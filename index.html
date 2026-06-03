@@ -197,7 +197,7 @@
         /* Dual Engine Real-Time Log Viewports */
         .logger-panel-split {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             margin-top: 10px;
         }
@@ -266,13 +266,13 @@
     <div class="monitor-workspace-split">
         <div class="left-telemetry-column">
 
-            <!-- 1. EVENT RUNTIME TEXT FEED LOG PANEL -->
-            <div class="group-box-frame" style="height: 90px; overflow: hidden; margin-bottom: 8px;">
+            <!-- 1. EVENT RUNTIME TEXT LOG FEED -->
+            <div class="group-box-frame" style="height: 110px; overflow: hidden; margin-bottom: 8px;">
                 <div class="group-box-title">Event</div>
-                <div id="event_log_stream" style="height: 80px; overflow-y: auto; font-family: monospace; font-size: 11px; white-space: pre-wrap; padding-left: 5px; color: #555555; line-height: 1.3;"></div>
+                <div id="event_log_stream" style="height: 100px; overflow-y: auto; font-family: monospace; font-size: 11px; white-space: pre-wrap; padding-left: 5px; color: #000000; line-height: 1.3; font-weight: bold;"></div>
             </div>
 
-            <!-- 2. FIRMWARE VERSION MESSAGE PANEL -->
+            <!-- 2. DIAGNOSTIC DEVICE VERSION MESSAGE PROFILE -->
             <div class="group-box-frame" style="margin-bottom: 8px; padding-bottom: 10px;">
                 <div class="group-box-title">Version Message</div>
                 <div class="telemetry-row-grid">
@@ -285,7 +285,7 @@
                 </div>
             </div>
 
-            <!-- 3. INDOOR OPERATIONAL MATRIX PANEL -->
+            <!-- 3. INDOOR OPERATIONAL PARAMETERS -->
             <div class="group-box-frame" style="margin-bottom: 8px; padding-bottom: 10px;">
                 <div class="group-box-title">Indoor</div>
                 <div class="telemetry-row-grid" style="margin-bottom: 8px;">
@@ -330,7 +330,7 @@
                 </div>
             </div>
 
-            <!-- 5. STEPPED FREQUENCY STATUS STRIPS -->
+            <!-- 5. STEPPED FREQUENCY MATRIX STRIPS -->
             <div class="bottom-frequency-strip">
                 <span class="freq-strip-label">FreqLevel</span>
                 <span class="freq-strip-label" style="min-width:32px;">F1</span>
@@ -379,7 +379,7 @@
                 </div>
             </div>
 
-            <!-- BITWISE CHECKBOX SELECTION LIST -->
+            <!-- BITWISE INDICATOR PANEL -->
             <div class="group-box-frame" style="flex: 1; padding-bottom: 10px; margin-bottom: 0;">
                 <div class="sidebar-indicator-layout">
                     <div class="checkbox-row-item"><div id="chk_fault" class="indicator-square-box"></div><span>Fault</span></div>
@@ -416,7 +416,7 @@
                     <div>Fan Type: <span id="lbl_fantype" style="font-weight:bold;">--</span></div>
                 </div>
 
-                <!-- EMBEDDED RETRO BRAND STAMP -->
+                <!-- WINDOWS CLASSIC LOOK BRAND LABEL -->
                 <div class="brand-logo-panel">
                     <span class="brand-logo-text">Meg</span>
                     <div id="lbl_branding_date" class="brand-sub-date">03-06-2026 12:53:51 AM</div>
@@ -425,10 +425,10 @@
         </div>
     </div> <!-- End of monitor-workspace-split -->
 
-    <!-- DUAL CONSOLE LOG PIPELINE CONTAINER VIEWPORTS -->
+    <!-- DUAL CONSOLE LOGGER OVERVIEWS -->
     <div class="logger-panel-split">
         <div class="terminal-box-frame">
-            <div class="terminal-box-header">live_packet_stream.log (Parallel Stream Engine Decodes)</div>
+            <div class="terminal-box-header">live_packet_stream.log (Parallel Stream Decodes)</div>
             <pre id="console_output"></pre>
         </div>
         <div class="terminal-box-frame">
@@ -438,9 +438,9 @@
     </div>
 
     <script>
-    // ==========================================
-    // PART 4 - SECTION B: CREDENTIALS & HANDSHAKE
-    // ==========================================
+    // ========================================================
+    // PART 4 - SECTION B: BROKER HOST ADDRESSES & SOCKET LOOPS
+    // ========================================================
     const BROKER_HOST = "e897bc6d6145492e99f4a7f09df8ffd9.s1.eu.hivemq.cloud";
     const WEBSOCKET_PORT = 8884;
     const MQTT_USER = "Amber_IOT";
@@ -482,16 +482,21 @@
         ws = new WebSocket(url, ["mqtt"]);
         ws.binaryType = "arraybuffer";
 
-        ws.onopen = () => { sendMqttConnectPacket(); };
+        ws.onopen = () => { 
+            sendMqttConnectPacket(); 
+        };
+        
         ws.onclose = () => {
             clearInterval(pingTimer);
             statusBar.classList.remove('connected');
             statusDot.classList.remove('connected');
             statusText.innerText = "Status: Connection down. Reconnecting...";
-            appendEventLog("Permanent stop, need to cut off power to start again ! !");
             setTimeout(connectNativeMQTT, 4000);
         };
-        ws.onmessage = (event) => { handleIncomingMqttFrame(event); };
+        
+        ws.onmessage = (event) => { 
+            handleIncomingMqttFrame(event); 
+        };
     }
     // ============================================================
     // PART 5 - SECTION A: HANDSHAKE BUILDERS & PAYLOAD DISPATCHER
@@ -502,13 +507,14 @@
         const enc = new TextEncoder();
         const bUser = enc.encode(MQTT_USER);
         const bPass = enc.encode(MQTT_PASS);
-        const bCid = enc.encode(bCid);
+        const bCid = enc.encode(cid); // Resolved reference loop error
+        
         const remLen = 12 + (2 + bCid.length) + (2 + bUser.length) + (2 + bPass.length);
         const pkt = new Uint8Array(2 + remLen);
         let idx = 0;
         
         pkt[idx++] = 16; pkt[idx++] = remLen; pkt[idx++] = 0; pkt[idx++] = 4;
-        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT
+        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT handshake protocol string signatures
         pkt[idx++] = 4;  pkt[idx++] = 194; pkt[idx++] = 0;  pkt[idx++] = 60;
         pkt[idx++] = (bCid.length >> 8); pkt[idx++] = (bCid.length & 255);
         pkt.set(bCid, idx); idx += bCid.length;
@@ -536,36 +542,35 @@
     function handleIncomingMqttFrame(event) {
         const payload = new Uint8Array(event.data);
         if (payload.length === 0) return;
-        const packetType = payload[0] >> 4;
+        const packetType = payload >> 4;
 
-        if (packetType === 2) { // CONNACK REGISTERED
+        if (packetType === 2) { // CONNACK HANDSHAKE REGISTERED 
             statusBar.classList.add('connected');
             statusDot.classList.add('connected');
             statusText.innerText = `Connected: Listening live on [${TOPIC_SUBSCRIBE}]`;
-            appendEventLog("Receive indoor instruction, cool_mode.");
             sendMqttSubscribePacket();
             
             clearInterval(pingTimer);
             pingTimer = setInterval(() => {
-                if (ws.readyState === 1) ws.send(new Uint8Array([0xC0, 0x00])); // PINGREQ
+                if (ws.readyState === 1) ws.send(new Uint8Array([0xC0, 0x00])); // PINGREQ keep-alive loop
             }, 15000);
         }
 
-        if (packetType === 3) { // INCOMING TELEMETRY STREAM
+        if (packetType === 3) { // INCOMING TELEMETRY ARRAY FRAME
             let idx = 1; let remLen = 0; let multiplier = 1;
             do { remLen += (payload[idx] & 127) * multiplier; multiplier *= 128; } while ((payload[idx++] & 128) !== 0);
             const topicLen = (payload[idx++] << 8) + payload[idx++]; idx += topicLen;
 
             const rawDataBytes = payload.subarray(idx);
             
-            // Route strictly to the core 0-based index parser function
+            // Forward directly to the 0-offset data matrix parser
             if (rawDataBytes.length >= 40) {
                 parseMegmeetCorePacket(rawDataBytes);
             }
         }
     }
     // =========================================================
-    // PART 5 - SECTION B: STRICT 0-BASED CORE DATA INDEX BINDER
+    // PART 5 - SECTION B: TELEMETRY PARSER & FORM BINDER ENGINE
     // =========================================================
 
     function parseMegmeetCorePacket(rawDataBytes) {
@@ -596,13 +601,13 @@
         const CompTime = (rawDataBytes[42] << 8) | rawDataBytes[43];
 
         // --- 3. Stepped Bottom Frequency Array Mapping (Indices 48 to 60) ---
-        const f1  = rawDataBytes[48]  || 29; const f2  = rawDataBytes[49]  || 34;
-        const f3  = rawDataBytes[50]  || 40; const f4  = rawDataBytes[51]  || 45;
-        const f5  = rawDataBytes[52]  || 50; const f6  = rawDataBytes[53]  || 55;
-        const f7  = rawDataBytes[54]  || 62; const f8  = rawDataBytes[55]  || 67;
-        const f9  = rawDataBytes[56]  || 69; const f10 = rawDataBytes[57]  || 75;
-        const f11 = rawDataBytes[58]  || 78; const f12 = rawDataBytes[59]  || 83;
-        const f13 = rawDataBytes[60]  || 90;
+        const f1  = rawDataBytes[48] || 29; const f2  = rawDataBytes[49] || 34;
+        const f3  = rawDataBytes[50] || 40; const f4  = rawDataBytes[51] || 45;
+        const f5  = rawDataBytes[52] || 50; const f6  = rawDataBytes[53] || 55;
+        const f7  = rawDataBytes[54] || 62; const f8  = rawDataBytes[55] || 67;
+        const f9  = rawDataBytes[56] || 69; const f10 = rawDataBytes[57] || 75;
+        const f11 = rawDataBytes[58] || 78; const f12 = rawDataBytes[59] || 83;
+        const f13 = rawDataBytes[60] || 90;
 
         // --- 4. Dynamic String Lookup Mappers (Bytes 18, 1, and 31) ---
         const fanLevelCode  = rawDataBytes[18];
@@ -612,15 +617,15 @@
         const setFreqHz     = rawDataBytes[4];
         const realFreqHz    = rawDataBytes[2];
 
-        // Fan Level Lookup Array
+        // Fan Level Lookup Array (Byte 18)
         const fanLevelArray = ["Stop", "Weak", "Silence", "Low", "Medium", "High", "Force"];
         const fanLevelStr   = fanLevelArray[fanLevelCode] || `Level ${fanLevelCode}`;
 
-        // Mode Lookup Array
+        // Mode Lookup Array (Byte 1)
         const modeArray     = ["Standby", "Cool", "Heat", "FAN", "Dry"];
         const modeStr       = modeArray[modeCode] || `Mode ${modeCode}`;
 
-        // Event Display Ticker Lookup Array
+        // Event Display Ticker Lookup Array (Byte 31)
         const eventTextArray = [
             "System Idle Standby",
             "Receive indoor instructions Standby",
@@ -650,7 +655,7 @@
         document.getElementById('val_tr').innerText          = tr + " °C";
         document.getElementById('val_ts').innerText          = ts + " °C";
         document.getElementById('val_te').innerText          = te + " °C";
-        document.getElementById('val_ratedmode').innerText   = "None";
+        document.getElementById('val_ratedmode').innerText   = modeCode === 0 ? "None" : modeStr;
         document.getElementById('val_fanlevel').innerText    = `-${fanLevelStr}`;
         document.getElementById('val_idufan').innerText      = iduFan + " rpm";
         document.getElementById('val_idufaultstr').innerText = "IDU fault fan fault";
