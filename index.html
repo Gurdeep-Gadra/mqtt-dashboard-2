@@ -41,7 +41,7 @@
             font-size: 11px;
         }
 
-        /* Standard Split Window Workspace Layout Layout */
+        /* Standard Split Window Workspace Layout */
         .monitor-workspace-split {
             display: flex;
             gap: 8px;
@@ -297,7 +297,7 @@
                 </div>
             </div>
 
-            <!-- 3. INDOOR OPERATIONS SUB-MATRIX GROUP -->
+            <!-- 3. INDOOR OPERATIONAL MATRIX PANEL -->
             <div class="group-box-frame" style="margin-bottom: 6px; padding-bottom: 8px;">
                 <div class="group-box-title">Indoor</div>
                 <div class="telemetry-row-grid" style="margin-bottom: 6px;">
@@ -418,7 +418,7 @@
                     <div>Fan Type: <span id="lbl_fantype" style="font-weight: bold; color: #000000;">--</span></div>
                 </div>
 
-                <!-- EMBEDDED RETRO DESIGN STAMP -->
+                <!-- EMBEDDED RETRO MONITOR GRAPHICS LABEL -->
                 <div class="brand-logo-panel">
                     <div class="brand-logo-text">Meg</div>
                     <div id="lbl_branding_date" class="brand-sub-date">03-06-2026 01:21:45 AM</div>
@@ -427,7 +427,7 @@
         </div>
     </div> <!-- End of monitor-workspace-split -->
 
-    <!-- DUAL CONSOLE LOGGER INTERFACES -->
+    <!-- DUAL CONSOLE LOGGER VIEWPORT PANELS -->
     <div class="logger-panel-split">
         <div class="terminal-box-frame">
             <div class="terminal-box-header">live_packet_stream.log (Parallel Stream Engine Decodes)</div>
@@ -500,14 +500,14 @@
         const enc = new TextEncoder();
         const bUser = enc.encode(MQTT_USER);
         const bPass = enc.encode(MQTT_PASS);
-        const bCid = enc.encode(cid); // Encodes the actual generated unique string
+        const bCid = enc.encode(cid);
         
         const remLen = 12 + (2 + bCid.length) + (2 + bUser.length) + (2 + bPass.length);
         const pkt = new Uint8Array(2 + remLen);
         let idx = 0;
         
         pkt[idx++] = 16; pkt[idx++] = remLen; pkt[idx++] = 0; pkt[idx++] = 4;
-        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // "MQTT" protocol string signatures
+        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT Handshake Strings
         pkt[idx++] = 4;  pkt[idx++] = 194; pkt[idx++] = 0;  pkt[idx++] = 60;
         pkt[idx++] = (bCid.length >> 8); pkt[idx++] = (bCid.length & 255);
         pkt.set(bCid, idx); idx += bCid.length;
@@ -535,9 +535,11 @@
     function handleIncomingMqttFrame(event) {
         const payload = new Uint8Array(event.data);
         if (payload.length === 0) return;
-        const packetType = payload >> 4;
+        
+        // RESOLVED BUG: Targets byte element [0] value state instead of shifting array container
+        const packetType = payload[0] >> 4; 
 
-        if (packetType === 2) { // CONNACK HANDSHAKE REGISTERED 
+        if (packetType === 2) { // CONNACK HANDSHAKE VALIDATED
             statusBar.classList.add('connected');
             statusDot.classList.add('connected');
             statusText.innerText = `Connected: Listening live on [${TOPIC_SUBSCRIBE}]`;
@@ -546,18 +548,18 @@
             
             clearInterval(pingTimer);
             pingTimer = setInterval(() => {
-                if (ws.readyState === 1) ws.send(new Uint8Array([0xC0, 0x00])); // Keep-alive loop
+                if (ws.readyState === 1) ws.send(new Uint8Array([0xC0, 0x00])); // PINGREQ
             }, 15000);
         }
 
-        if (packetType === 3) { // INCOMING DATA FRAME
+        if (packetType === 3) { // PUBLISH
             let idx = 1; let remLen = 0; let multiplier = 1;
             do { remLen += (payload[idx] & 127) * multiplier; multiplier *= 128; } while ((payload[idx++] & 128) !== 0);
             const topicLen = (payload[idx++] << 8) + payload[idx++]; idx += topicLen;
 
             const rawDataBytes = payload.subarray(idx);
             
-            // Forward directly down to the core bracketted data array fields binder
+            // Route array down to strict zero-based parameter parser block
             if (rawDataBytes.length >= 40) {
                 parseMegmeetCorePacket(rawDataBytes);
             }
