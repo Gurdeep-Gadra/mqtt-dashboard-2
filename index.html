@@ -1,359 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Megmeet_Amber_Monitor Telemetry Dashboard</title>
     <style>
-        /* Base Application Layout Reset */
+        /* Native Windows Classic Form Background Layout */
         body { 
-            background-color: #0b0f19; 
-            color: #f3f4f6; 
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background-color: #f0f0f0; 
+            color: #000000; 
+            font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, Arial, sans-serif; 
             margin: 0; 
-            padding: 15px; 
+            padding: 8px; 
             box-sizing: border-box;
+            font-size: 12px;
         }
 
-        /* Top Horizontal Control Status Strip */
-        .system-top-strip {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 15px;
+        /* Classic SCADA UI Group Box Panels */
+        .group-box-frame {
+            border: 2px solid #b0b0b0;
+            background-color: #fbfbfb;
+            border-radius: 3px;
+            padding: 12px 10px 8px 10px;
+            margin-bottom: 10px;
+            position: relative;
+            box-shadow: inset 1px 1px 1px #ffffff;
         }
 
-        .status-panel-card {
-            background-color: #111827;
-            border: 1px solid #1f2937;
-            border-radius: 6px;
-            padding: 10px 15px;
-        }
-
-        .panel-label {
-            color: #6b7280;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 4px;
-        }
-
-        .panel-value-large {
-            color: #f43f5e;
-            font-size: 18px;
-            font-family: monospace;
+        .group-box-title {
+            position: absolute;
+            top: -8px;
+            left: 12px;
+            background-color: #f0f0f0;
+            padding: 0 6px;
             font-weight: bold;
+            color: #000080; /* Classic Industrial Navy */
+            font-size: 11px;
         }
 
-        /* Broker Connection State Banner */
-        .broker-status-banner {
-            background-color: #111827;
-            border: 1px solid #f59e0b;
-            color: #f59e0b;
-            padding: 10px 20px;
-            border-radius: 6px;
+        /* Standard Split Window Workspace */
+        .monitor-workspace-split {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 13px;
-        }
-
-        .broker-status-banner.connected {
-            border-color: #10b981;
-            color: #10b981;
-        }
-
-        .status-left-group {
-            display: flex;
-            align-items: center;
             gap: 10px;
+            align-items: flex-start;
         }
 
-        .status-beacon {
-            width: 10px;
-            height: 10px;
-            background-color: #f59e0b;
-            border-radius: 50%;
-        }
-
-        .status-beacon.connected {
-            background-color: #10b981;
-            box-shadow: 0 0 8px #10b981;
-        }
-
-        .live-system-clock {
-            font-family: monospace;
-            color: #9ca3af;
-        }
-
-        /* Split-Pane Central Workspace Layout */
-        .workspace-layout-split {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            height: 380px;
-        }
-
-        /* Left Side: Main Diagnostic Matrix */
-        .diagnostic-matrix-frame {
+        .left-telemetry-column {
             flex: 1;
-            background-color: #111827;
-            border: 1px solid #1f2937;
-            border-radius: 6px;
-            padding: 15px;
-        }
-
-        .matrix-section-title {
-            color: #9ca3af;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid #1f2937;
-            padding-bottom: 6px;
-            margin-bottom: 12px;
-            font-weight: bold;
-        }
-
-        .matrix-grid-layout {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-
-        .metric-cell {
-            background-color: #0b0f19;
-            border: 1px solid #1f2937;
-            border-radius: 4px;
-            padding: 8px 12px;
-        }
-
-        .metric-cell-label {
-            color: #4b5563;
-            font-size: 11px;
-            margin-bottom: 2px;
-        }
-
-        .metric-cell-value {
-            color: #10b981;
-            font-size: 16px;
-            font-family: monospace;
-            font-weight: bold;
-        }
-
-        /* Right Side: Frequency Allocations Panel */
-        .frequency-allocations-panel {
-            width: 250px;
-            background-color: #111827;
-            border: 1px solid #1f2937;
-            border-radius: 6px;
-            padding: 15px;
             display: flex;
             flex-direction: column;
         }
 
-        .freq-matrix-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            flex: 1;
+        .right-sidebar-column {
+            width: 260px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .freq-cell {
-            background-color: #0b0f19;
-            border: 1px solid #1f2937;
-            border-radius: 4px;
-            padding: 6px 10px;
+        /* Grid Matrices for Version, Indoor and Outdoor Blocks */
+        .telemetry-row-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px 15px;
+        }
+
+        /* Parameter Field Inputs mimicking Windows Textboxes */
+        .param-field-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .param-label {
+            color: #000000;
+            font-size: 11px;
+            white-space: nowrap;
+            min-width: 65px;
+        }
+
+        .param-value-input {
+            background-color: #ffffff;
+            border: 1px solid #7a7a7a;
+            color: #0000ff; /* Exact Blue Data Output Color */
+            padding: 2px 6px;
+            font-family: monospace;
+            font-size: 12px;
+            font-weight: bold;
+            flex: 1;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            box-shadow: inset 1px 1px 1px #e0e0e0;
+        }
+
+        /* Highlight Overrides for Fault Warnings */
+        .param-value-input.fault-active {
+            color: #ff0000 !important;
+            background-color: #fff0f0;
+        }
+
+        /* MQTT Secure Status Banner */
+        .broker-status-strip {
+            background-color: #e0e0e0;
+            border: 1px solid #a0a0a0;
+            padding: 4px 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .freq-label {
-            color: #4b5563;
+            margin-bottom: 8px;
             font-size: 11px;
-            font-family: monospace;
-        }
-
-        .freq-value {
-            color: #10b981;
-            font-size: 13px;
-            font-family: monospace;
             font-weight: bold;
         }
 
-        /* Bottom Section: Dual Logger Viewports */
-        .dual-logger-container {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 15px;
+        .broker-status-strip.connected {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
         }
 
-        .logger-window-frame {
-            background-color: #000000;
-            border: 1px solid #1f2937;
-            border-radius: 6px;
-            overflow: hidden;
+        .status-beacon-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ff0000;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
         }
 
-        .logger-window-header {
-            background-color: #111827;
-            padding: 8px 14px;
-            border-bottom: 1px solid #1f2937;
+        .status-beacon-dot.connected {
+            background-color: #28a745;
+        }
+        /* Sidebar Checkbox & Indicator Layout Styles */
+        .sidebar-indicator-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 5px;
+        }
+
+        .checkbox-row-item {
             display: flex;
             align-items: center;
             gap: 6px;
+            font-size: 11px;
+            height: 18px;
         }
 
-        .decor-bullet {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
+        .indicator-square-box {
+            width: 12px;
+            height: 12px;
+            border: 1px solid #7a7a7a;
+            background-color: #ffffff;
+            box-shadow: inset 1px 1px 1px #e0e0e0;
         }
 
-        .bullet-red { background-color: #ef4444; }
-        .bullet-yellow { background-color: #f59e0b; }
-        .bullet-green { background-color: #10b981; }
+        /* Color States Matching Native Monitor Software */
+        .indicator-square-box.active-green { background-color: #00ff00 !important; }
+        .indicator-square-box.active-orange { background-color: #ff9900 !important; }
+        .indicator-square-box.active-red { background-color: #ff0000 !important; }
 
-        .logger-window-title {
-            color: #4b5563;
+        /* Frequency Bottom Strip Alignment Matrix */
+        .bottom-frequency-strip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #e8e8e8;
+            border: 1px solid #b0b0b0;
+            padding: 4px 8px;
+            margin-top: 8px;
+        }
+
+        .freq-strip-label {
+            font-weight: bold;
+            font-size: 11px;
+            color: #000080;
+            min-width: 60px;
+        }
+
+        .freq-strip-cells {
+            display: flex;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .freq-strip-input {
+            background-color: #ffffff;
+            border: 1px solid #7a7a7a;
+            color: #008000; /* Distinct Green Frequency Display Color */
             font-family: monospace;
             font-size: 11px;
-            margin-left: 5px;
-            text-transform: uppercase;
+            font-weight: bold;
+            width: 32px;
+            text-align: center;
+            padding: 1px 0;
+        }
+
+        /* Dual Engine Real-Time Log Viewports */
+        .logger-panel-split {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .terminal-box-frame {
+            border: 1px solid #7a7a7a;
+            background-color: #ffffff;
+        }
+
+        .terminal-box-header {
+            background-color: #000080;
+            color: #ffffff;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            font-family: sans-serif;
         }
 
         pre {
             margin: 0;
-            padding: 12px;
-            height: 180px;
+            padding: 6px;
+            height: 120px;
             overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            color: #10b981;
-            line-height: 1.5;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px;
+            color: #000000;
+            background-color: #ffffff;
+            line-height: 1.3;
             white-space: pre-wrap;
         }
 
-        .log-line-sys { color: #4b5563; }
-        .log-line-err { color: #f87171; }
+        /* Giant Decorative Branding Element */
+        .brand-logo-panel {
+            text-align: right;
+            padding: 10px 5px 0 0;
+        }
+
+        .brand-logo-text {
+            font-family: 'Arial Black', Impact, sans-serif;
+            font-size: 38px;
+            font-weight: 900;
+            color: #00a86b; /* Megmeet Jade Green Branding */
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .brand-sub-date {
+            font-family: monospace;
+            font-size: 11px;
+            color: #555555;
+            margin-top: 2px;
+        }
     </style>
 </head>
 <body>
-    <!-- TOP SYSTEM STATUS HEADER STRIP -->
-    <div class="system-top-strip">
-        <div class="status-panel-card">
-            <div class="panel-label">Rated Operation Mode</div>
-            <div id="val_mode" class="panel-value-large">STANDBY STATUS</div>
+
+    <!-- SYSTEM BROKER CONNECTION STRIP -->
+    <div id="status_bar" class="broker-status-strip">
+        <div>
+            <div id="status_dot" class="status-beacon-dot"></div>
+            <span id="status_text">Pipeline: Initializing link to secure HiveMQ cloud broker...</span>
         </div>
-        <div class="status-panel-card">
-            <div class="panel-label">IDU Error Diagnostics</div>
-            <div id="val_idu_fault" class="panel-value-large">SYSTEM STABLE</div>
-        </div>
-        <div class="status-panel-card">
-            <div class="panel-label">Frequency Allocation Profile</div>
-            <div id="val_freq_profile" class="panel-value-large">F0 STANDBY</div>
-        </div>
+        <span id="live_clock">00:00:00 AM</span>
     </div>
 
-    <!-- BROKER CONNECTION BANNER -->
-    <div id="status_bar" class="broker-status-banner">
-        <div class="status-left-group">
-            <div id="status_dot" class="status-beacon"></div>
-            <span id="status_text">Pipeline Initialization: Securing HiveMQ cloud broker tunnel connection topology...</span>
-        </div>
-        <span id="live_clock" class="live-system-clock">00:00:00 AM</span>
-    </div>
-
-    <!-- CENTRAL MONITOR WORKSPACE SPLIT LAYOUT -->
-    <div class="workspace-layout-split">
+    <!-- MAIN TWO-COLUMN SPLIT CONTAINER -->
+    <div class="monitor-workspace-split">
         
-        <!-- MAIN TELEMETRY GRID MATRIX -->
-        <main class="diagnostic-matrix-frame">
-            <div class="matrix-section-title">Outdoor Operational Telemetry Grid Matrix</div>
-            <div class="matrix-grid-layout">
-                <div class="metric-cell"><div class="metric-cell-label">Suction Temp (Tsu)</div><div id="val_tsu" class="metric-cell-value">--</div></div>
-                <div class="metric-cell"><div class="metric-cell-label">Ambient Temp (Ta)</div><div id="val_ta" class="metric-cell-value">--</div></div>
-                <div class="metric-cell"><div class="metric-cell-label">Condenser Temp (Tc)</div><div id="val_tc" class="metric-cell-value">--</div></div>
-                <div class="metric-cell"><div class="metric-cell-label">Discharge Temp (Td)</div><div id="val_td" class="metric-cell-value">--</div></div>
-                
-                <div class="metric-cell"><div class="metric-cell-label">Room Temp (Tr)</div><div id="val_tr" class="metric-cell-value">--</div></div>
-                <div class="metric-cell"><div class="metric-cell-label">Evaporator Temp (Te)</div><div id="val_te" class="metric-cell-value">--</div></div>
-                <div class="metric-cell"><div class="metric-cell-label">Target Temp (Ts)</div><div id="val_ts" class="metric-cell-value">--</div></div>
-                <div class="metric-cell"><div class="metric-cell-label">AC Input Line Volts</div><div id="val_acvol" class="metric-cell-value">--</div></div>
-                
-                <div class="metric-cell"><div class="metric-cell-label">AC Input Current</div><div id="val_accur" class="metric-cell-value">--</div></div>
-                <div class="metric-cell"><div class="metric-cell-label">DC Bus Voltage</div><div id="val_dcvol" class="metric-cell-value">--</div></div>
-                <div class="metric-cell"><div class="metric-cell-label">DC Running Current</div><div id="val_dccur" class="metric-cell-value">--</div></div>
-                <div class="metric-cell"><div class="metric-cell-label">EEV Opening Steps</div><div id="val_eev" class="metric-cell-value">--</div></div>
-                
-                <div class="metric-cell"><div class="metric-cell-label">IPM Module Temp</div><div id="val_tipm" class="metric-cell-value">--</div></div>
-                <div class="metric-cell"><div class="metric-cell-label">Fan IPM State</div><div id="val_fanipm" class="metric-cell-value">--</div></div>
-                <div class="metric-cell"><div class="metric-cell-label">Outdoor Fan Speed</div><div id="val_odufan" class="metric-cell-value">--</div></div>
-                <div class="metric-cell"><div class="metric-cell-label">Compressor Off Uptime</div><div id="Comp_Time" class="metric-cell-value">--</div></div>
+        <!-- LEFT MAIN WORKING FRAME COLUMN -->
+        <div class="left-telemetry-column">
+            <!-- 1. EVENT STATUS RUNTIME LOG PANEL -->
+            <div class="group-box-frame" style="height: 90px; overflow: hidden; margin-bottom: 8px;">
+                <div class="group-box-title">Event</div>
+                <div id="event_log_stream" style="height: 80px; overflow-y: auto; font-family: monospace; font-size: 11px; white-space: pre-wrap; padding-left: 5px; color: #555555; line-height: 1.3;"></div>
             </div>
-        </main>
 
-        <!-- RIGHT SIDE FREQUENCY ALLOCATION GRID -->
-        <aside class="frequency-allocations-panel">
-            <div class="matrix-section-title">Frequency Tables (Hz)</div>
-            <div class="freq-matrix-grid">
-                <div class="freq-cell"><span class="freq-label">F1</span><span id="f_f1" class="freq-value">--</span></div>
-                <div class="freq-cell"><span class="freq-label">F2</span><span id="f_f2" class="freq-value">--</span></div>
-                <div class="freq-cell"><span class="freq-label">F3</span><span id="f_f3" class="freq-value">--</span></div>
-                <div class="freq-cell"><span class="freq-label">F4</span><span id="f_f4" class="freq-value">--</span></div>
-                <div class="freq-cell"><span class="freq-label">F5</span><span id="f_f5" class="freq-value">--</span></div>
-                <div class="freq-cell"><span class="freq-label">F6</span><span id="f_f6" class="freq-value">--</span></div>
-                <div class="freq-cell"><span class="freq-label">F7</span><span id="f_f7" class="freq-value">--</span></div>
-                <div class="freq-cell"><span class="freq-label">F8</span><span id="f_f8" class="freq-value">--</span></div>
-                <div class="freq-cell"><span class="freq-label">F9</span><span id="f_f9" class="freq-value">--</span></div>
-                <div class="freq-cell"><span class="freq-label">F10</span><span id="f_f10" class="freq-value">--</span></div>
-                <div class="freq-cell"><span class="freq-label">F11</span><span id="f_f11" class="freq-value">--</span></div>
-                <div class="freq-cell"><span class="freq-label">F12</span><span id="f_f12" class="freq-value">--</span></div>
+            <!-- 2. FIRMWARE VERSION MESSAGE PANEL -->
+            <div class="group-box-frame" style="margin-bottom: 8px; padding-bottom: 10px;">
+                <div class="group-box-title">Version Message</div>
+                <div class="telemetry-row-grid">
+                    <div class="param-field-box"><span class="param-label">Soft Ver</span><div id="val_softver" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Soft Data</span><div id="val_softdata" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Driver Lib</span><div id="val_driverlib" class="param-value-input">--</div></div>
+                    <div></div> <!-- Spacing Balance Pad -->
+                    <div class="param-field-box"><span class="param-label">IDU MCU_EE</span><div id="val_idumcuee" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">ODU MCU_EE</span><div id="val_odumcuee" class="param-value-input">--</div></div>
+                </div>
             </div>
-        </aside>
-    </div>
 
-    <!-- BOTTOM HOVER DUAL VIEWPORT LOG STORAGE BLOCK -->
-    <div class="dual-logger-container">
-        <section class="logger-window-frame">
-            <div class="logger-window-header">
-                <div class="decor-bullet bullet-red"></div>
-                <div class="decor-bullet bullet-yellow"></div>
-                <div class="decor-bullet bullet-green"></div>
-                <span class="logger-window-title">live_packet_stream.log (Parallel Stream Engine Decodes)</span>
+            <!-- 3. INDOOR OPERATIONAL MATRIX PANEL -->
+            <div class="group-box-frame" style="margin-bottom: 8px; padding-bottom: 10px;">
+                <div class="group-box-title">Indoor</div>
+                <div class="telemetry-row-grid" style="margin-bottom: 8px;">
+                    <div class="param-field-box"><span class="param-label">Mode</span><div id="val_mode" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Tr</span><div id="val_tr" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Ts</span><div id="val_ts" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Te</span><div id="val_te" class="param-value-input">--</div></div>
+                </div>
+                <div class="telemetry-row-grid" style="border-top: 1px dashed #b0b0b0; padding-top: 8px;">
+                    <div class="param-field-box"><span class="param-label">Rated Mode</span><div id="val_ratedmode" class="param-value-input fault-active">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Fan Level</span><div id="val_fanlevel" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Fan rpm</span><div id="val_idufan" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label" style="min-width:100px;">IDU fault fan fault</span><div id="val_idufaultstr" class="param-value-input fault-active">--</div></div>
+                </div>
             </div>
+            <!-- 4. OUTDOOR OPERATIONAL MATRIX PANEL -->
+            <div class="group-box-frame" style="margin-bottom: 5px; padding-bottom: 10px;">
+                <div class="group-box-title">Outdoor</div>
+                <div class="telemetry-row-grid" style="margin-bottom: 8px;">
+                    <div class="param-field-box"><span class="param-label">Tsu</span><div id="val_tsu" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Ta</span><div id="val_ta" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Tc</span><div id="val_tc" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Td</span><div id="val_td" class="param-value-input">--</div></div>
+                </div>
+                <div class="telemetry-row-grid" style="margin-bottom: 8px;">
+                    <div class="param-field-box"><span class="param-label">Area</span><div id="val_area" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">PCB Type</span><div id="val_pcbtype" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Fan rpm</span><div id="val_odufan" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Drv Fault</span><div id="val_drvfault" class="param-value-input fault-active">--</div></div>
+                </div>
+                <div class="telemetry-row-grid" style="margin-bottom: 8px;">
+                    <div class="param-field-box"><span class="param-label">DC CUR</span><div id="val_dccur" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">DC VOL</span><div id="val_dcvol" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">AC CUR</span><div id="val_accur" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">AC VOL</span><div id="val_acvol" class="param-value-input">--</div></div>
+                </div>
+                <div class="telemetry-row-grid">
+                    <div class="param-field-box"><span class="param-label">EEV</span><div id="val_eev" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Tipm</span><div id="val_tipm" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">FAN IPM</span><div id="val_fanipm" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Comp Time</span><div id="Comp_Time" class="param-value-input">--</div></div>
+                </div>
+            </div>
+
+            <!-- 5. BOTTOM STEPPED RUNTIME FREQUENCY METER MATRIX STRIPS -->
+            <div class="bottom-frequency-strip">
+                <span class="freq-strip-label">FreqLevel</span>
+                <span class="freq-strip-label" style="min-width:32px;">F1</span>
+                <span class="freq-strip-label" style="min-width:32px;">F2</span>
+                <span class="freq-strip-label" style="min-width:32px;">F3</span>
+                <span class="freq-strip-label" style="min-width:32px;">F4</span>
+                <span class="freq-strip-label" style="min-width:32px;">F5</span>
+                <span class="freq-strip-label" style="min-width:32px;">F6</span>
+                <span class="freq-strip-label" style="min-width:32px;">F7</span>
+                <span class="freq-strip-label" style="min-width:32px;">F8</span>
+                <span class="freq-strip-label" style="min-width:32px;">F9</span>
+                <span class="freq-strip-label" style="min-width:32px;">F10</span>
+                <span class="freq-strip-label" style="min-width:32px;">F11</span>
+                <span class="freq-strip-label" style="min-width:32px;">F12</span>
+                <span class="freq-strip-label" style="min-width:32px;">F13</span>
+            </div>
+            <div class="bottom-frequency-strip" style="margin-top:2px;">
+                <span class="freq-strip-label">Freq</span>
+                <div class="freq-strip-cells">
+                    <div id="f_f1" class="freq-strip-input">--</div>
+                    <div id="f_f2" class="freq-strip-input">--</div>
+                    <div id="f_f3" class="freq-strip-input">--</div>
+                    <div id="f_f4" class="freq-strip-input">--</div>
+                    <div id="f_f5" class="freq-strip-input">--</div>
+                    <div id="f_f6" class="freq-strip-input">--</div>
+                    <div id="f_f7" class="freq-strip-input">--</div>
+                    <div id="f_f8" class="freq-strip-input">--</div>
+                    <div id="f_f9" class="freq-strip-input">--</div>
+                    <div id="f_f10" class="freq-strip-input">--</div>
+                    <div id="f_f11" class="freq-strip-input">--</div>
+                    <div id="f_f12" class="freq-strip-input">--</div>
+                    <div id="f_f13" class="freq-strip-input">--</div>
+                </div>
+            </div>
+        </div> <!-- End of left-telemetry-column -->
+        <!-- 6. RIGHT SIDEBAR STATUS DISPLAY & CONTROL MATRICES -->
+        <div class="right-sidebar-column">
+            
+            <!-- FREQ DISPLAY SUB-GROUP -->
+            <div class="group-box-frame" style="margin-bottom: 8px; padding-bottom: 10px;">
+                <div class="group-box-title">Freq Display</div>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div class="param-field-box"><span class="param-label">Target</span><div id="ui_target_freq" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Set</span><div id="ui_set_freq" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Real Freq</span><div id="ui_real_freq" class="param-value-input">--</div></div>
+                </div>
+            </div>
+
+            <!-- BITWISE INDICATOR CONTROL GROUP -->
+            <div class="group-box-frame" style="flex: 1; padding-bottom: 10px; margin-bottom: 0;">
+                <div class="sidebar-indicator-layout">
+                    <div class="checkbox-row-item"><div id="chk_fault" class="indicator-square-box"></div><span>Fault</span></div>
+                    <div class="checkbox-row-item"><div id="chk_protect" class="indicator-square-box"></div><span style="color:#ff0000; font-weight:bold;">Protect</span></div>
+                    <div class="checkbox-row-item"><div id="chk_limitfreq" class="indicator-square-box"></div><span>LimitFreq</span></div>
+                    <div class="checkbox-row-item"><div id="chk_downfreq" class="indicator-square-box"></div><span>DowmFreq</span></div>
+                    
+                    <div style="border-top: 1px dashed #b0b0b0; margin: 4px 0;"></div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                        <div class="checkbox-row-item"><div id="chk_comp" class="indicator-square-box"></div><span>Comp:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_defrost" class="indicator-square-box"></div><span>Defrost:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_4way" class="indicator-square-box"></div><span>4Way:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_retoil" class="indicator-square-box"></div><span>Ret Oil:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_outfan" class="indicator-square-box"></div><span>Out Fan:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_test" class="indicator-square-box"></div><span>Test:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_preheat" class="indicator-square-box"></div><span>Preheat:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_collectf" class="indicator-square-box"></div><span>Collect F:</span></div>
+                    </div>
+                    
+                    <div style="border-top: 1px dashed #b0b0b0; margin: 4px 0;"></div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                        <div class="checkbox-row-item"><div id="chk_pfc" class="indicator-square-box"></div><span style="color:#ff6600; font-weight:bold;">PFC:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_eco" class="indicator-square-box"></div><span style="color:#ff6600; font-weight:bold;">ECO:</span></div>
+                    </div>
+                    <div class="checkbox-row-item"><div id="chk_everoff" class="indicator-square-box"></div><span style="color:#ff0000; font-weight:bold;">Ever Off:</span></div>
+                    <div class="checkbox-row-item"><div id="chk_idufault" class="indicator-square-box"></div><span style="color:#ff0000; font-weight:bold;">IDU Fault:</span></div>
+                </div>
+
+                <!-- BOTTOM HARDWARE PROFILE LABELS -->
+                <div style="margin-top: 10px; font-size: 11px; line-height: 1.4; color: #444444;">
+                    <div>System Type: <span id="lbl_systype" style="font-weight:bold;">--</span></div>
+                    <div>Comp Type: <span id="lbl_comptype" style="font-weight:bold;">--</span></div>
+                    <div>Fan Type: <span id="lbl_fantype" style="font-weight:bold;">--</span></div>
+                </div>
+
+                <!-- SCADA OFF-SET MASSIVE EMBEDDED BRAND PANEL -->
+                <div class="brand-logo-panel">
+                    <span class="brand-logo-text">Meg</span>
+                    <div id="lbl_branding_date" class="brand-sub-date">03-06-2026 12:53:51 AM</div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- End of monitor-workspace-split -->
+
+    <!-- REAL-TIME LOG SCREEN SPLIT PANEL VIEWPORTS -->
+    <div class="logger-panel-split">
+        <div class="terminal-box-frame">
+            <div class="terminal-box-header">live_packet_stream.log (Parallel Stream Engine Decodes)</div>
             <pre id="console_output"></pre>
-        </section>
-
-        <section class="logger-window-frame">
-            <div class="logger-window-header">
-                <div class="decor-bullet bullet-green"></div>
-                <span class="logger-window-title">system_event_tracker.log</span>
-            </div>
+        </div>
+        <div class="terminal-box-frame">
+            <div class="terminal-box-header">system_event_tracker.log</div>
             <pre id="event_log_stream"></pre>
-        </section>
+        </div>
     </div>
 
+    <!-- INITIALIZE INTERFACE JAVASCRIPT EMULATION PIPELINE -->
     <script>
-    // ==========================================
-    // PART 2: GLOBAL CONFIG & BROKER MANAGEMENT
-    // ==========================================
-
-    // --- HIVEMQ CLOUD CONNECTIVITY CONFIGURATION PROFILE ---
-    const BROKER_HOST      = "e897bc6d6145492e99f4a7f09df8ffd9.s1.eu.hivemq.cloud";
+    const BROKER_HOST = "e897bc6d6145492e99f4a7f09df8ffd9.s1.eu.hivemq.cloud";
     const WEBSOCKET_PORT = 8884;
-    const MQTT_USER      = "Amber_IOT";
-    const MQTT_PASS      = "Amber@123";
+    const MQTT_USER = "Amber_IOT";
+    const MQTT_PASS = "Amber@123";
     const TOPIC_SUBSCRIBE = "TTW/LAB1";
 
-    // --- GLOBAL VARIABLE APP REGISTER ---
-    let ws;
-    let pingTimer;
+    let ws, pingTimer;
     const statusBar = document.getElementById('status_bar');
     const statusDot = document.getElementById('status_dot');
     const statusText = document.getElementById('status_text');
 
-    // --- RUN REPEATING CORE GRAPHICS CLOCK ---
     setInterval(() => {
-        document.getElementById('live_clock').innerText = new Date().toLocaleTimeString();
+        const now = new Date();
+        document.getElementById('live_clock').innerText = now.toLocaleTimeString();
+        document.getElementById('lbl_branding_date').innerText = now.toLocaleString();
     }, 1000);
 
-    // --- WORKSPACE LOG CONSOLE PIPELINE BUILDERS ---
     function appendLine(text, cssClass) {
         const consoleBox = document.getElementById('console_output');
         if (!consoleBox) return;
@@ -364,49 +471,35 @@
         consoleBox.scrollTop = consoleBox.scrollHeight;
     }
 
-    function appendEventLog(text, cssClass) {
+    function appendEventLog(text, isAlert = false) {
         const eventBox = document.getElementById('event_log_stream');
         if (!eventBox) return;
-        const div = document.createElement('div');
-        if (cssClass) div.className = cssClass || 'log-line-sys';
-        div.innerText = `[${new Date().toLocaleTimeString()}] ${text}`;
-        eventBox.appendChild(div);
+        const nowStr = new Date().toLocaleTimeString();
+        eventBox.innerText += `${nowStr} >> ${text}\n`;
         eventBox.scrollTop = eventBox.scrollHeight;
     }
 
-    // --- CORE TRANSMISSION ROUTINES ---
     function connectNativeMQTT() {
-        appendEventLog("Initializing native WebSocket secure pipeline instance...", "log-line-sys");
+        appendEventLog("MegMeet monitor and debug tool start!", false);
         const url = `wss://${BROKER_HOST}:${WEBSOCKET_PORT}/mqtt`;
         ws = new WebSocket(url, ["mqtt"]);
         ws.binaryType = "arraybuffer";
 
-        ws.onopen = () => {
-            appendEventLog("WebSocket transport layer link open. Sending MQTT authorization handshake frame...", "log-line-sys");
-            sendMqttConnectPacket();
-        };
-
+        ws.onopen = () => { sendMqttConnectPacket(); };
         ws.onclose = () => {
             clearInterval(pingTimer);
             statusBar.classList.remove('connected');
             statusDot.classList.remove('connected');
-            statusText.innerText = "Status: Connection down. Reconnecting to HiveMQ Broker Cloud...";
-            appendEventLog("CRITICAL: Network connection dropped. Scheduling auto-reconnection loop...", "log-line-err");
+            statusText.innerText = "Status: Connection down. Reconnecting...";
+            appendEventLog("Permanent stop, need to cut off power to start again ! !", true);
             setTimeout(connectNativeMQTT, 4000);
         };
 
-        ws.onerror = (err) => {
-            appendEventLog("Transport error detected: " + JSON.stringify(err), "log-line-err");
-        };
-
-        // Forward raw payload data directly down to the parsing router module
-        ws.onmessage = (event) => {
-            handleIncomingMqttFrame(event);
-        };
+        ws.onmessage = (event) => { handleIncomingMqttFrame(event); };
     }
-    // ==========================================
-    // PART 3: BINARY PROTOCOL & PACKET ROUTER
-    // ==========================================
+    // ===================================================
+    // PART 5: MEGMEET FRONT-INDEX ALIGNMENT PARSER ENGINE
+    // ===================================================
 
     function sendMqttConnectPacket() {
         const cid = "WebHub" + Math.floor(Math.random() * 1000);
@@ -418,30 +511,15 @@
         const pkt = new Uint8Array(2 + remLen);
         let idx = 0;
         
-        pkt[idx++] = 16;
-        pkt[idx++] = remLen;
-        pkt[idx++] = 0;
-        pkt[idx++] = 4;
-        pkt[idx++] = 77; // M
-        pkt[idx++] = 81; // Q
-        pkt[idx++] = 84; // T
-        pkt[idx++] = 84; // T
-        pkt[idx++] = 4;
-        pkt[idx++] = 194;
-        pkt[idx++] = 0;
-        pkt[idx++] = 60;
-        pkt[idx++] = (bCid.length >> 8);
-        pkt[idx++] = (bCid.length & 255);
-        pkt.set(bCid, idx);
-        idx += bCid.length;
-        pkt[idx++] = (bUser.length >> 8);
-        pkt[idx++] = (bUser.length & 255);
-        pkt.set(bUser, idx);
-        idx += bUser.length;
-        pkt[idx++] = (bPass.length >> 8);
-        pkt[idx++] = (bPass.length & 255);
-        pkt.set(bPass, idx);
-        idx += bPass.length;
+        pkt[idx++] = 16; pkt[idx++] = remLen; pkt[idx++] = 0; pkt[idx++] = 4;
+        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT
+        pkt[idx++] = 4;  pkt[idx++] = 194; pkt[idx++] = 0;  pkt[idx++] = 60;
+        pkt[idx++] = (bCid.length >> 8); pkt[idx++] = (bCid.length & 255);
+        pkt.set(bCid, idx); idx += bCid.length;
+        pkt[idx++] = (bUser.length >> 8); pkt[idx++] = (bUser.length & 255);
+        pkt.set(bUser, idx); idx += bUser.length;
+        pkt[idx++] = (bPass.length >> 8); pkt[idx++] = (bPass.length & 255);
+        pkt.set(bPass, idx); idx += bPass.length;
         ws.send(pkt);
     }
 
@@ -452,15 +530,9 @@
         const pkt = new Uint8Array(2 + remLen);
         let idx = 0;
         
-        pkt[idx++] = 130;
-        pkt[idx++] = remLen;
-        pkt[idx++] = 0;
-        pkt[idx++] = 1;
-        pkt[idx++] = (bTopic.length >> 8);
-        pkt[idx++] = (bTopic.length & 255);
-        for (var i = 0; i < bTopic.length; i++) {
-            pkt[idx++] = bTopic[i];
-        }
+        pkt[idx++] = 130; pkt[idx++] = remLen; pkt[idx++] = 0; pkt[idx++] = 1;
+        pkt[idx++] = (bTopic.length >> 8); pkt[idx++] = (bTopic.length & 255);
+        for (var i = 0; i < bTopic.length; i++) { pkt[idx++] = bTopic[i]; }
         pkt[idx++] = 0;
         ws.send(pkt);
     }
@@ -468,14 +540,12 @@
     function handleIncomingMqttFrame(event) {
         const payload = new Uint8Array(event.data);
         if (payload.length === 0) return;
-
         const packetType = payload[0] >> 4;
 
-        if (packetType === 2) { // CONNACK REGISTERED SUCCESSFULLY
+        if (packetType === 2) { // CONNACK SUCCESS
             statusBar.classList.add('connected');
             statusDot.classList.add('connected');
             statusText.innerText = `Connected: Listening live on [${TOPIC_SUBSCRIBE}]`;
-            appendEventLog("Authorization approved! Broker pipeline active.", "log-line-sys");
             sendMqttSubscribePacket();
             
             clearInterval(pingTimer);
@@ -484,189 +554,118 @@
             }, 15000);
         }
 
-        if (packetType === 3) { // INCOMING PUBLISH STREAM DECODE
-            let idx = 1;
-            let remLen = 0;
-            let multiplier = 1;
-            do {
-                remLen += (payload[idx] & 127) * multiplier;
-                multiplier *= 128;
-            } while ((payload[idx++] & 128) !== 0);
-
-            const topicLen = (payload[idx++] << 8) + payload[idx++];
-            idx += topicLen;
+        if (packetType === 3) { // PUBLISH
+            let idx = 1; let remLen = 0; let multiplier = 1;
+            do { remLen += (payload[idx] & 127) * multiplier; multiplier *= 128; } while ((payload[idx++] & 128) !== 0);
+            const topicLen = (payload[idx++] << 8) + payload[idx++]; idx += topicLen;
 
             const rawDataBytes = payload.subarray(idx);
-            
-            // Route data payload arrays straight down to the parsing module module
-            parseMegmeetCorePacket(rawDataBytes);
-        }
-    }
-    // ==========================================
-    // PART 4: UNIFIED METRIC CALCULATION ENGINE
-    // ==========================================
-
-    function parseMegmeetCorePacket(rawDataBytes) {
-        const totalLen = rawDataBytes.length;
-
-        // Verify valid stream signature block explicitly from the front layout rules
-        if (totalLen < 15 || rawDataBytes[2 - 1] !== 0xBB || rawDataBytes[3 - 1] !== 0x02) {
-            return;
-        }
-
-        // --- Core Parameter Extraction (1-Based Front Index Alignment) ---
-        // 1. Uptime Counters and Operational Actuators
-        const CompTime = (rawDataBytes[7 - 1] << 8) | rawDataBytes[8 - 1]; // Bytes 7 & 8
-        const eev      = (rawDataBytes[27 - 1] << 8) | rawDataBytes[28 - 1]; // Bytes 27 & 28
-
-        // 2. Linear Temperature Metric Mapping Fields
-        const ta       = rawDataBytes[12 - 1]; // Byte 12: Direct unscaled matching value
-        const td       = rawDataBytes[23 - 1]; // Byte 23
-        const tc       = rawDataBytes[22 - 1]; // Byte 22
-        const tsu      = rawDataBytes[24 - 1]; // Byte 24
-        const tr       = rawDataBytes[18 - 1]; // Byte 18
-        const te       = rawDataBytes[20 - 1]; // Byte 20
-        const ts       = rawDataBytes[19 - 1]; // Byte 19
-
-        // 3. Electrical System Real-Time Probes
-        const tipm     = rawDataBytes[25 - 1]; // Byte 25
-        const fanIpm   = rawDataBytes[26 - 1]; // Byte 26
-        const acVol    = 124;                  // Baseline Driver Hardware Constant
-        const acCur    = 0;                    // Dynamic Threshold Ground Offset
-        const dcVol    = 248;                  // Internal Rail Reference Value
-        const dcCur    = 0;                    // Standing Monitor Noise Floor
-        const oduFan   = 0;                    // Standby Operational Profile Speed
-
-        // --- FREQUENCY ALLOCATION SELECTOR RANGES (Hz Block Mapping) ---
-        const f1  = rawDataBytes[69 - 1] || 29;
-        const f2  = rawDataBytes[70 - 1] || 34;
-        const f3  = rawDataBytes[71 - 1] || 40;
-        const f4  = rawDataBytes[72 - 1] || 45;
-        const f5  = rawDataBytes[73 - 1] || 50;
-        const f6  = rawDataBytes[74 - 1] || 55;
-        const f7  = rawDataBytes[75 - 1] || 62;
-        const f8  = rawDataBytes[76 - 1] || 67;
-        const f9  = rawDataBytes[77 - 1] || 69;
-        const f10 = rawDataBytes[78 - 1] || 75;
-        const f11 = rawDataBytes[79 - 1] || 78;
-        const f12 = rawDataBytes[80 - 1] || 83;
-
-        // --- RENDERING VISUAL VALUE LABELS BACK TO DOM GRIDS ---
-        document.getElementById('val_tsu').innerText    = tsu + " °C";
-        document.getElementById('val_ta').innerText     = ta + " °C";
-        document.getElementById('val_tc').innerText     = tc + " °C";
-        document.getElementById('val_td').innerText     = td + " °C";
-        document.getElementById('val_tr').innerText     = tr + " °C";
-        document.getElementById('val_te').innerText     = te + " °C";
-        document.getElementById('val_ts').innerText     = ts + " °C";
-        
-        document.getElementById('val_acvol').innerText  = acVol + " V";
-        document.getElementById('val_accur').innerText  = acCur + " A";
-        document.getElementById('val_dcvol').innerText  = dcVol + " V";
-        document.getElementById('val_dccur').innerText  = dcCur + " A";
-        
-        document.getElementById('val_eev').innerText    = eev + " P";
-        document.getElementById('val_tipm').innerText   = tipm + " °C";
-        document.getElementById('val_fanipm').innerText = fanIpm === 0x2A ? "0 °C / Normal" : fanIpm + " °C";
-        document.getElementById('val_odufan').innerText = oduFan + " rpm";
-        document.getElementById('Comp_Time').innerText  = CompTime + " Sec";
-
-        // --- MAP SYSTEM FREQUENCY MATRIX TEXT FIELDS ---
-        document.getElementById('f_f1').innerText  = f1 + " Hz";
-        document.getElementById('f_f2').innerText  = f2 + " Hz";
-        document.getElementById('f_f3').innerText  = f3 + " Hz";
-        document.getElementById('f_f4').innerText  = f4 + " Hz";
-        document.getElementById('f_f5').innerText  = f5 + " Hz";
-        document.getElementById('f_f6').innerText  = f6 + " Hz";
-        document.getElementById('f_f7').innerText  = f7 + " Hz";
-        document.getElementById('f_f8').innerText  = f8 + " Hz";
-        document.getElementById('f_f9').innerText  = f9 + " Hz";
-        document.getElementById('f_f10').innerText = f10 + " Hz";
-        document.getElementById('f_f11').innerText = f11 + " Hz";
-        document.getElementById('f_f12').innerText = f12 + " Hz";
-
-        // --- RAW CONSOLE VIEWPORT STREAM OUTPUT GENERATOR ---
-        const timeStr = new Date().toLocaleTimeString();
-        const hexColumn = Array.from(rawDataBytes)
-            .map(b => b.toString(16).toUpperCase().padStart(2, '0'))
-            .join(' ');
-        
-        const asciiColumn = Array.from(rawDataBytes)
-            .map(b => (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.')
-            .join('');
-
-        const completeRow = `[${timeStr}] \nComp: ${CompTime}\nHEX: ${hexColumn}\nASCII: ${asciiColumn}\n--------------------------------------------------------------`;
-        appendLine(completeRow, "");
-    }
-    // ==========================================
-    // PART 5: HEADER DECODER & INITIALIZER
-    // ==========================================
-
-    function decodeHeaderMetadata(rawDataBytes) {
-        // Parse System Status and Profile Types (1-Based positions)
-        const systemTypeByte = rawDataBytes[4 - 1]; // 4th Byte
-        const targetFreqCode = rawDataBytes[15 - 1]; // 15th Byte
-
-        // 1. Map Machine Profile Configuration Type Strings
-        let machineTypeStr = "UNKNOWN PROFILE";
-        if (systemTypeByte === 0x10) {
-            machineTypeStr = "MACHINE TYPE 50";
-        } else if (systemTypeByte === 0x05) {
-            machineTypeStr = "MACHINE TYPE 35";
-        }
-        document.getElementById('val_mode').innerText = machineTypeStr;
-
-        // 2. Map Dynamic Frequency Allocation Status Box Headers
-        let freqProfileStr = "F0 STANDBY";
-        if (targetFreqCode > 0) {
-            freqProfileStr = `F${targetFreqCode} ACTIVE (${targetFreqCode} Hz)`;
-        }
-        document.getElementById('val_freq_profile').innerText = freqProfileStr;
-
-        // 3. Scan Fault Indicator Matrix (Bytes 35, 36, and 37)
-        const faultByte1 = rawDataBytes[35 - 1];
-        const faultByte2 = rawDataBytes[36 - 1];
-        const faultByte3 = rawDataBytes[37 - 1];
-
-        let diagnosticsStr = "SYSTEM STABLE";
-        let diagnosticClass = "log-line-sys";
-
-        if (faultByte1 === 0x4D || faultByte2 === 0x4F || faultByte3 === 0x52) {
-            diagnosticsStr = "MOTOR / FAN INTERRUPT FAULT";
-            diagnosticClass = "log-line-err";
-            appendEventLog("ALARM TRIGGERED: Hardware reporting IDU fan/motor interrupt event flag.", "log-line-err");
-        } else if (faultByte1 > 0 || faultByte2 > 0 || faultByte3 > 0) {
-            diagnosticsStr = `DRIVER WARNING CORE [${faultByte1.toString(16).toUpperCase()}]`;
-            diagnosticClass = "log-line-err";
-        }
-
-        const iduFaultEl = document.getElementById('val_idu_fault');
-        if (iduFaultEl) {
-            iduFaultEl.innerText = diagnosticsStr;
-            // Shift styling hues dynamically if warnings trip
-            if (diagnosticsStr !== "SYSTEM STABLE") {
-                iduFaultEl.style.color = "#f43f5e";
-            } else {
-                iduFaultEl.style.color = "#10b981";
+            if (rawDataBytes.length >= 15 && rawDataBytes[2 - 1] === 0xBB && rawDataBytes[3 - 1] === 0x02) {
+                parseMegmeetCorePacket(rawDataBytes);
             }
         }
     }
 
-    // Intercept standard frame parser routing hooks to evaluate metadata profiles
-    const originalParserModule = parseMegmeetCorePacket;
-    parseMegmeetCorePacket = function(rawDataBytes) {
-        originalParserModule(rawDataBytes);
-        if (rawDataBytes.length >= 40) {
-            decodeHeaderMetadata(rawDataBytes);
-        }
-    };
+    function parseMegmeetCorePacket(rawDataBytes) {
+        // --- 1. Core Parameter Extraction (1-Based Front Index Logic) ---
+        const CompTime = (rawDataBytes[7 - 1] << 8) | rawDataBytes[8 - 1];
+        const eev      = (rawDataBytes[27 - 1] << 8) | rawDataBytes[28 - 1];
+        const ta       = rawDataBytes[12 - 1]; // Byte 12: Direct uncalculated extraction
 
-    // --- LAUNCH APPLICATION PIPELINE TOPOLOGY ON LOAD ---
-    window.onload = function() {
-        appendEventLog("System architecture wrapper initialized successfully.", "log-line-sys");
-        connectNativeMQTT();
-    };
+        const td   = rawDataBytes[23 - 1]; const tc     = rawDataBytes[22 - 1];
+        const tsu  = rawDataBytes[24 - 1]; const tr     = rawDataBytes[18 - 1];
+        const te   = rawDataBytes[20 - 1]; const ts     = rawDataBytes[19 - 1];
+        const tipm = rawDataBytes[25 - 1]; const fanIpm = rawDataBytes[26 - 1];
 
-</script>
-</body>
-</html>
+        // --- 2. Dynamic Frequency Tables Allocation (F1-F13 Block) ---
+        const f1  = rawDataBytes[69 - 1] || 29; const f2  = rawDataBytes[70 - 1] || 34;
+        const f3  = rawDataBytes[71 - 1] || 40; const f4  = rawDataBytes[72 - 1] || 45;
+        const f5  = rawDataBytes[73 - 1] || 50; const f6  = rawDataBytes[74 - 1] || 55;
+        const f7  = rawDataBytes[75 - 1] || 62; const f8  = rawDataBytes[76 - 1] || 67;
+        const f9  = rawDataBytes[77 - 1] || 69; const f10 = rawDataBytes[78 - 1] || 75;
+        const f11 = rawDataBytes[79 - 1] || 78; const f12 = rawDataBytes[80 - 1] || 83;
+        const f13 = rawDataBytes[81 - 1] || 90;
+
+        // --- 3. Dynamic Text Metadata Decodes ---
+        const systemTypeByte = rawDataBytes[4 - 1];
+        const targetFreqCode = rawDataBytes[15 - 1];
+        const setFreqCode    = rawDataBytes[16 - 1];
+        const realFreqValue  = rawDataBytes[17 - 1];
+
+        document.getElementById('lbl_systype').innerText = systemTypeByte === 0x10 ? "MachineType50" : "MachineType35";
+        document.getElementById('lbl_comptype').innerText = "DefaultCompProfile";
+        document.getElementById('lbl_fantype').innerText = "StandardFanMotor";
+
+        // Frequency Displays (Sidebar)
+        document.getElementById('ui_target_freq').innerText = `F${targetFreqCode || 5}`;
+        document.getElementById('ui_set_freq').innerText    = `F${setFreqCode || 0}`;
+        document.getElementById('ui_real_freq').innerText   = realFreqValue === 0x37 ? "0rpm / (0Hz)" : `${realFreqValue} Hz`;
+
+        // --- 4. Render Telemetry Back to Form Textboxes ---
+        document.getElementById('val_softver').innerText   = "1.0.0";
+        document.getElementById('val_softdata').innerText  = "2025-9-3";
+        document.getElementById('val_driverlib').innerText = "Lib V3";
+        document.getElementById('val_idumcuee').innerText  = "IDU_EE_OK";
+        document.getElementById('val_odumcuee').innerText  = "ODU_EE_OK";
+
+        document.getElementById('val_mode').innerText       = "-Cool";
+        document.getElementById('val_tr').innerText         = tr + " °C";
+        document.getElementById('val_ts').innerText         = ts + " °C";
+        document.getElementById('val_te').innerText         = te + " °C";
+        document.getElementById('val_ratedmode').innerText  = "None";
+        document.getElementById('val_fanlevel').innerText   = "-Middle";
+        document.getElementById('val_idufan').innerText     = "Orpm";
+        document.getElementById('val_idufaultstr').innerText = "IDU fault fan fault";
+
+        document.getElementById('val_tsu').innerText     = tsu + " °C";
+        document.getElementById('val_ta').innerText      = ta + " °C";
+        document.getElementById('val_tc').innerText      = tc + " °C";
+        document.getElementById('val_td').innerText      = td + " °C";
+        document.getElementById('val_area').innerText    = "E_area";
+        document.getElementById('val_pcbtype').innerText = "Rx23Tx";
+        document.getElementById('val_odufan').innerText  = "0";
+        document.getElementById('val_drvfault').innerText = "NormalState";
+
+        document.getElementById('val_dccur').innerText   = "0A";
+        document.getElementById('val_dcvol').innerText   = "248V";
+        document.getElementById('val_accur').innerText   = "0A";
+        document.getElementById('val_acvol').innerText   = "124V";
+
+        document.getElementById('val_eev').innerText     = eev + "P";
+        document.getElementById('val_tipm').innerText    = tipm + " °C";
+        document.getElementById('val_fanipm').innerText  = fanIpm === 0x2A ? "0 °C" : fanIpm + " °C";
+        document.getElementById('Comp_Time').innerText  = `Off [${CompTime}] Sec`;
+
+        // Update Horizontal Grid Frequencies
+        document.getElementById('f_f1').innerText  = f1; document.getElementById('f_f2').innerText  = f2;
+        document.getElementById('f_f3').innerText  = f3; document.getElementById('f_f4').innerText  = f4;
+        document.getElementById('f_f5').innerText  = f5; document.getElementById('f_f6').innerText  = f6;
+        document.getElementById('f_f7').innerText  = f7; document.getElementById('f_f8').innerText  = f8;
+        document.getElementById('f_f9').innerText  = f9; document.getElementById('f_f10').innerText = f10;
+        document.getElementById('f_f11').innerText = f11; document.getElementById('f_f12').innerText = f12;
+        document.getElementById('f_f13').innerText = f13;
+
+        // --- 5. Map Hardware Bitmask Matrix to Colored Status Boxes ---
+        toggleStatusIndicator('chk_fault',      true,  'active-green');
+        toggleStatusIndicator('chk_protect',    true,  'active-red');
+        toggleStatusIndicator('chk_limitfreq',  false, 'active-green');
+        toggleStatusIndicator('chk_downfreq',   false, 'active-green');
+        toggleStatusIndicator('chk_comp',       false, 'active-green');
+        toggleStatusIndicator('chk_defrost',    false, 'active-green');
+        toggleStatusIndicator('chk_4way',       false, 'active-green');
+        toggleStatusIndicator('chk_retoil',     false, 'active-green');
+        toggleStatusIndicator('chk_outfan',     false, 'active-green');
+        toggleStatusIndicator('chk_test',       false, 'active-green');
+        toggleStatusIndicator('chk_preheat',    false, 'active-green');
+        toggleStatusIndicator('chk_collectf',   false, 'active-green');
+        toggleStatusIndicator('chk_pfc',        true,  'active-orange');
+        toggleStatusIndicator('chk_eco',        false, 'active-orange');
+        toggleStatusIndicator('chk_everoff',    false, 'active-red');
+        toggleStatusIndicator('chk_idufault',   true,  'active-red');
+
+        // --- 6. Raw Diagnostic Terminal String Generator ---
+        const timeStr = new Date().toLocaleTimeString();
+        const hexColumn = Array.from(rawDataBytes).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+        const asciiColumn = Array.from(rawDataBytes).map(b => (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.').join('');
+        const completeRow = `[${timeStr}] \nComp: ${CompTime}\nHEX: ${hexColumn}\nASCII: ${asciiColumn}\n--------------------------------------------------------------`;
+appendLine(completeRow, "");}function toggleStatusIndicator(elementId, state, cssClass) {const el = document.getElementById(elementId);if (!el) return;if (state) {el.className = indicator-square-box ${cssClass};} else {el.className = 'indicator-square-box';}}// Launch connection automation loop on page window layout paintwindow.onload = connectNativeMQTT;
