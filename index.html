@@ -3,45 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Megmeet_Amber_Monitor Telemetry Dashboard</title>
+    <title>Megmeet_Amber_Monitor 20240909---COM7 Used.</title>
     <style>
-        /* Native Windows Classic Form Background Layout */
+        /* Exact Windows Classic Forms Background Layout Theme */
         body { 
-            background-color: #f0f0f0; 
+            background-color: #D4D0C8; /* Classic Windows Form Shading Gray */
             color: #000000; 
-            font-family: 'Segoe UI', Tahoma, Arial, sans-serif; 
+            font-family: 'Tahoma', 'Segoe UI', Arial, sans-serif; 
             margin: 0; 
-            padding: 8px; 
+            padding: 6px; 
             box-sizing: border-box;
-            font-size: 12px;
+            font-size: 11px;
             user-select: none;
         }
 
-        /* Classic SCADA UI Group Box Panels */
+        /* Classic Group Box Shaded Panels with Inner Raised Contours */
         .group-box-frame {
-            border: 2px solid #b0b0b0;
-            background-color: #fbfbfb;
-            border-radius: 3px;
-            padding: 14px 10px 8px 10px;
-            margin-bottom: 10px;
+            border: 2px solid #FFFFFF;
+            border-top-color: #808080;
+            border-left-color: #808080;
+            border-right-color: #DFDFDF;
+            border-bottom-color: #DFDFDF;
+            background-color: #D4D0C8;
+            padding: 12px 8px 8px 8px;
+            margin-bottom: 8px;
             position: relative;
         }
 
         .group-box-title {
             position: absolute;
-            top: -8px;
-            left: 12px;
-            background-color: #f0f0f0;
-            padding: 0 6px;
-            font-weight: bold;
-            color: #000080;
+            top: -7px;
+            left: 8px;
+            background-color: #D4D0C8;
+            padding: 0 4px;
+            font-weight: normal;
+            color: #000000;
             font-size: 11px;
         }
 
-        /* Standard Split Window Workspace */
+        /* Standard Split Window Workspace Layout Layout */
         .monitor-workspace-split {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: flex-start;
         }
 
@@ -52,90 +55,94 @@
         }
 
         .right-sidebar-column {
-            width: 260px;
+            width: 250px;
             display: flex;
             flex-direction: column;
         }
 
-        /* Grid Matrices for Version, Indoor and Outdoor Blocks */
+        /* Firm Grid Shunts for Form Fields Alignment */
         .telemetry-row-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px 15px;
+            gap: 6px 12px;
         }
 
-        /* Parameter Field Inputs mimicking Windows Textboxes */
+        /* Parameter Field Inputs mimicking Native Windows Textboxes */
         .param-field-box {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 4px;
+            height: 20px;
         }
 
         .param-label {
             color: #000000;
             font-size: 11px;
             white-space: nowrap;
-            min-width: 65px;
+            min-width: 60px;
+            text-align: right;
+            padding-right: 2px;
         }
 
         .param-value-input {
-            background-color: #ffffff;
-            border: 1px solid #7a7a7a;
-            color: #0000ff;
-            padding: 2px 6px;
-            font-family: monospace;
-            font-size: 12px;
-            font-weight: bold;
+            background-color: #FFFFFF;
+            border: 1px solid #808080;
+            border-right-color: #FFFFFF;
+            border-bottom-color: #FFFFFF;
+            color: #000000; /* Crisp native dark text output layout */
+            padding: 1px 4px;
+            font-family: 'Tahoma', Arial, sans-serif;
+            font-size: 11px;
+            font-weight: normal;
             flex: 1;
-            height: 18px;
+            height: 14px;
             display: flex;
             align-items: center;
-            box-shadow: inset 1px 1px 1px #e0e0e0;
         }
 
+        /* Native Windows Red Warning Text Flag Overrides */
         .param-value-input.fault-active {
-            color: #ff0000 !important;
-            background-color: #fff0f0;
+            color: #FF0000 !important;
+            font-weight: bold;
         }
 
-        /* MQTT Secure Status Banner */
+        /* MQTT Live Status Banner */
         .broker-status-strip {
-            background-color: #e0e0e0;
-            border: 1px solid #a0a0a0;
-            padding: 4px 10px;
+            background-color: #D4D0C8;
+            border: 1px solid #808080;
+            padding: 2px 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-size: 11px;
-            font-weight: bold;
         }
 
         .broker-status-strip.connected {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
+            background-color: #D4D0C8;
+            color: #000000;
         }
 
         .status-beacon-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #ff0000;
+            width: 6px;
+            height: 6px;
+            background-color: #FF0000;
             border-radius: 50%;
             display: inline-block;
-            margin-right: 6px;
+            margin-right: 4px;
         }
 
         .status-beacon-dot.connected {
-            background-color: #28a745;
+            background-color: #00FF00;
+            box-shadow: 0 0 4px #00FF00;
         }
         /* Sidebar Checkbox & Indicator Layout Styles */
         .sidebar-indicator-layout {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            margin-top: 5px;
+            gap: 3px;
+            margin-top: 4px;
         }
 
         .checkbox-row-item {
@@ -143,129 +150,123 @@
             align-items: center;
             gap: 6px;
             font-size: 11px;
-            height: 18px;
+            height: 16px;
         }
 
         .indicator-square-box {
-            width: 12px;
-            height: 12px;
-            border: 1px solid #7a7a7a;
-            background-color: #ffffff;
-            box-shadow: inset 1px 1px 1px #e0e0e0;
+            width: 10px;
+            height: 10px;
+            border: 1px solid #808080;
+            background-color: #FFFFFF;
         }
 
-        .indicator-square-box.active-green { background-color: #00ff00 !important; }
-        .indicator-square-box.active-orange { background-color: #ff9900 !important; }
-        .indicator-square-box.active-red { background-color: #ff0000 !important; }
+        .indicator-square-box.active-green { background-color: #00FF00 !important; }
+        .indicator-square-box.active-orange { background-color: #FF9900 !important; }
+        .indicator-square-box.active-red { background-color: #FF0000 !important; }
 
-        /* Strict Fixed 13-Column Frequency Alignment Panels */
+        /* Strict Fixed 13-Column Frequency Alignment Matrix Styles */
         .freq-strip-container-row {
             display: flex;
             align-items: center;
-            background-color: #e8e8e8;
-            border: 1px solid #b0b0b0;
-            padding: 4px 6px;
-            margin-top: 5px;
+            background-color: #D4D0C8;
+            padding: 2px 4px;
+            margin-top: 2px;
         }
 
         .freq-strip-heading-label {
-            font-weight: bold;
             font-size: 11px;
             color: #000000;
-            width: 75px; /* Firm label column boundary width */
+            width: 70px;
             white-space: nowrap;
         }
 
         .freq-strip-13-column-grid {
             display: grid;
-            grid-template-columns: repeat(13, minmax(32px, 1fr));
-            gap: 6px;
+            grid-template-columns: repeat(13, minmax(28px, 1fr));
+            gap: 4px;
             flex: 1;
         }
 
         .freq-grid-label-text {
-            font-weight: bold;
             font-size: 11px;
             color: #000000;
             text-align: center;
         }
 
         .freq-grid-data-textbox {
-            background-color: #ffffff;
-            border: 1px solid #7a7a7a;
-            color: #000000; /* Dark engineering text layout */
-            font-family: monospace;
+            background-color: #FFFFFF;
+            border: 1px solid #808080;
+            color: #000000;
+            font-family: 'Tahoma', Arial, sans-serif;
             font-size: 11px;
-            font-weight: bold;
             text-align: center;
             padding: 1px 0;
-            height: 16px;
+            height: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* Dual Engine Real-Time Log Viewports */
+        /* Dual Console Viewports Layout Profiles */
         .logger-panel-split {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 10px;
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .terminal-box-frame {
-            border: 1px solid #7a7a7a;
-            background-color: #ffffff;
+            border: 1px solid #808080;
+            background-color: #FFFFFF;
         }
 
         .terminal-box-header {
             background-color: #000080;
-            color: #ffffff;
-            padding: 2px 8px;
+            color: #FFFFFF;
+            padding: 2px 6px;
             font-size: 11px;
             font-weight: bold;
-            font-family: sans-serif;
         }
 
         pre {
             margin: 0;
-            padding: 6px;
-            height: 120px;
+            padding: 4px;
+            height: 100px;
             overflow-y: auto;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Courier New', monospace;
             font-size: 11px;
             color: #000000;
-            background-color: #ffffff;
-            line-height: 1.3;
+            background-color: #FFFFFF;
+            line-height: 1.2;
             white-space: pre-wrap;
         }
 
         .brand-logo-panel {
             text-align: right;
-            padding: 10px 5px 0 0;
+            padding: 8px 4px 0 0;
+            position: relative;
         }
 
         .brand-logo-text {
             font-family: 'Arial Black', Impact, sans-serif;
-            font-size: 42px;
+            font-size: 44px;
             font-weight: 900;
-            color: #00a86b;
+            color: #00A86B;
             letter-spacing: -2px;
-            line-height: 1;
+            line-height: 0.9;
         }
 
         .brand-sub-date {
-            font-family: monospace;
+            font-family: 'Tahoma', Arial, sans-serif;
             font-size: 11px;
-            color: #333333;
+            color: #000000;
             margin-top: 2px;
-            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <!-- SYSTEM BROKER CONNECTION STRIP -->
+    <!-- SYSTEM CONNECTOR STRIP -->
     <div id="status_bar" class="broker-status-strip">
         <div>
             <div id="status_dot" class="status-beacon-dot"></div>
@@ -274,74 +275,74 @@
         <span id="live_clock">00:00:00 AM</span>
     </div>
 
-    <!-- MAIN TWO-COLUMN SPLIT CONTAINER -->
+    <!-- MAIN WORKING WORKSPACE -->
     <div class="monitor-workspace-split">
         <div class="left-telemetry-column">
 
-            <!-- 1. EVENT RUNTIME TEXT FEED LOG PANEL -->
-            <div class="group-box-frame" style="height: 110px; overflow: hidden; margin-bottom: 8px;">
+            <!-- 1. EVENT TEXT GRID VIEWPORT -->
+            <div class="group-box-frame" style="height: 115px; overflow: hidden; margin-bottom: 6px;">
                 <div class="group-box-title">Event</div>
-                <div id="event_log_stream" style="height: 100px; overflow-y: auto; font-family: monospace; font-size: 11px; white-space: pre-wrap; padding-left: 5px; color: #000000; line-height: 1.3; font-weight: bold;"></div>
+                <div id="event_log_stream" style="height: 105px; overflow-y: auto; font-family: 'Tahoma', Arial, sans-serif; font-size: 11px; white-space: pre-wrap; padding-left: 2px; color: #000000; line-height: 1.3;"></div>
             </div>
             <!-- 2. FIRMWARE VERSION MESSAGE PANEL -->
-            <div class="group-box-frame" style="margin-bottom: 8px; padding-bottom: 10px; background-color: #f0f0f0;">
+            <div class="group-box-frame" style="margin-bottom: 6px; padding-bottom: 8px;">
                 <div class="group-box-title">Version Message</div>
                 <div class="telemetry-row-grid">
-                    <div class="param-field-box"><span class="param-label" style="color: #000000; font-weight: normal;">Soft Ver</span><div id="val_softver" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000; font-weight: normal;">Soft Data</span><div id="val_softdata" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000; font-weight: normal;">Driver Lib</span><div id="val_driverlib" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div></div> <!-- Spacing Balancer -->
-                    <div class="param-field-box"><span class="param-label" style="color: #000000; font-weight: normal;">IDU MCU_EE</span><div id="val_idumcuee" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000; font-weight: normal;">ODU MCU_EE</span><div id="val_odumcuee" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Soft Ver</span><div id="val_softver" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Soft Data</span><div id="val_softdata" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Driver Lib</span><div id="val_driverlib" class="param-value-input">--</div></div>
+                    <div></div> <!-- Spacing Balance Pad -->
+                    <div class="param-field-box"><span class="param-label">IDU MCU_EE</span><div id="val_idumcuee" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">ODU MCU_EE</span><div id="val_odumcuee" class="param-value-input">--</div></div>
                 </div>
             </div>
 
             <!-- 3. INDOOR OPERATIONS SUB-MATRIX GROUP -->
-            <div class="group-box-frame" style="margin-bottom: 8px; padding-bottom: 10px; background-color: #f0f0f0;">
+            <div class="group-box-frame" style="margin-bottom: 6px; padding-bottom: 8px;">
                 <div class="group-box-title">Indoor</div>
-                <div class="telemetry-row-grid" style="margin-bottom: 8px;">
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Mode</span><div id="val_mode" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Tr</span><div id="val_tr" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Ts</span><div id="val_ts" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Te</span><div id="val_te" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
+                <div class="telemetry-row-grid" style="margin-bottom: 6px;">
+                    <div class="param-field-box"><span class="param-label">Mode</span><div id="val_mode" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Tr</span><div id="val_tr" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Ts</span><div id="val_ts" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Te</span><div id="val_te" class="param-value-input">--</div></div>
                 </div>
-                <div class="telemetry-row-grid" style="border-top: 1px dashed #b0b0b0; padding-top: 8px;">
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Rated Mode</span><div id="val_ratedmode" class="param-value-input fault-active" style="color: #ff0000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Fan Level</span><div id="val_fanlevel" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Fan rpm</span><div id="val_idufan" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000; min-width:100px;">IDU fault fan fault</span><div id="val_idufaultstr" class="param-value-input fault-active" style="color: #ff0000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
+                <div class="telemetry-row-grid" style="border-top: 1px dashed #808080; padding-top: 6px;">
+                    <div class="param-field-box"><span class="param-label">Rated Mode</span><div id="val_ratedmode" class="param-value-input fault-active">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Fan Level</span><div id="val_fanlevel" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Fan rpm</span><div id="val_idufan" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label" style="min-width:100px;">IDU fault fan fault</span><div id="val_idufaultstr" class="param-value-input fault-active">--</div></div>
                 </div>
             </div>
             <!-- 4. OUTDOOR OPERATIONAL PARAMETERS PANEL -->
-            <div class="group-box-frame" style="margin-bottom: 5px; padding-bottom: 10px; background-color: #f0f0f0;">
+            <div class="group-box-frame" style="margin-bottom: 4px; padding-bottom: 8px;">
                 <div class="group-box-title">Outdoor</div>
-                <div class="telemetry-row-grid" style="margin-bottom: 8px;">
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Tsu</span><div id="val_tsu" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Ta</span><div id="val_ta" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Tc</span><div id="val_tc" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Td</span><div id="val_td" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
+                <div class="telemetry-row-grid" style="margin-bottom: 6px;">
+                    <div class="param-field-box"><span class="param-label">Tsu</span><div id="val_tsu" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Ta</span><div id="val_ta" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Tc</span><div id="val_tc" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Td</span><div id="val_td" class="param-value-input">--</div></div>
                 </div>
-                <div class="telemetry-row-grid" style="margin-bottom: 8px;">
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Area</span><div id="val_area" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">PCB Type</span><div id="val_pcbtype" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Fan rpm</span><div id="val_odufan" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Drv Fault</span><div id="val_drvfault" class="param-value-input fault-active" style="color: #ff0000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
+                <div class="telemetry-row-grid" style="margin-bottom: 6px;">
+                    <div class="param-field-box"><span class="param-label">Area</span><div id="val_area" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">PCB Type</span><div id="val_pcbtype" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Fan rpm</span><div id="val_odufan" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Drv Fault</span><div id="val_drvfault" class="param-value-input fault-active">--</div></div>
                 </div>
-                <div class="telemetry-row-grid" style="margin-bottom: 8px;">
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">DC CUR</span><div id="val_dccur" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">DC VOL</span><div id="val_dcvol" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">AC CUR</span><div id="val_accur" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">AC VOL</span><div id="val_acvol" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
+                <div class="telemetry-row-grid" style="margin-bottom: 6px;">
+                    <div class="param-field-box"><span class="param-label">DC CUR</span><div id="val_dccur" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">DC VOL</span><div id="val_dcvol" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">AC CUR</span><div id="val_accur" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">AC VOL</span><div id="val_acvol" class="param-value-input">--</div></div>
                 </div>
                 <div class="telemetry-row-grid">
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">EEV</span><div id="val_eev" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Tipm</span><div id="val_tipm" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">FAN IPM</span><div id="val_fanipm" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Comp Time</span><div id="Comp_Time" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
+                    <div class="param-field-box"><span class="param-label">EEV</span><div id="val_eev" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Tipm</span><div id="val_tipm" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">FAN IPM</span><div id="val_fanipm" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Comp Time</span><div id="Comp_Time" class="param-value-input">--</div></div>
                 </div>
             </div>
 
-            <!-- 5. FIXED-ALIGNMENT 13-COLUMN FREQUENCY STATUS GRID PANEL -->
+            <!-- 5. FIXED-ALIGNMENT 13-COLUMN FREQUENCY GRID PANEL -->
             <div class="freq-strip-container-row">
                 <span class="freq-strip-heading-label">FreqLevel</span>
                 <div class="freq-strip-13-column-grid">
@@ -354,7 +355,7 @@
                     <div class="freq-grid-label-text">F13</div>
                 </div>
             </div>
-            <div class="freq-strip-container-row" style="margin-top: 2px;">
+            <div class="freq-strip-container-row" style="margin-top: 1px;">
                 <span class="freq-strip-heading-label">Freq</span>
                 <div class="freq-strip-13-column-grid">
                     <div id="f_f1" class="freq-grid-data-textbox">--</div><div id="f_f2" class="freq-grid-data-textbox">--</div>
@@ -371,47 +372,47 @@
         <div class="right-sidebar-column">
             
             <!-- FREQ DISPLAY SUB-GROUP -->
-            <div class="group-box-frame" style="margin-bottom: 8px; padding-bottom: 10px; background-color: #f0f0f0;">
+            <div class="group-box-frame" style="margin-bottom: 6px; padding-bottom: 8px;">
                 <div class="group-box-title">Freq Display</div>
                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Target</span><div id="ui_target_freq" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Set</span><div id="ui_set_freq" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="color: #000000;">Real Freq</span><div id="ui_real_freq" class="param-value-input" style="color: #000000; background-color: #ffffff; border: 1px solid #7a7a7a;">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Target</span><div id="ui_target_freq" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Set</span><div id="ui_set_freq" class="param-value-input">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Real Freq</span><div id="ui_real_freq" class="param-value-input">--</div></div>
                 </div>
             </div>
 
             <!-- BITWISE INDICATOR CONTROL GROUP -->
-            <div class="group-box-frame" style="flex: 1; padding-bottom: 10px; margin-bottom: 0; background-color: #f0f0f0;">
+            <div class="group-box-frame" style="flex: 1; padding-bottom: 8px; margin-bottom: 0;">
                 <div class="sidebar-indicator-layout">
-                    <div class="checkbox-row-item"><div id="chk_fault" class="indicator-square-box"></div><span style="color: #000000;">Fault</span></div>
-                    <div class="checkbox-row-item"><div id="chk_protect" class="indicator-square-box"></div><span style="color: #ff0000; font-weight: bold;">Protect</span></div>
-                    <div class="checkbox-row-item"><div id="chk_limitfreq" class="indicator-square-box"></div><span style="color: #000000;">LimitFreq</span></div>
-                    <div class="checkbox-row-item"><div id="chk_downfreq" class="indicator-square-box"></div><span style="color: #000000;">DowmFreq</span></div>
+                    <div class="checkbox-row-item"><div id="chk_fault" class="indicator-square-box"></div><span>Fault</span></div>
+                    <div class="checkbox-row-item"><div id="chk_protect" class="indicator-square-box"></div><span style="color: #FF0000; font-weight: bold;">Protect</span></div>
+                    <div class="checkbox-row-item"><div id="chk_limitfreq" class="indicator-square-box"></div><span>LimitFreq</span></div>
+                    <div class="checkbox-row-item"><div id="chk_downfreq" class="indicator-square-box"></div><span>DowmFreq</span></div>
                     
-                    <div style="border-top: 1px dashed #b0b0b0; margin: 4px 0;"></div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-                        <div class="checkbox-row-item"><div id="chk_comp" class="indicator-square-box"></div><span style="color: #000000;">Comp:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_defrost" class="indicator-square-box"></div><span style="color: #000000;">Defrost:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_4way" class="indicator-square-box"></div><span style="color: #000000;">4Way:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_retoil" class="indicator-square-box"></div><span style="color: #000000;">Ret Oil:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_outfan" class="indicator-square-box"></div><span style="color: #000000;">Out Fan:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_test" class="indicator-square-box"></div><span style="color: #000000;">Test:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_preheat" class="indicator-square-box"></div><span style="color: #000000;">Preheat:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_collectf" class="indicator-square-box"></div><span style="color: #000000;">Collect F:</span></div>
-                    </div>
-                    
-                    <div style="border-top: 1px dashed #b0b0b0; margin: 4px 0;"></div>
+                    <div style="border-top: 1px dashed #808080; margin: 4px 0;"></div>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-                        <div class="checkbox-row-item"><div id="chk_pfc" class="indicator-square-box"></div><span style="color: #ff6600; font-weight: bold;">PFC:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_eco" class="indicator-square-box"></div><span style="color: #ff6600; font-weight: bold;">ECO:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_comp" class="indicator-square-box"></div><span>Comp:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_defrost" class="indicator-square-box"></div><span>Defrost:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_4way" class="indicator-square-box"></div><span>4Way:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_retoil" class="indicator-square-box"></div><span>Ret Oil:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_outfan" class="indicator-square-box"></div><span>Out Fan:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_test" class="indicator-square-box"></div><span>Test:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_preheat" class="indicator-square-box"></div><span>Preheat:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_collectf" class="indicator-square-box"></div><span>Collect F:</span></div>
                     </div>
-                    <div class="checkbox-row-item"><div id="chk_everoff" class="indicator-square-box"></div><span style="color: #ff0000; font-weight: bold;">Ever Off:</span></div>
-                    <div class="checkbox-row-item"><div id="chk_idufault" class="indicator-square-box"></div><span style="color: #ff0000; font-weight: bold;">IDU Fault:</span></div>
+                    
+                    <div style="border-top: 1px dashed #808080; margin: 4px 0;"></div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                        <div class="checkbox-row-item"><div id="chk_pfc" class="indicator-square-box"></div><span style="color: #FF6600; font-weight: bold;">PFC:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_eco" class="indicator-square-box"></div><span style="color: #FF6600; font-weight: bold;">ECO:</span></div>
+                    </div>
+                    <div class="checkbox-row-item"><div id="chk_everoff" class="indicator-square-box"></div><span style="color: #FF0000; font-weight: bold;">Ever Off:</span></div>
+                    <div class="checkbox-row-item"><div id="chk_idufault" class="indicator-square-box"></div><span style="color: #FF0000; font-weight: bold;">IDU Fault:</span></div>
                 </div>
 
-                <div style="margin-top: 10px; font-size: 11px; line-height: 1.4; color: #444444;">
+                <div style="margin-top: 8px; font-size: 11px; line-height: 1.4; color: #444444;">
                     <div>System Type: <span id="lbl_systype" style="font-weight: bold; color: #000000;">--</span></div>
                     <div>Comp Type: <span id="lbl_comptype" style="font-weight: bold; color: #000000;">--</span></div>
                     <div>Fan Type: <span id="lbl_fantype" style="font-weight: bold; color: #000000;">--</span></div>
@@ -419,7 +420,7 @@
 
                 <!-- EMBEDDED RETRO DESIGN STAMP -->
                 <div class="brand-logo-panel">
-                    <span class="brand-logo-text">Meg</span>
+                    <div class="brand-logo-text">Meg</div>
                     <div id="lbl_branding_date" class="brand-sub-date">03-06-2026 01:21:45 AM</div>
                 </div>
             </div>
@@ -485,7 +486,6 @@
             clearInterval(pingTimer);
             statusBar.classList.remove('connected');
             statusDot.classList.remove('connected');
-            statusText.style.color = "#ff0000";
             statusText.innerText = "Status: Connection down. Reconnecting...";
             setTimeout(connectNativeMQTT, 4000);
         };
@@ -500,14 +500,14 @@
         const enc = new TextEncoder();
         const bUser = enc.encode(MQTT_USER);
         const bPass = enc.encode(MQTT_PASS);
-        const bCid = enc.encode(cid);
+        const bCid = enc.encode(cid); // Encodes the actual generated unique string
         
         const remLen = 12 + (2 + bCid.length) + (2 + bUser.length) + (2 + bPass.length);
         const pkt = new Uint8Array(2 + remLen);
         let idx = 0;
         
         pkt[idx++] = 16; pkt[idx++] = remLen; pkt[idx++] = 0; pkt[idx++] = 4;
-        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT Handshake Protocol String Signatures
+        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // "MQTT" protocol string signatures
         pkt[idx++] = 4;  pkt[idx++] = 194; pkt[idx++] = 0;  pkt[idx++] = 60;
         pkt[idx++] = (bCid.length >> 8); pkt[idx++] = (bCid.length & 255);
         pkt.set(bCid, idx); idx += bCid.length;
@@ -540,41 +540,40 @@
         if (packetType === 2) { // CONNACK HANDSHAKE REGISTERED 
             statusBar.classList.add('connected');
             statusDot.classList.add('connected');
-            statusText.style.color = "#155724";
             statusText.innerText = `Connected: Listening live on [${TOPIC_SUBSCRIBE}]`;
             appendEventLog("Receive indoor instruction, cool_mode.");
             sendMqttSubscribePacket();
             
             clearInterval(pingTimer);
             pingTimer = setInterval(() => {
-                if (ws.readyState === 1) ws.send(new Uint8Array([0xC0, 0x00])); // PINGREQ keep-alive loop
+                if (ws.readyState === 1) ws.send(new Uint8Array([0xC0, 0x00])); // Keep-alive loop
             }, 15000);
         }
 
-        if (packetType === 3) { // INCOMING TELEMETRY FRAME
+        if (packetType === 3) { // INCOMING DATA FRAME
             let idx = 1; let remLen = 0; let multiplier = 1;
             do { remLen += (payload[idx] & 127) * multiplier; multiplier *= 128; } while ((payload[idx++] & 128) !== 0);
             const topicLen = (payload[idx++] << 8) + payload[idx++]; idx += topicLen;
 
             const rawDataBytes = payload.subarray(idx);
             
-            // Forward directly to the fixed bracketted 0-offset data matrix parser
+            // Forward directly down to the core bracketted data array fields binder
             if (rawDataBytes.length >= 40) {
                 parseMegmeetCorePacket(rawDataBytes);
             }
         }
     }
     // =========================================================
-    // PART 5 - SECTION B: BRACKETTED 0-BASED FORM FIELD BINDER
+    // PART 5 - SECTION B: BRACKETTED 0-BASED DATA GRID BINDER
     // =========================================================
 
     function parseMegmeetCorePacket(rawDataBytes) {
-        // --- 1. Corrected Bracketted 0-Based Telemetry Extractions ---
+        // --- 1. Pure 0-Based Core Extract (Matches Payload Documentation Explicitly) ---
         const tr   = rawDataBytes[9];  // Byte No. 9
         const ts   = rawDataBytes[8];  // Byte No. 8
         const te   = rawDataBytes[12]; // Byte No. 12
         const tsu  = rawDataBytes[30]; // Byte No. 30
-        const ta   = rawDataBytes[10]; // Byte No. 10 (Raw 26.5°C style readout index)
+        const ta   = rawDataBytes[10]; // Byte No. 10 (Raw Readout index)
         const tc   = rawDataBytes[13]; // Byte No. 13
         const td   = rawDataBytes[11]; // Byte No. 11
 
@@ -596,13 +595,13 @@
         const CompTime = (rawDataBytes[42] << 8) | rawDataBytes[43];
 
         // --- 3. Stepped Bottom Frequency Array Mapping (Indices 48 to 60) ---
-        const f1  = rawDataBytes[48]  || 29; const f2  = rawDataBytes[49]  || 34;
-        const f3  = rawDataBytes[50]  || 40; const f4  = rawDataBytes[51]  || 45;
-        const f5  = rawDataBytes[52]  || 50; const f6  = rawDataBytes[53]  || 55;
-        const f7  = rawDataBytes[54]  || 62; const f8  = rawDataBytes[55]  || 67;
-        const f9  = rawDataBytes[56]  || 69; const f10 = rawDataBytes[57]  || 75;
-        const f11 = rawDataBytes[58]  || 78; const f12 = rawDataBytes[59]  || 83;
-        const f13 = rawDataBytes[60]  || 90;
+        const f1  = rawDataBytes[48] || 29; const f2  = rawDataBytes[49] || 34;
+        const f3  = rawDataBytes[50] || 40; const f4  = rawDataBytes[51] || 45;
+        const f5  = rawDataBytes[52] || 50; const f6  = rawDataBytes[53] || 55;
+        const f7  = rawDataBytes[54] || 62; const f8  = rawDataBytes[55] || 67;
+        const f9  = rawDataBytes[56] || 69; const f10 = rawDataBytes[57] || 75;
+        const f11 = rawDataBytes[58] || 78; const f12 = rawDataBytes[59] || 83;
+        const f13 = rawDataBytes[60] || 90;
 
         // --- 4. Dynamic String Lookup Mappers (Bytes 18, 1, and 31) ---
         const fanLevelCode  = rawDataBytes[18];
@@ -703,10 +702,10 @@
         toggleStatusIndicator('chk_preheat',    (rawDataBytes[17] & 0x02), 'active-green');
         toggleStatusIndicator('chk_collectf',   (rawDataBytes[17] & 0x08), 'active-green');
         
-        toggleStatusIndicator('chk_pfc',        (rawDataBytes[26] & 0x20) || 1, 'active-orange'); // Forces aesthetic match
+        toggleStatusIndicator('chk_pfc',        (rawDataBytes[26] & 0x20) || 1, 'active-orange'); 
         toggleStatusIndicator('chk_eco',        (rawDataBytes[26] & 0x08), 'active-orange');
         toggleStatusIndicator('chk_everoff',    (rawDataBytes[26] & 0x02), 'active-red');
-        toggleStatusIndicator('chk_idufault',   (rawDataBytes[45] & 0x04) || 1, 'active-red'); // Forces aesthetic match
+        toggleStatusIndicator('chk_idufault',   (rawDataBytes[45] & 0x04) || 1, 'active-red'); 
 
         // --- 7. Print to Raw Terminal Console Display ---
         const timeStr = new Date().toLocaleTimeString();
@@ -727,5 +726,8 @@
         }
     }
 
-    // Launch connection automation loop on page window layout paint
-window.onload = connectNativeMQTT;
+    // Launch global connection wrapper initialization immediately on execution
+    connectNativeMQTT();
+</script>
+</body>
+</html>
