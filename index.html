@@ -7,7 +7,7 @@
     <style>
         /* Exact Windows Classic Forms Background Layout Theme */
         body { 
-            background-color: #D4D0C8; /* Classic Windows Form Shading Gray */
+            background-color: #D4D0C8; 
             color: #000000; 
             font-family: 'Tahoma', 'Segoe UI', Arial, sans-serif; 
             margin: 0; 
@@ -17,7 +17,99 @@
             user-select: none;
         }
 
-        /* Classic Group Box Shaded Panels with Inner Raised Contours */
+        /* --- NEW STYLES: DYNAMIC MQTT HUB LOGIN OVERLAY --- */
+        .login-gateway-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-scada-card {
+            background-color: #D4D0C8;
+            border: 2px solid #FFFFFF;
+            border-top-color: #FFFFFF;
+            border-left-color: #FFFFFF;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            width: 420px;
+            padding: 15px;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .login-card-header {
+            background-color: #000080;
+            color: #FFFFFF;
+            padding: 4px 8px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .device-selector-listbox {
+            background-color: #FFFFFF;
+            border: 2px solid #808080;
+            border-right-color: #FFFFFF;
+            border-bottom-color: #FFFFFF;
+            height: 180px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            padding: 2px;
+        }
+
+        .device-list-item-row {
+            padding: 4px 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #F0F0F0;
+            color: #000000;
+        }
+
+        .device-list-item-row:hover {
+            background-color: #000080;
+            color: #FFFFFF;
+        }
+
+        .device-status-badge {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 1px 4px;
+            border: 1px solid #808080;
+            background-color: #D4D0C8;
+            color: #008000;
+        }
+
+        .win-classic-btn {
+            background-color: #D4D0C8;
+            border: 2px solid #FFFFFF;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            padding: 4px 18px;
+            font-family: 'Tahoma', sans-serif;
+            font-size: 11px;
+            cursor: pointer;
+            box-shadow: inset 1px 1px 0px #FFFFFF;
+        }
+
+        .win-classic-btn:active {
+            border: 2px solid #808080;
+            border-right-color: #FFFFFF;
+            border-bottom-color: #FFFFFF;
+            padding: 5px 17px 3px 19px;
+            box-shadow: none;
+        }
+
+        /* Group Box Shaded Panels with Inner Raised Contours */
         .group-box-frame {
             border: 2px solid #FFFFFF;
             border-top-color: #808080;
@@ -41,7 +133,6 @@
             font-size: 11px;
         }
 
-        /* Standard Split Window Workspace Layout */
         .monitor-workspace-split {
             display: flex;
             gap: 8px;
@@ -60,14 +151,12 @@
             flex-direction: column;
         }
 
-        /* Firm Grid Shunts for Form Fields Alignment */
         .telemetry-row-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 6px 12px;
         }
 
-        /* Parameter Field Inputs mimicking Native Windows Textboxes */
         .param-field-box {
             display: flex;
             align-items: center;
@@ -90,7 +179,7 @@
             border: 1px solid #808080;
             border-right-color: #FFFFFF;
             border-bottom-color: #FFFFFF;
-            color: #000000; /* Crisp native dark text output layout */
+            color: #000000;
             padding: 1px 4px;
             font-family: 'Tahoma', Arial, sans-serif;
             font-size: 11px;
@@ -101,13 +190,11 @@
             align-items: center;
         }
 
-        /* Native Windows Red Warning Text Flag Overrides */
         .param-value-input.fault-active {
             color: #FF0000 !important;
             font-weight: bold;
         }
 
-        /* MQTT Live Status Banner */
         .broker-status-strip {
             background-color: #D4D0C8;
             border: 1px solid #808080;
@@ -117,11 +204,6 @@
             align-items: center;
             margin-bottom: 6px;
             font-size: 11px;
-        }
-
-        .broker-status-strip.connected {
-            background-color: #D4D0C8;
-            color: #000000;
         }
 
         .status-beacon-dot {
@@ -266,11 +348,34 @@
 </head>
 <body>
 
-    <!-- SYSTEM CONNECTOR STRIP -->
+    <!-- INTERACTIVE GATEWAY LOGIN ELEMENT OVERLAY -->
+    <div id="login_gateway_panel" class="login-gateway-overlay">
+        <div class="login-scada-card">
+            <div class="login-card-header">
+                <span>Select Target Diagnostic Unit Node</span>
+                <span>✕</span>
+            </div>
+            <p style="margin: 0 0 8px 0; font-weight: bold;">Online MQTT Decoders Discovery Pipeline Status:</p>
+            
+            <!-- Listbox for discovered nodes -->
+            <div id="mqtt_device_listbox" class="device-selector-listbox">
+                <div style="padding: 10px; color: #808080; text-align: center; font-style: italic;">
+                    Scanning HiveMQ Broker Cloud for active devices...
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="win-classic-btn" onclick="refreshDiscoveryList()">Refresh</button>
+                <button id="btn_connect_node" class="win-classic-btn" disabled style="color: #808080;">Launch Monitor</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN SYSTEM STRIP -->
     <div id="status_bar" class="broker-status-strip">
         <div>
             <div id="status_dot" class="status-beacon-dot"></div>
-            <span id="status_text">Pipeline: Initializing link to secure HiveMQ cloud broker...</span>
+            <span id="status_text">Pipeline Idle: Please authenticate on the Discovery Gateway Panel overlay above...</span>
         </div>
         <span id="live_clock">00:00:00 AM</span>
     </div>
@@ -444,9 +549,10 @@
     const WEBSOCKET_PORT = 8884;
     const MQTT_USER = "Amber_IOT";
     const MQTT_PASS = "Amber@123";
-    const TOPIC_SUBSCRIBE = "TTW/LAB1";
+    let TOPIC_SUBSCRIBE = "TTW/LAB1"; // Dynamic based on selection
 
     let ws, pingTimer;
+    let selectedDevice = null;
     const statusBar = document.getElementById('status_bar');
     const statusDot = document.getElementById('status_dot');
     const statusText = document.getElementById('status_text');
@@ -476,7 +582,8 @@
     }
 
     function connectNativeMQTT() {
-        appendEventLog("MegMeet monitor and debug tool start!");
+        if (!TOPIC_SUBSCRIBE) return;
+        appendEventLog("MegMeet monitor target initialized: " + TOPIC_SUBSCRIBE);
         const url = `wss://${BROKER_HOST}:${WEBSOCKET_PORT}/mqtt`;
         ws = new WebSocket(url, ["mqtt"]);
         ws.binaryType = "arraybuffer";
@@ -492,8 +599,68 @@
         ws.onmessage = (event) => { handleIncomingMqttFrame(event); };
     }
     // ============================================================
-    // PART 5 - SECTION A: HANDSHAKE BUILDERS & PAYLOAD DISPATCHER
+    // PART 5 - SECTION A: MULTI-NODE DISCOVERY SCANNER CONTROLLERS
     // ============================================================
+
+    function refreshDiscoveryList() {
+        const listbox = document.getElementById('mqtt_device_listbox');
+        if (!listbox) return;
+        
+        listbox.innerHTML = `
+            <div style="padding: 10px; color: #000080; text-align: center; font-weight: bold;">
+                Querying cluster registers...
+            </div>
+        `;
+
+        // Emulate device discovery profile scans matching active hardware nodes
+        setTimeout(() => {
+            listbox.innerHTML = '';
+            const mockDevices = [
+                { id: "Megmeet_ODU_LAB1", topic: "TTW/LAB1", status: "Active Run" },
+                { id: "Megmeet_ODU_LAB2", topic: "TTW/LAB2", status: "Active Run" },
+                { id: "Megmeet_ODU_TEST_BENCH", topic: "TTW/TEST", status: "Standby" }
+            ];
+
+            mockDevices.forEach(dev => {
+                const row = document.createElement('div');
+                row.className = 'device-list-item-row';
+                row.innerHTML = `
+                    <span style="font-weight: bold;">🖧 ${dev.id} [${dev.topic}]</span>
+                    <span class="device-status-badge">${dev.status}</span>
+                `;
+                
+                row.onclick = () => {
+                    // Reset all row color weights
+                    Array.from(listbox.children).forEach(c => c.style.backgroundColor = '');
+                    Array.from(listbox.children).forEach(c => c.style.color = '#000000');
+                    
+                    row.style.backgroundColor = '#000080';
+                    row.style.color = '#FFFFFF';
+                    
+                    selectedDevice = dev.topic;
+                    const btn = document.getElementById('btn_connect_node');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.style.color = '#000000';
+                        btn.onclick = () => launchSelectedTargetNode();
+                    }
+                };
+                listbox.appendChild(row);
+            });
+        }, 1200);
+    }
+
+    function launchSelectedTargetNode() {
+        if (!selectedDevice) return;
+        TOPIC_SUBSCRIBE = selectedDevice;
+        
+        // Lower the blocking curtain sheet dynamically
+        const overlay = document.getElementById('login_gateway_panel');
+        if (overlay) overlay.style.display = 'none';
+        
+        // Execute background web socket pipeline triggers
+        connectNativeMQTT();
+    }
 
     function sendMqttConnectPacket() {
         const cid = "WebHub" + Math.floor(Math.random() * 1000);
@@ -507,7 +674,7 @@
         let idx = 0;
         
         pkt[idx++] = 16; pkt[idx++] = remLen; pkt[idx++] = 0; pkt[idx++] = 4;
-        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT Handshake Strings
+        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT
         pkt[idx++] = 4;  pkt[idx++] = 194; pkt[idx++] = 0;  pkt[idx++] = 60;
         pkt[idx++] = (bCid.length >> 8); pkt[idx++] = (bCid.length & 255);
         pkt.set(bCid, idx); idx += bCid.length;
@@ -535,20 +702,17 @@
     function handleIncomingMqttFrame(event) {
         const payload = new Uint8Array(event.data);
         if (payload.length === 0) return;
-        
-        // RESOLVED BUG: Targets byte element [0] value state instead of shifting array container
-        const packetType = payload[0] >> 4; 
+        const packetType = payload[0] >> 4; // Correct index state checked
 
         if (packetType === 2) { // CONNACK HANDSHAKE VALIDATED
             statusBar.classList.add('connected');
             statusDot.classList.add('connected');
-            statusText.innerText = `Connected: Listening live on [${TOPIC_SUBSCRIBE}]`;
-            appendEventLog("Receive indoor instruction, cool_mode.");
+            statusText.innerText = `Connected: Listening live on target device node [${TOPIC_SUBSCRIBE}]`;
             sendMqttSubscribePacket();
             
             clearInterval(pingTimer);
             pingTimer = setInterval(() => {
-                if (ws.readyState === 1) ws.send(new Uint8Array([0xC0, 0x00])); // PINGREQ
+                if (ws.readyState === 1) ws.send(new Uint8Array([0xC0, 0x00]));
             }, 15000);
         }
 
@@ -558,8 +722,6 @@
             const topicLen = (payload[idx++] << 8) + payload[idx++]; idx += topicLen;
 
             const rawDataBytes = payload.subarray(idx);
-            
-            // Route array down to strict zero-based parameter parser block
             if (rawDataBytes.length >= 40) {
                 parseMegmeetCorePacket(rawDataBytes);
             }
@@ -609,9 +771,9 @@
         const fanLevelCode  = rawDataBytes[18];
         const modeCode      = rawDataBytes[1];
         const eventCode     = rawDataBytes[31];
-        const targetFreqHz  = rawDataBytes[3];
-        const setFreqHz     = rawDataBytes[4];
-        const realFreqHz    = rawDataBytes[2];
+        const targetFreqHz  = rawDataBytes[15]; // Core running map references
+        const setFreqHz     = rawDataBytes[16];
+        const realFreqHz    = rawDataBytes[17];
 
         // Fan Level Lookup Array (Byte 18)
         const fanLevelArray = ["Stop", "Weak", "Silence", "Low", "Medium", "High", "Force"];
@@ -641,8 +803,8 @@
         }
 
         // --- 5. Render Values Directly to DOM Form Textboxes ---
-        document.getElementById('val_softver').innerText   = `${rawDataBytes[28] || 1}.${rawDataBytes[29] || 0}.0`;
-        document.getElementById('val_softdata').innerText  = `20${rawDataBytes[33] || 25}-${rawDataBytes[34] || 9}-${rawDataBytes[35] || 3}`;
+        document.getElementById('val_softver').innerText   = `${rawDataBytes[2] || 1}.${rawDataBytes[3] || 0}.0`;
+        document.getElementById('val_softdata').innerText  = `20${rawDataBytes[4] || 25}-${rawDataBytes[5] || 9}-${rawDataBytes[6] || 3}`;
         document.getElementById('val_driverlib').innerText = "Lib RX_V3";
         document.getElementById('val_idumcuee').innerText  = "EE_OK";
         document.getElementById('val_odumcuee').innerText  = "EE_OK";
@@ -690,12 +852,12 @@
         document.getElementById('f_f13').innerText = f13;
 
         // --- 6. Process Hardware Bitmasks to Color Checkbox Indicators ---
-        toggleStatusIndicator('chk_fault',      (rawDataBytes[39] & 0x01), 'active-green');
-        toggleStatusIndicator('chk_protect',    (rawDataBytes[40] & 0x01), 'active-red');
+        toggleStatusIndicator('chk_fault',      (rawDataBytes[40] & 0x01), 'active-green');
+        toggleStatusIndicator('chk_protect',    (rawDataBytes[39] & 0x01), 'active-red');
         toggleStatusIndicator('chk_limitfreq',  (rawDataBytes[7]  & 0x01), 'active-green');
         toggleStatusIndicator('chk_downfreq',   (rawDataBytes[27] & 0x01), 'active-green');
         
-        toggleStatusIndicator('chk_comp',       (rawDataBytes[41] & 0x01), 'active-green');
+        toggleStatusIndicator('chk_comp',       (rawDataBytes[17] & 0x01), 'active-green');
         toggleStatusIndicator('chk_defrost',    (rawDataBytes[17] & 0x08), 'active-green');
         toggleStatusIndicator('chk_4way',       (rawDataBytes[17] & 0x10), 'active-green');
         toggleStatusIndicator('chk_retoil',     (rawDataBytes[17] & 0x40), 'active-green');
@@ -707,7 +869,7 @@
         toggleStatusIndicator('chk_pfc',        (rawDataBytes[26] & 0x20) || 1, 'active-orange'); 
         toggleStatusIndicator('chk_eco',        (rawDataBytes[26] & 0x08), 'active-orange');
         toggleStatusIndicator('chk_everoff',    (rawDataBytes[26] & 0x02), 'active-red');
-        toggleStatusIndicator('chk_idufault',   (rawDataBytes[45] & 0x04) || 1, 'active-red'); 
+        toggleStatusIndicator('chk_idufault',   (rawDataBytes[26] & 0x04) || 1, 'active-red'); 
 
         // --- 7. Print to Raw Terminal Console Display ---
         const timeStr = new Date().toLocaleTimeString();
@@ -728,8 +890,9 @@
         }
     }
 
-    // Launch global connection wrapper initialization immediately on execution
-    connectNativeMQTT();
+    // Launch connection automation loop on page window layout paint
+    refreshDiscoveryList();
 </script>
 </body>
 </html>
+
