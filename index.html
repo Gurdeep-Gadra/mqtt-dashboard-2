@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Megmeet_Amber_Monitor 20240909---COM7 Used.</title>
+    <title>Megmeet_Amber_Monitor Serverless Enterprise Hub</title>
     <style>
         /* Exact Windows Classic Forms Background Layout Theme */
         body { 
@@ -17,208 +17,119 @@
             user-select: none;
         }
 
-        /* --- NEW STYLES: DYNAMIC MQTT HUB LOGIN OVERLAY --- */
-        .login-gateway-overlay {
+        /* --- NEW USER IDENTITY AUTH OVERLAYS --- */
+        .auth-gate-wrapper {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #D4D0C8;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 99999;
         }
 
-        .login-scada-card {
+        .auth-win-frame {
             background-color: #D4D0C8;
             border: 2px solid #FFFFFF;
-            border-top-color: #FFFFFF;
-            border-left-color: #FFFFFF;
-            border-right-color: #808080;
-            border-bottom-color: #808080;
-            width: 420px;
-            padding: 15px;
-            box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+            border-right-color: #808080; border-bottom-color: #808080;
+            width: 320px; padding: 12px;
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.2);
         }
 
-        .login-card-header {
-            background-color: #000080;
-            color: #FFFFFF;
-            padding: 4px 8px;
-            font-weight: bold;
-            font-size: 12px;
+        .auth-header-strip {
+            background-color: #000080; color: #FFFFFF;
+            padding: 3px 6px; font-weight: bold; font-size: 11px;
             margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
         }
 
-        .device-selector-listbox {
-            background-color: #FFFFFF;
-            border: 2px solid #808080;
-            border-right-color: #FFFFFF;
-            border-bottom-color: #FFFFFF;
-            height: 180px;
-            overflow-y: auto;
-            margin-bottom: 12px;
-            padding: 2px;
-        }
-
-        .device-list-item-row {
-            padding: 4px 6px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #F0F0F0;
-            color: #000000;
-        }
-
-        .device-list-item-row:hover {
-            background-color: #000080;
-            color: #FFFFFF;
-        }
-
-        .device-status-badge {
-            font-size: 10px;
-            font-weight: bold;
-            padding: 1px 4px;
-            border: 1px solid #808080;
+        /* --- NEW DEVICE MANAGEMENT LAYOUTS --- */
+        .device-mgr-wrapper {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #D4D0C8;
-            color: #008000;
+            display: none; justify-content: center; align-items: center;
+            z-index: 88888;
+        }
+
+        .device-mgr-frame {
+            background-color: #D4D0C8;
+            border: 2px solid #FFFFFF;
+            border-right-color: #808080; border-bottom-color: #808080;
+            width: 520px; padding: 12px;
+            box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .device-data-table {
+            width: 100%; border-collapse: collapse;
+            background-color: #FFFFFF; border: 2px solid #808080;
+            margin-bottom: 10px; font-size: 11px; text-align: left;
+        }
+
+        .device-data-table th {
+            background-color: #D4D0C8; color: #000000;
+            border: 1px solid #808080; padding: 4px; font-weight: bold;
+        }
+
+        .device-data-table td {
+            border: 1px solid #D4D0C8; padding: 4px; cursor: pointer;
+        }
+
+        .device-data-table tr:hover td {
+            background-color: #000080; color: #FFFFFF;
+        }
+
+        /* Standard Native Form Element Elements */
+        .form-txt-input {
+            background-color: #FFFFFF; border: 1px solid #808080;
+            border-right-color: #FFFFFF; border-bottom-color: #FFFFFF;
+            padding: 2px 4px; font-family: 'Tahoma', sans-serif;
+            font-size: 11px; height: 16px; width: 100%; box-sizing: border-box;
         }
 
         .win-classic-btn {
-            background-color: #D4D0C8;
-            border: 2px solid #FFFFFF;
-            border-right-color: #808080;
-            border-bottom-color: #808080;
-            padding: 4px 18px;
-            font-family: 'Tahoma', sans-serif;
-            font-size: 11px;
-            cursor: pointer;
-            box-shadow: inset 1px 1px 0px #FFFFFF;
+            background-color: #D4D0C8; border: 2px solid #FFFFFF;
+            border-right-color: #808080; border-bottom-color: #808080;
+            padding: 3px 14px; font-family: 'Tahoma', sans-serif;
+            font-size: 11px; cursor: pointer; box-shadow: inset 1px 1px 0px #FFFFFF;
         }
 
         .win-classic-btn:active {
-            border: 2px solid #808080;
-            border-right-color: #FFFFFF;
-            border-bottom-color: #FFFFFF;
-            padding: 5px 17px 3px 19px;
-            box-shadow: none;
+            border: 2px solid #808080; border-right-color: #FFFFFF; border-bottom-color: #FFFFFF;
+            padding: 4px 13px 2px 15px; box-shadow: none;
         }
 
         /* Group Box Shaded Panels with Inner Raised Contours */
         .group-box-frame {
             border: 2px solid #FFFFFF;
-            border-top-color: #808080;
-            border-left-color: #808080;
-            border-right-color: #DFDFDF;
-            border-bottom-color: #DFDFDF;
-            background-color: #D4D0C8;
-            padding: 12px 8px 8px 8px;
-            margin-bottom: 8px;
-            position: relative;
+            border-top-color: #808080; border-left-color: #808080;
+            border-right-color: #DFDFDF; border-bottom-color: #DFDFDF;
+            background-color: #D4D0C8; padding: 12px 8px 8px 8px;
+            margin-bottom: 8px; position: relative;
         }
 
         .group-box-title {
-            position: absolute;
-            top: -7px;
-            left: 8px;
-            background-color: #D4D0C8;
-            padding: 0 4px;
-            font-weight: normal;
-            color: #000000;
-            font-size: 11px;
+            position: absolute; top: -7px; left: 8px;
+            background-color: #D4D0C8; padding: 0 4px;
+            font-weight: normal; color: #000000; font-size: 11px;
         }
 
-        .monitor-workspace-split {
-            display: flex;
-            gap: 8px;
-            align-items: flex-start;
-        }
+        .monitor-workspace-split { display: flex; gap: 8px; align-items: flex-start; }
+        .left-telemetry-column { flex: 1; display: flex; flex-direction: column; }
+        .right-sidebar-column { width: 250px; display: flex; flex-direction: column; }
+        .telemetry-row-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 12px; }
 
-        .left-telemetry-column {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .right-sidebar-column {
-            width: 250px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .telemetry-row-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px 12px;
-        }
-
-        .param-field-box {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 4px;
-            height: 20px;
-        }
-
-        .param-label {
-            color: #000000;
-            font-size: 11px;
-            white-space: nowrap;
-            min-width: 60px;
-            text-align: right;
-            padding-right: 2px;
-        }
-
+        .param-field-box { display: flex; align-items: center; justify-content: space-between; gap: 4px; height: 20px; }
+        .param-label { color: #000000; font-size: 11px; white-space: nowrap; min-width: 60px; text-align: right; padding-right: 2px; }
+        
         .param-value-input {
-            background-color: #FFFFFF;
-            border: 1px solid #808080;
-            border-right-color: #FFFFFF;
-            border-bottom-color: #FFFFFF;
-            color: #000000;
-            padding: 1px 4px;
-            font-family: 'Tahoma', Arial, sans-serif;
-            font-size: 11px;
-            font-weight: normal;
-            flex: 1;
-            height: 14px;
-            display: flex;
-            align-items: center;
+            background-color: #FFFFFF; border: 1px solid #808080;
+            border-right-color: #FFFFFF; border-bottom-color: #FFFFFF;
+            color: #0000ff; padding: 1px 4px; font-family: monospace;
+            font-size: 11px; font-weight: bold; flex: 1; height: 14px; display: flex; align-items: center;
         }
 
-        .param-value-input.fault-active {
-            color: #FF0000 !important;
-            font-weight: bold;
-        }
-
-        .broker-status-strip {
-            background-color: #D4D0C8;
-            border: 1px solid #808080;
-            padding: 2px 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-            font-size: 11px;
-        }
-
-        .status-beacon-dot {
-            width: 6px;
-            height: 6px;
-            background-color: #FF0000;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 4px;
-        }
-
-        .status-beacon-dot.connected {
-            background-color: #00FF00;
-            box-shadow: 0 0 4px #00FF00;
-        }
+        .param-value-input.fault-active { color: #FF0000 !important; font-weight: bold; }
+        .broker-status-strip { background-color: #D4D0C8; border: 1px solid #808080; padding: 2px 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 11px; }
+        .status-beacon-dot { width: 6px; height: 6px; background-color: #FF0000; border-radius: 50%; display: inline-block; margin-right: 4px; }
+        .status-beacon-dot.connected { background-color: #00FF00; box-shadow: 0 0 4px #00FF00; }
         /* Sidebar Checkbox & Indicator Layout Styles */
         .sidebar-indicator-layout {
             display: flex;
@@ -348,48 +259,89 @@
 </head>
 <body>
 
-    <!-- INTERACTIVE GATEWAY LOGIN ELEMENT OVERLAY -->
-    <div id="login_gateway_panel" class="login-gateway-overlay">
-        <div class="login-scada-card">
-            <div class="login-card-header">
-                <span>Select Target Diagnostic Unit Node</span>
-                <span>✕</span>
+    <!-- 1. OPERATOR SECURITY AUTHENTICATION GATE -->
+    <div id="auth_gate" class="auth-gate-wrapper">
+        <div class="auth-win-frame">
+            <div class="auth-header-strip">System Operator Login Validation</div>
+            <div style="margin-bottom: 8px;">
+                <label style="display:block; margin-bottom:2px;">Operator ID / Username:</label>
+                <input type="text" id="login_user" class="form-txt-input" value="admin">
             </div>
-            <p style="margin: 0 0 8px 0; font-weight: bold;">Online MQTT Decoders Discovery Pipeline Status:</p>
-            
-            <!-- Listbox for discovered nodes -->
-            <div id="mqtt_device_listbox" class="device-selector-listbox">
-                <div style="padding: 10px; color: #808080; text-align: center; font-style: italic;">
-                    Scanning HiveMQ Broker Cloud for active devices...
-                </div>
+            <div style="margin-bottom: 12px;">
+                <label style="display:block; margin-bottom:2px;">Security Key / Password:</label>
+                <input type="password" id="login_pass" class="form-txt-input" value="1234">
             </div>
-            
-            <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                <button class="win-classic-btn" onclick="refreshDiscoveryList()">Refresh</button>
-                <button id="btn_connect_node" class="win-classic-btn" disabled style="color: #808080;">Launch Monitor</button>
+            <div style="display: flex; justify-content: flex-end;">
+                <button class="win-classic-btn" onclick="executeUserAuthentication()">Validate Account</button>
             </div>
         </div>
     </div>
 
-    <!-- MAIN SYSTEM STRIP -->
+    <!-- 2. SERVERLESS LOCALSTORAGE DEVICE INVENTORY INVENTORY MODULE -->
+    <div id="device_manager" class="device-mgr-wrapper">
+        <div class="device-mgr-frame">
+            <div class="auth-header-strip">MQTT Target Diagnostic Unit Asset Inventory Register</div>
+            
+            <p style="margin: 0 0 6px 0; font-weight: bold;">Registered Nodes Database List:</p>
+            <table class="device-data-table">
+                <thead>
+                    <tr>
+                        <th>Hardware Node Identity Descriptor</th>
+                        <th>MQTT Topic Routing Link</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="device_inventory_tbody">
+                    <!-- Dynamic database inventory inserts go here -->
+                </tbody>
+            </table>
+
+            <div class="group-box-frame" style="background-color: #D4D0C8; padding-top: 14px; margin-bottom: 10px;">
+                <div class="group-box-title">Register New Diagnostic Node Asset</div>
+                <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+                    <div style="flex: 1;">
+                        <span style="font-size:10px;">Node Label (e.g. LAB_1_COMP)</span>
+                        <input type="text" id="add_dev_name" class="form-txt-input" placeholder="Device Label Name">
+                    </div>
+                    <div style="flex: 1;">
+                        <span style="font-size:10px;">MQTT Target Topic (e.g. TTW/LAB1)</span>
+                        <input type="text" id="add_dev_topic" class="form-txt-input" placeholder="TTW/LAB1">
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end;">
+                    <button class="win-classic-btn" onclick="commitDeviceToDatabase()">Save Node to Registry</button>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #808080; padding-top: 8px;">
+                <button class="win-classic-btn" style="color: #800000;" onclick="executeOperatorLogout()">Log Out Account</button>
+                <span style="font-size:10px; color:#555555; font-style:italic;">Click a row above to activate the live monitoring screen.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN SYSTEM TELEMETRY STRIP -->
     <div id="status_bar" class="broker-status-strip">
         <div>
             <div id="status_dot" class="status-beacon-dot"></div>
-            <span id="status_text">Pipeline Idle: Please authenticate on the Discovery Gateway Panel overlay above...</span>
+            <span id="status_text">Pipeline Locked: Awaiting secure profile verification...</span>
         </div>
-        <span id="live_clock">00:00:00 AM</span>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <button class="win-classic-btn" style="padding: 1px 6px; font-size:10px;" onclick="returnToInventoryDashboard()">Asset Menu</button>
+            <span id="live_clock">00:00:00 AM</span>
+        </div>
     </div>
 
-    <!-- MAIN WORKING WORKSPACE -->
+    <!-- MAIN MONITOR WORKSPACE SPLIT CONTAINER -->
     <div class="monitor-workspace-split">
         <div class="left-telemetry-column">
 
-            <!-- 1. EVENT TEXT GRID VIEWPORT -->
+            <!-- EVENT TEXT VIEWPORT BLOCK -->
             <div class="group-box-frame" style="height: 115px; overflow: hidden; margin-bottom: 6px;">
                 <div class="group-box-title">Event</div>
                 <div id="event_log_stream" style="height: 105px; overflow-y: auto; font-family: 'Tahoma', Arial, sans-serif; font-size: 11px; white-space: pre-wrap; padding-left: 2px; color: #000000; line-height: 1.3;"></div>
             </div>
-            <!-- 2. FIRMWARE VERSION MESSAGE PANEL -->
+            <!-- 3. FIRMWARE VERSION MESSAGE PANEL -->
             <div class="group-box-frame" style="margin-bottom: 6px; padding-bottom: 8px;">
                 <div class="group-box-title">Version Message</div>
                 <div class="telemetry-row-grid">
@@ -402,7 +354,7 @@
                 </div>
             </div>
 
-            <!-- 3. INDOOR OPERATIONAL MATRIX PANEL -->
+            <!-- 4. INDOOR OPERATIONAL MATRIX PANEL -->
             <div class="group-box-frame" style="margin-bottom: 6px; padding-bottom: 8px;">
                 <div class="group-box-title">Indoor</div>
                 <div class="telemetry-row-grid" style="margin-bottom: 6px;">
@@ -418,7 +370,7 @@
                     <div class="param-field-box"><span class="param-label" style="min-width:100px;">IDU fault fan fault</span><div id="val_idufaultstr" class="param-value-input fault-active">--</div></div>
                 </div>
             </div>
-            <!-- 4. OUTDOOR OPERATIONAL PARAMETERS PANEL -->
+            <!-- 5. OUTDOOR OPERATIONAL PARAMETERS PANEL -->
             <div class="group-box-frame" style="margin-bottom: 4px; padding-bottom: 8px;">
                 <div class="group-box-title">Outdoor</div>
                 <div class="telemetry-row-grid" style="margin-bottom: 6px;">
@@ -447,7 +399,7 @@
                 </div>
             </div>
 
-            <!-- 5. FIXED-ALIGNMENT 13-COLUMN FREQUENCY GRID PANEL -->
+            <!-- 6. FIXED-ALIGNMENT 13-COLUMN FREQUENCY GRID PANEL -->
             <div class="freq-strip-container-row">
                 <span class="freq-strip-heading-label">FreqLevel</span>
                 <div class="freq-strip-13-column-grid">
@@ -473,7 +425,7 @@
                 </div>
             </div>
         </div> <!-- End of left-telemetry-column -->
-        <!-- 6. RIGHT SIDEBAR STATUS DISPLAY COLUMN -->
+        <!-- 7. RIGHT SIDEBAR STATUS DISPLAY COLUMN -->
         <div class="right-sidebar-column">
             
             <!-- FREQ DISPLAY SUB-GROUP -->
@@ -523,7 +475,7 @@
                     <div>Fan Type: <span id="lbl_fantype" style="font-weight: bold; color: #000000;">--</span></div>
                 </div>
 
-                <!-- EMBEDDED RETRO MONITOR GRAPHICS LABEL -->
+                <!-- EMBEDDED DESIGN LABEL -->
                 <div class="brand-logo-panel">
                     <div class="brand-logo-text">Meg</div>
                     <div id="lbl_branding_date" class="brand-sub-date">03-06-2026 01:21:45 AM</div>
@@ -532,7 +484,7 @@
         </div>
     </div> <!-- End of monitor-workspace-split -->
 
-    <!-- DUAL CONSOLE LOGGER VIEWPORT PANELS -->
+    <!-- DUAL LOG VIEWPORT FRAMES -->
     <div class="logger-panel-split">
         <div class="terminal-box-frame">
             <div class="terminal-box-header">live_packet_stream.log (Parallel Stream Engine Decodes)</div>
@@ -545,14 +497,14 @@
     </div>
 
     <script>
+    // --- STATIC HARDWARE CONSTANTS ---
     const BROKER_HOST = "e897bc6d6145492e99f4a7f09df8ffd9.s1.eu.hivemq.cloud";
     const WEBSOCKET_PORT = 8884;
     const MQTT_USER = "Amber_IOT";
     const MQTT_PASS = "Amber@123";
-    let TOPIC_SUBSCRIBE = "TTW/LAB1"; // Dynamic based on selection
+    let TOPIC_SUBSCRIBE = "TTW/LAB1"; // Managed dynamically via database
 
     let ws, pingTimer;
-    let selectedDevice = null;
     const statusBar = document.getElementById('status_bar');
     const statusDot = document.getElementById('status_dot');
     const statusText = document.getElementById('status_text');
@@ -582,8 +534,7 @@
     }
 
     function connectNativeMQTT() {
-        if (!TOPIC_SUBSCRIBE) return;
-        appendEventLog("MegMeet monitor target initialized: " + TOPIC_SUBSCRIBE);
+        appendEventLog("MegMeet pipeline starting subscription on: " + TOPIC_SUBSCRIBE);
         const url = `wss://${BROKER_HOST}:${WEBSOCKET_PORT}/mqtt`;
         ws = new WebSocket(url, ["mqtt"]);
         ws.binaryType = "arraybuffer";
@@ -599,69 +550,115 @@
         ws.onmessage = (event) => { handleIncomingMqttFrame(event); };
     }
     // ============================================================
-    // PART 5 - SECTION A: MULTI-NODE DISCOVERY SCANNER CONTROLLERS
+    // PART 5 - SECTION A: DATABASE CONTROLLERS & SECURE VALIDATORS
     // ============================================================
 
-    function refreshDiscoveryList() {
-        const listbox = document.getElementById('mqtt_device_listbox');
-        if (!listbox) return;
-        
-        listbox.innerHTML = `
-            <div style="padding: 10px; color: #000080; text-align: center; font-weight: bold;">
-                Querying cluster registers...
-            </div>
-        `;
+    // --- 1. USER ACCOUNT AUTHENTICATION ENGINE ---
+    function executeUserAuthentication() {
+        const uInput = document.getElementById('login_user').value;
+        const pInput = document.getElementById('login_pass').value;
 
-        // Emulate device discovery profile scans matching active hardware nodes
-        setTimeout(() => {
-            listbox.innerHTML = '';
-            const mockDevices = [
-                { id: "Megmeet_ODU_LAB1", topic: "TTW/LAB1", status: "Active Run" },
-                { id: "Megmeet_ODU_LAB2", topic: "TTW/LAB2", status: "Active Run" },
-                { id: "Megmeet_ODU_TEST_BENCH", topic: "TTW/TEST", status: "Standby" }
-            ];
-
-            mockDevices.forEach(dev => {
-                const row = document.createElement('div');
-                row.className = 'device-list-item-row';
-                row.innerHTML = `
-                    <span style="font-weight: bold;">🖧 ${dev.id} [${dev.topic}]</span>
-                    <span class="device-status-badge">${dev.status}</span>
-                `;
-                
-                row.onclick = () => {
-                    // Reset all row color weights
-                    Array.from(listbox.children).forEach(c => c.style.backgroundColor = '');
-                    Array.from(listbox.children).forEach(c => c.style.color = '#000000');
-                    
-                    row.style.backgroundColor = '#000080';
-                    row.style.color = '#FFFFFF';
-                    
-                    selectedDevice = dev.topic;
-                    const btn = document.getElementById('btn_connect_node');
-                    if (btn) {
-                        btn.disabled = false;
-                        btn.style.color = '#000000';
-                        btn.onclick = () => launchSelectedTargetNode();
-                    }
-                };
-                listbox.appendChild(row);
-            });
-        }, 1200);
+        // Structured matching check against credentials criteria
+        if (uInput === "admin" && pInput === "1234") {
+            document.getElementById('auth_gate').style.display = 'none';
+            document.getElementById('device_manager').style.display = 'flex';
+            appendEventLog("Operator 'admin' authenticated. Loading node inventory database...");
+            renderDeviceInventoryTable();
+        } else {
+            alert("CRITICAL ERROR: Access Denied. Invalid operator identifiers.");
+        }
     }
 
-    function launchSelectedTargetNode() {
-        if (!selectedDevice) return;
-        TOPIC_SUBSCRIBE = selectedDevice;
+    function executeOperatorLogout() {
+        if(ws) ws.close();
+        document.getElementById('device_manager').style.display = 'none';
+        document.getElementById('auth_gate').style.display = 'flex';
+        statusBar.classList.remove('connected');
+        statusDot.classList.remove('connected');
+        statusText.innerText = "Pipeline Locked: Awaiting secure profile verification...";
+        appendEventLog("Operator logged out safely. Network loop frozen.");
+    }
+
+    // --- 2. LOCALSTORAGE DATABASE TRANSACTION ENGINE ---
+    function fetchDevicesFromRegistry() {
+        const stored = localStorage.getItem('MEGMEET_NODES_DB');
+        if (stored) {
+            return JSON.parse(stored);
+        }
+        // Fallback default dataset profile array mapping if storage is empty
+        const defaultNodes = [
+            { name: "Megmeet_ODU_LAB1", topic: "TTW/LAB1" },
+            { name: "Megmeet_ODU_LAB2", topic: "TTW/LAB2" }
+        ];
+        localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(defaultNodes));
+        return defaultNodes;
+    }
+
+    function renderDeviceInventoryTable() {
+        const tbody = document.getElementById('device_inventory_tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        const devices = fetchDevicesFromRegistry();
+        devices.forEach((dev, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-weight:bold; color:#000080;">🖥️ ${dev.name}</td>
+                <td style="font-family:monospace;">${dev.topic}</td>
+                <td><button class="win-classic-btn" style="padding:1px 6px; color:#800000; font-size:10px;" onclick="purgeDeviceEntry(event, ${idx})">Delete</button></td>
+            `;
+            
+            // Row selection callback sets up live stream focus hook
+            tr.onclick = () => launchDiagnosticMonitorScreen(dev.topic);
+            tbody.appendChild(tr);
+        });
+    }
+
+    function commitDeviceToDatabase() {
+        const nameEl = document.getElementById('add_dev_name');
+        const topicEl = document.getElementById('add_dev_topic');
+        const name = nameEl.value.trim();
+        const topic = topicEl.value.trim();
+
+        if (!name || !topic) {
+            alert("Validation Failure: Labels and routing paths cannot be blank.");
+            return;
+        }
+
+        const devices = fetchDevicesFromRegistry();
+        devices.push({ name: name, topic: topic });
+        localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(devices));
         
-        // Lower the blocking curtain sheet dynamically
-        const overlay = document.getElementById('login_gateway_panel');
-        if (overlay) overlay.style.display = 'none';
-        
-        // Execute background web socket pipeline triggers
+        nameEl.value = '';
+        topicEl.value = '';
+        renderDeviceInventoryTable();
+        appendEventLog(`Successfully saved asset entry [${name}] to persistent system registers.`);
+    }
+
+    function purgeDeviceEntry(event, index) {
+        event.stopPropagation(); // Prevents clicking delete from triggering table monitor row select launch
+        const devices = fetchDevicesFromRegistry();
+        devices.splice(index, 1);
+        localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(devices));
+        renderDeviceInventoryTable();
+    }
+
+    function launchDiagnosticMonitorScreen(targetTopic) {
+        TOPIC_SUBSCRIBE = targetTopic;
+        document.getElementById('device_manager').style.display = 'none';
         connectNativeMQTT();
     }
 
+    function returnToInventoryDashboard() {
+        if(ws) ws.close();
+        document.getElementById('device_manager').style.display = 'flex';
+        statusBar.classList.remove('connected');
+        statusDot.classList.remove('connected');
+        statusText.innerText = "Pipeline Idle: Custom workspace dashboard hidden.";
+        renderDeviceInventoryTable();
+    }
+
+    // --- 3. BINARY MQTT HANDSHAKE FORMATTERS ---
     function sendMqttConnectPacket() {
         const cid = "WebHub" + Math.floor(Math.random() * 1000);
         const enc = new TextEncoder();
@@ -674,7 +671,7 @@
         let idx = 0;
         
         pkt[idx++] = 16; pkt[idx++] = remLen; pkt[idx++] = 0; pkt[idx++] = 4;
-        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT
+        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT binary markers
         pkt[idx++] = 4;  pkt[idx++] = 194; pkt[idx++] = 0;  pkt[idx++] = 60;
         pkt[idx++] = (bCid.length >> 8); pkt[idx++] = (bCid.length & 255);
         pkt.set(bCid, idx); idx += bCid.length;
@@ -702,12 +699,12 @@
     function handleIncomingMqttFrame(event) {
         const payload = new Uint8Array(event.data);
         if (payload.length === 0) return;
-        const packetType = payload[0] >> 4; // Correct index state checked
+        const packetType = payload[0] >> 4; // Element state target isolated
 
-        if (packetType === 2) { // CONNACK HANDSHAKE VALIDATED
+        if (packetType === 2) { 
             statusBar.classList.add('connected');
             statusDot.classList.add('connected');
-            statusText.innerText = `Connected: Listening live on target device node [${TOPIC_SUBSCRIBE}]`;
+            statusText.innerText = `Connected: Listening live on topic parameter [${TOPIC_SUBSCRIBE}]`;
             sendMqttSubscribePacket();
             
             clearInterval(pingTimer);
@@ -716,7 +713,7 @@
             }, 15000);
         }
 
-        if (packetType === 3) { // PUBLISH
+        if (packetType === 3) { 
             let idx = 1; let remLen = 0; let multiplier = 1;
             do { remLen += (payload[idx] & 127) * multiplier; multiplier *= 128; } while ((payload[idx++] & 128) !== 0);
             const topicLen = (payload[idx++] << 8) + payload[idx++]; idx += topicLen;
@@ -771,7 +768,7 @@
         const fanLevelCode  = rawDataBytes[18];
         const modeCode      = rawDataBytes[1];
         const eventCode     = rawDataBytes[31];
-        const targetFreqHz  = rawDataBytes[15]; // Core running map references
+        const targetFreqHz  = rawDataBytes[15]; 
         const setFreqHz     = rawDataBytes[16];
         const realFreqHz    = rawDataBytes[17];
 
@@ -852,8 +849,8 @@
         document.getElementById('f_f13').innerText = f13;
 
         // --- 6. Process Hardware Bitmasks to Color Checkbox Indicators ---
-        toggleStatusIndicator('chk_fault',      (rawDataBytes[40] & 0x01), 'active-green');
-        toggleStatusIndicator('chk_protect',    (rawDataBytes[39] & 0x01), 'active-red');
+        toggleStatusIndicator('chk_fault',      (rawDataBytes[39] & 0x01), 'active-green');
+        toggleStatusIndicator('chk_protect',    (rawDataBytes[40] & 0x01), 'active-red');
         toggleStatusIndicator('chk_limitfreq',  (rawDataBytes[7]  & 0x01), 'active-green');
         toggleStatusIndicator('chk_downfreq',   (rawDataBytes[27] & 0x01), 'active-green');
         
@@ -889,10 +886,6 @@
             el.className = 'indicator-square-box';
         }
     }
-
-    // Launch connection automation loop on page window layout paint
-    refreshDiscoveryList();
 </script>
 </body>
 </html>
-
