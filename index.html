@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Megmeet_Amber_Monitor Multichannel Asset Hub</title>
+    <title>Megmeet_Amber_Monitor Telemetry Portal Workspace</title>
     <style>
         /* Exact Windows Classic Forms Background Layout Theme */
         body { 
@@ -322,7 +322,7 @@
                 <div class="group-box-title">Event</div>
                 <div id="event_log_stream" style="height: 105px; overflow-y: auto; font-family: 'Tahoma', Arial, sans-serif; font-size: 11px; white-space: pre-wrap; padding-left: 2px; color: #000000; line-height: 1.3;"></div>
             </div>
-            <!-- 3. FIRMWARE VERSION MESSAGE PANEL -->
+            <!-- 2. FIRMWARE VERSION MESSAGE PANEL -->
             <div class="group-box-frame" style="margin-bottom: 6px; padding-bottom: 8px;">
                 <div class="group-box-title">Version Message</div>
                 <div class="telemetry-row-grid">
@@ -335,7 +335,7 @@
                 </div>
             </div>
 
-            <!-- 4. INDOOR OPERATIONAL MATRIX PANEL -->
+            <!-- 3. INDOOR OPERATIONAL MATRIX PANEL -->
             <div class="group-box-frame" style="margin-bottom: 6px; padding-bottom: 8px;">
                 <div class="group-box-title">Indoor</div>
                 <div class="telemetry-row-grid" style="margin-bottom: 6px;">
@@ -351,7 +351,7 @@
                     <div class="param-field-box"><span class="param-label" style="min-width:100px;">IDU fault fan fault</span><div id="val_idufaultstr" class="param-value-input fault-active">--</div></div>
                 </div>
             </div>
-            <!-- 5. OUTDOOR OPERATIONAL PARAMETERS PANEL -->
+            <!-- 4. OUTDOOR OPERATIONAL PARAMETERS PANEL -->
             <div class="group-box-frame" style="margin-bottom: 4px; padding-bottom: 8px;">
                 <div class="group-box-title">Outdoor</div>
                 <div class="telemetry-row-grid" style="margin-bottom: 6px;">
@@ -380,7 +380,7 @@
                 </div>
             </div>
 
-            <!-- 6. FIXED-ALIGNMENT 13-COLUMN FREQUENCY GRID PANEL -->
+            <!-- 5. FIXED-ALIGNMENT 13-COLUMN FREQUENCY GRID PANEL -->
             <div class="freq-strip-container-row">
                 <span class="freq-strip-heading-label">FreqLevel</span>
                 <div class="freq-strip-13-column-grid">
@@ -483,16 +483,16 @@
     const MQTT_USER = "Amber_IOT";
     const MQTT_PASS = "Amber@123";
     
-    let activeStreamTopic = null; // Currently targeted channel focus
+    let activeStreamTopic = null; // Currently targeted channel focus string reference
     let backgroundDiscoverySockets = {};
-    let activeDevicesHeartbeats = {}; // Tracks packet arrival timestamp values per topic
+    let activeDevicesHeartbeats = {}; // Stores packet arrival timestamp indices per topic
 
     setInterval(() => {
         const now = new Date();
         document.getElementById('live_clock').innerText = now.toLocaleTimeString();
         document.getElementById('lbl_branding_date').innerText = now.toLocaleString();
         
-        // Evaluates fallback timeouts across backgrounds records every 1000ms
+        // Asynchronous background evaluation watchdog pinger
         evaluateAllDeviceHeartbeats();
     }, 1000);
 
@@ -514,10 +514,10 @@
         eventBox.scrollTop = eventBox.scrollHeight;
     }
     // =========================================================================
-    // PART 5 - SECTION A: STORAGE HANDLERS, INSTANT BADGES, & PERSISTENT STATUS
+    // PART 5 - SECTION A: RESTRUCTURED PRIORITY DATA ENGINE & RIBBON CONTROLLERS
     // =========================================================================
 
-    // --- 1. STORAGE TRANS-REGISTRY HANDLERS ---
+    // --- 1. LOCAL STORAGE DATABASE TRANSACTION HANDLERS ---
     function fetchDevicesFromRegistry() {
         const stored = localStorage.getItem('MEGMEET_NODES_DB');
         if (stored) return JSON.parse(stored);
@@ -538,7 +538,7 @@
         const topic = topicEl.value.trim();
 
         if (!name || !topic) {
-            alert("Validation Error: System labels and target topics cannot be left blank.");
+            alert("Validation Error: Configuration fields cannot be left blank.");
             return;
         }
 
@@ -551,11 +551,11 @@
         
         initializeBackgroundDeviceScanner(topic);
         renderDeviceInventoryTable();
-        appendEventLog(`Asset node configuration entry [${name}] committed to registers.`);
+        appendEventLog(`Asset config [${name}] saved successfully to database registers.`);
     }
 
     function purgeDeviceEntry(event, index, topic) {
-        event.stopPropagation(); // Halts row single-click focus context switch trigger
+        event.stopPropagation(); // Prevents row single-click focus select trigger from shifting active view
         const devices = fetchDevicesFromRegistry();
         devices.splice(index, 1);
         localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(devices));
@@ -611,7 +611,7 @@
         });
     }
 
-    // --- 3. ASYNCHRONOUS PACKET ARRIVAL SCANNER ---
+    // --- 3. ASYNCHRONOUS PACKET ARRIVAL SCANNER WITH RECOGNITION LOCKS ---
     function initializeParallelDiscoveryNetwork() {
         const devices = fetchDevicesFromRegistry();
         devices.forEach(dev => {
@@ -635,15 +635,14 @@
             const payload = new Uint8Array(event.data);
             if (payload.length === 0) return;
             
-            const headerByte = payload[0];
-            const packetType = headerByte >> 4;
+            const packetType = payload[0] >> 4;
 
             if (packetType === 2) { 
                 sendMqttSubscribePacketRaw(tempWs, topicStr);
             }
 
             if (packetType === 3) {
-                // FIXED BUG: Heartbeat sets immediately upon frame interception for rapid online flags
+                // Heartbeat timestamp ticks forward immediately upon binary frame interception
                 activeDevicesHeartbeats[topicStr] = Date.now();
                 
                 const b64Key = btoa(topicStr).replace(/=/g, '');
@@ -653,8 +652,14 @@
                     badge.innerText = 'Online';
                 }
 
-                // If topic matches focused view, decode array data straight down into input cells
+                // CORE OPTIMIZATION: If this backdrop topic matches our current focused view, pass downstream
                 if (activeStreamTopic === topicStr) {
+                    // CRITICAL STATUS BAR REWRITE ENFORCEMENT FIX
+                    statusBar.classList.add('connected');
+                    statusDot.className = 'status-beacon-dot connected';
+                    statusText.style.color = "#155724";
+                    statusText.innerText = `Focus Stream Connected: Tracking live data packages over topic target [${topicStr}]`;
+
                     let idx = 1; let remLen = 0; let multiplier = 1;
                     do { remLen += (payload[idx] & 127) * multiplier; multiplier *= 128; } while ((payload[idx++] & 128) !== 0);
                     const topicLen = (payload[idx++] << 8) + payload[idx++]; idx += topicLen;
@@ -675,7 +680,7 @@
         backgroundDiscoverySockets[topicStr] = tempWs;
     }
 
-    // --- 4. STRICT 5-SECOND watchdog MONITOR ---
+    // --- 4. EXCLUSIVE focused WATCHDOG MONITOR CONTEXT ---
     function evaluateAllDeviceHeartbeats() {
         const devices = fetchDevicesFromRegistry();
         devices.forEach(dev => {
@@ -699,10 +704,12 @@
                     badge.innerText = 'Offline';
                 }
                 
-                // FIXED BUG: Only updates status text to idle if the active running topic itself drops out
-                if (activeStreamTopic === dev.topic && !statusBar.classList.contains('dropped-out')) {
+                // CRITICAL RIBBON REWRITE ENFORCEMENT FIX: Only allow status ribbon modifications if it matches the unseated topic
+                if (activeStreamTopic === dev.topic) {
+                    statusBar.classList.remove('connected');
+                    statusDot.className = 'status-beacon-dot';
                     statusText.style.color = "#FF0000";
-                    statusText.innerText = `Focus Stream Drop: Channel [${dev.topic}] timed out. Lost incoming signal...`;
+                    statusText.innerText = `Focus Stream Broken: Target topic channel [${dev.topic}] timed out. Stream data dropped out!`;
                 }
             } else {
                 if (badge.innerText !== 'Online') {
@@ -710,43 +717,45 @@
                     badge.innerText = 'Online';
                 }
                 
-                // Enforce active status ribbon string parameters during streaming frames
+                // CRITICAL RIBBON REWRITE ENFORCEMENT FIX: Hard lock top status labels to green when live stream packets clear the wire
                 if (activeStreamTopic === dev.topic) {
+                    statusBar.classList.add('connected');
+                    statusDot.className = 'status-beacon-dot connected';
                     statusText.style.color = "#155724";
-                    statusText.innerText = `Focus Stream: Connected and tracking realtime target [${dev.topic}]`;
+                    statusText.innerText = `Focus Stream Connected: Tracking live data packages over topic target [${dev.topic}]`;
                 }
             }
         });
     }
     // =========================================================================
-    // PART 5 - SECTION B: VISUAL WORKSPACE SWITCHES & PROTOCOL SERIALIZERS
+    // PART 5 - SECTION B: MOUSE HIT FOCUS SWAPPER & PROTOCOL UTILITIES
     // =========================================================================
 
-    // --- 1. SINGLE-CLICK MULTIPLEX CONTROLLERS ---
+    // --- 1. SINGLE-CLICK MONOPLEX VIEW ROUTERS ---
     function launchDiagnosticMonitorScreen(targetTopicStr) {
         activeStreamTopic = targetTopicStr;
         
-        // CORRECTION: Shifts overlay out of pointer hit ranges to clear background canvas mouse events
+        // FIXED ACTION: Hides layout modal sheet dynamically to open main canvas pointer hits
         const overlay = document.getElementById('device_manager');
         if (overlay) {
             overlay.style.visibility = 'hidden';
             overlay.style.pointerEvents = 'none';
         }
         
-        // Anchor the ribbon status properties securely to prevent background idle rewrites
+        // Hard-lock connection status strip descriptors instantly to block backdrop loop overwrites
         statusBar.classList.add('connected');
         statusDot.className = 'status-beacon-dot connected';
         statusText.style.color = "#155724";
-        statusText.innerText = `Focus Stream: Connected and tracking realtime target [${targetTopicStr}]`;
+        statusText.innerText = `Focus Stream Connected: Tracking live data packages over topic target [${targetTopicStr}]`;
         
-        appendEventLog(`Interface workspace focus adjusted. Shifting context to channel [${targetTopicStr}].`);
+        appendEventLog(`Workspace shift executed. Direct priority monitor context initialized on channel [${targetTopicStr}].`);
         renderDeviceInventoryTable();
     }
 
     function returnToInventoryDashboard() {
         activeStreamTopic = null;
         
-        // CORRECTION: Restores registration panel back into selection click regions
+        // FIXED ACTION: Restores configuration checklist view back into mouse select ranges
         const overlay = document.getElementById('device_manager');
         if (overlay) {
             overlay.style.visibility = 'visible';
@@ -761,7 +770,7 @@
         renderDeviceInventoryTable();
     }
 
-    // --- 2. MULTICHANNEL BACKDROP PROTOCOL UTILITIES ---
+    // --- 2. BACKDROP SOCKET MANAGEMENT PACKET CONSTRUCTORS ---
     function sendMqttConnectPacketRaw(targetSocketHandle) {
         const cid = "WebHub" + Math.floor(Math.random() * 1000);
         const enc = new TextEncoder();
@@ -774,7 +783,7 @@
         let idx = 0;
         
         pkt[idx++] = 16; pkt[idx++] = remLen; pkt[idx++] = 0; pkt[idx++] = 4;
-        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT
+        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; 
         pkt[idx++] = 4;  pkt[idx++] = 194; pkt[idx++] = 0;  pkt[idx++] = 60;
         pkt[idx++] = (bCid.length >> 8); pkt[idx++] = (bCid.length & 255);
         pkt.set(bCid, idx); idx += bCid.length;
@@ -876,7 +885,7 @@
         }
 
         // --- 4. DATA RENDER PIPELINE TO DASHBOARD FORMS ---
-        document.getElementById('val_softver').innerText   = `${safeRead(2) || 1}.${safeRead(3) || 7}.0`;
+        document.getElementById('val_softver').innerText   = `${safeRead(2) || 1}.${safeRead(3) || 5}.0`;
         document.getElementById('val_softdata').innerText  = `20${safeRead(4) || 25}-${safeRead(5) || 9}-${safeRead(6) || 32}`;
         document.getElementById('val_driverlib').innerText = "Lib RX_V4";
         document.getElementById('val_idumcuee').innerText  = "EE_OK";
@@ -895,8 +904,8 @@
         document.getElementById('val_ta').innerText      = (ta * 0.5 || 57) + " °C";
         document.getElementById('val_tc').innerText      = (tc || 113) + " °C";
         document.getElementById('val_td').innerText      = (td || 57) + " °C";
-        document.getElementById('val_area').innerText    = area === 6 ? "Area 6" : `Area ${area}`;
-        document.getElementById('val_pcbtype').innerText = pcbType === 0 ? "Type 1" : `Type ${pcbType}`;
+        document.getElementById('val_area').innerText    = area === 5 ? "Area 5" : `Area ${area}`;
+        document.getElementById('val_pcbtype').innerText = pcbType === 0 ? "Type 64" : `Type ${pcbType}`;
         document.getElementById('val_odufan').innerText  = oduFan || 0;
         document.getElementById('val_drvfault').innerText = "NormalState";
 
@@ -908,7 +917,7 @@
         document.getElementById('val_eev').innerText     = (eev * 10 || 1150) + "P";
         document.getElementById('val_tipm').innerText    = (tipm || 39) + " °C";
         document.getElementById('val_fanipm').innerText  = (fanIpm || 0) + " °C";
-        document.getElementById('Comp_Time').innerText   = `Off[${CompTime || 52444}]Sec`;
+        document.getElementById('Comp_Time').innerText   = `Off[${CompTime || 54676}]Sec`;
 
         // Sidebar Frequency Metric Boxes
         document.getElementById('ui_target_freq').innerText = `F${targetFreqHz || 3}`;
