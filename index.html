@@ -458,7 +458,7 @@
 
                 <div class="brand-logo-panel">
                     <div class="brand-logo-text">Meg</div>
-                    <div id="lbl_branding_date" class="brand-sub-date">03-06-2026 01:21:45 AM</div>
+                    <div id="lbl_branding_date" class="brand-sub-date">03-06-2026 11:02:15 AM</div>
                 </div>
             </div>
         </div>
@@ -483,16 +483,16 @@
     const MQTT_USER = "Amber_IOT";
     const MQTT_PASS = "Amber@123";
     
-    let activeStreamTopic = null; // Active topic targeted for UI telemetry view
+    let activeStreamTopic = null; // Currently targeted channel focus
     let backgroundDiscoverySockets = {};
-    let activeDevicesHeartbeats = {}; // Stores last frame timestamp per topic string
+    let activeDevicesHeartbeats = {}; // Tracks packet arrival timestamp values per topic
 
     setInterval(() => {
         const now = new Date();
         document.getElementById('live_clock').innerText = now.toLocaleTimeString();
         document.getElementById('lbl_branding_date').innerText = now.toLocaleString();
         
-        // Background watch loop for dynamic status badge evaluations every second
+        // Evaluates fallback timeouts across backgrounds records every 1000ms
         evaluateAllDeviceHeartbeats();
     }, 1000);
 
@@ -514,10 +514,10 @@
         eventBox.scrollTop = eventBox.scrollHeight;
     }
     // =========================================================================
-    // PART 5 - SECTION A: DATA ENGINE, HEARTBEAT BADGES, & SINGLE-CLICK MONITOR
+    // PART 5 - SECTION A: STORAGE HANDLERS, INSTANT BADGES, & PERSISTENT STATUS
     // =========================================================================
 
-    // --- 1. LOCAL STORAGE DATABASE TRANSACTION HANDLERS ---
+    // --- 1. STORAGE TRANS-REGISTRY HANDLERS ---
     function fetchDevicesFromRegistry() {
         const stored = localStorage.getItem('MEGMEET_NODES_DB');
         if (stored) return JSON.parse(stored);
@@ -538,7 +538,7 @@
         const topic = topicEl.value.trim();
 
         if (!name || !topic) {
-            alert("Validation Error: Configuration label or routing topic cannot be empty.");
+            alert("Validation Error: System labels and target topics cannot be left blank.");
             return;
         }
 
@@ -551,11 +551,11 @@
         
         initializeBackgroundDeviceScanner(topic);
         renderDeviceInventoryTable();
-        appendEventLog(`Successfully added asset [${name}] to network database mapping.`);
+        appendEventLog(`Asset node configuration entry [${name}] committed to registers.`);
     }
 
     function purgeDeviceEntry(event, index, topic) {
-        event.stopPropagation(); // Stops table row click event bubble from shifting monitor view focus
+        event.stopPropagation(); // Halts row single-click focus context switch trigger
         const devices = fetchDevicesFromRegistry();
         devices.splice(index, 1);
         localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(devices));
@@ -606,13 +606,12 @@
                 <td><button class="win-classic-btn" style="padding:1px 6px; color:#800000; font-size:10px;" onclick="purgeDeviceEntry(event, ${idx}, '${dev.topic}')">Delete</button></td>
             `;
             
-            // Single-click layout activation shunts mouse directly to monitoring view focus
             tr.onclick = () => launchDiagnosticMonitorScreen(dev.topic);
             tbody.appendChild(tr);
         });
     }
 
-    // --- 3. BACKGROUND CONTINUOUS TUNNEL DISCOVERY WATCHDOG ---
+    // --- 3. ASYNCHRONOUS PACKET ARRIVAL SCANNER ---
     function initializeParallelDiscoveryNetwork() {
         const devices = fetchDevicesFromRegistry();
         devices.forEach(dev => {
@@ -636,15 +635,15 @@
             const payload = new Uint8Array(event.data);
             if (payload.length === 0) return;
             
-            // Extract the true packet message type header state byte
-            const packetType = payload[0] >> 4;
+            const headerByte = payload[0];
+            const packetType = headerByte >> 4;
 
             if (packetType === 2) { 
                 sendMqttSubscribePacketRaw(tempWs, topicStr);
             }
 
             if (packetType === 3) {
-                // FIXED BUG: Heartbeat register now ticks forward for backdrop topics flawlessly
+                // FIXED BUG: Heartbeat sets immediately upon frame interception for rapid online flags
                 activeDevicesHeartbeats[topicStr] = Date.now();
                 
                 const b64Key = btoa(topicStr).replace(/=/g, '');
@@ -654,7 +653,7 @@
                     badge.innerText = 'Online';
                 }
 
-                // Demux binary arrays straight down to form textboxes if this topic is focused
+                // If topic matches focused view, decode array data straight down into input cells
                 if (activeStreamTopic === topicStr) {
                     let idx = 1; let remLen = 0; let multiplier = 1;
                     do { remLen += (payload[idx] & 127) * multiplier; multiplier *= 128; } while ((payload[idx++] & 128) !== 0);
@@ -670,14 +669,13 @@
 
         tempWs.onclose = () => {
             delete backgroundDiscoverySockets[topicStr];
-            // Asynchronous background pinger auto-reconnects drop-outs down the line safely
             setTimeout(() => initializeBackgroundDeviceScanner(topicStr), 4000);
         };
 
         backgroundDiscoverySockets[topicStr] = tempWs;
     }
 
-    // --- 4. STRICT DUAL-STATE 5-SECOND watchdog MONITOR ---
+    // --- 4. STRICT 5-SECOND watchdog MONITOR ---
     function evaluateAllDeviceHeartbeats() {
         const devices = fetchDevicesFromRegistry();
         devices.forEach(dev => {
@@ -687,7 +685,6 @@
 
             const lastSeen = activeDevicesHeartbeats[dev.topic];
             if (!lastSeen) {
-                // Initial syncing indicator default block
                 if (badge.innerText !== 'Syncing...') {
                     badge.className = 'status-badge-node status-node-syncing';
                     badge.innerText = 'Syncing...';
@@ -695,49 +692,61 @@
                 return;
             }
 
-            // TRUE 5-SECOND DUAL STATE TIMEOUT WATCHDOG ENGINE
             const elapsedSec = (Date.now() - lastSeen) / 1000;
             if (elapsedSec > 5) {
                 if (badge.innerText !== 'Offline') {
                     badge.className = 'status-badge-node status-node-offline';
                     badge.innerText = 'Offline';
                 }
+                
+                // FIXED BUG: Only updates status text to idle if the active running topic itself drops out
+                if (activeStreamTopic === dev.topic && !statusBar.classList.contains('dropped-out')) {
+                    statusText.style.color = "#FF0000";
+                    statusText.innerText = `Focus Stream Drop: Channel [${dev.topic}] timed out. Lost incoming signal...`;
+                }
             } else {
                 if (badge.innerText !== 'Online') {
                     badge.className = 'status-badge-node status-node-online';
                     badge.innerText = 'Online';
                 }
+                
+                // Enforce active status ribbon string parameters during streaming frames
+                if (activeStreamTopic === dev.topic) {
+                    statusText.style.color = "#155724";
+                    statusText.innerText = `Focus Stream: Connected and tracking realtime target [${dev.topic}]`;
+                }
             }
         });
     }
     // =========================================================================
-    // PART 5 - SECTION B: INTERFACE FOCUS SWITCH ENGINE & SOCKET DRIVERS
+    // PART 5 - SECTION B: VISUAL WORKSPACE SWITCHES & PROTOCOL SERIALIZERS
     // =========================================================================
 
-    // --- 1. SINGLE-CLICK VIEW ROUTING SWITCHES ---
+    // --- 1. SINGLE-CLICK MULTIPLEX CONTROLLERS ---
     function launchDiagnosticMonitorScreen(targetTopicStr) {
         activeStreamTopic = targetTopicStr;
         
-        // CORRECTION: Shifts overlay window out of pointer hit ranges to clear main UI mouse events
+        // CORRECTION: Shifts overlay out of pointer hit ranges to clear background canvas mouse events
         const overlay = document.getElementById('device_manager');
         if (overlay) {
             overlay.style.visibility = 'hidden';
             overlay.style.pointerEvents = 'none';
         }
         
-        // Update connection bar metadata status labels
+        // Anchor the ribbon status properties securely to prevent background idle rewrites
         statusBar.classList.add('connected');
         statusDot.className = 'status-beacon-dot connected';
+        statusText.style.color = "#155724";
         statusText.innerText = `Focus Stream: Connected and tracking realtime target [${targetTopicStr}]`;
         
-        appendEventLog(`Workspace shifting view context to active channel: [${targetTopicStr}].`);
+        appendEventLog(`Interface workspace focus adjusted. Shifting context to channel [${targetTopicStr}].`);
         renderDeviceInventoryTable();
     }
 
     function returnToInventoryDashboard() {
         activeStreamTopic = null;
         
-        // CORRECTION: Restores asset configuration register table back into pointer selection capture
+        // CORRECTION: Restores registration panel back into selection click regions
         const overlay = document.getElementById('device_manager');
         if (overlay) {
             overlay.style.visibility = 'visible';
@@ -746,12 +755,13 @@
         
         statusBar.classList.remove('connected');
         statusDot.className = 'status-beacon-dot';
-        statusText.innerText = "Pipeline Idle: Please choose an active node path from your Asset Dashboard window...";
+        statusText.style.color = "#000000";
+        statusText.innerText = "Pipeline Idle: Please choose a node path from your Asset Dashboard window...";
         
         renderDeviceInventoryTable();
     }
 
-    // --- 2. BACKDROP SOCKET MANAGEMENT PACKET CONSTRUCTORS ---
+    // --- 2. MULTICHANNEL BACKDROP PROTOCOL UTILITIES ---
     function sendMqttConnectPacketRaw(targetSocketHandle) {
         const cid = "WebHub" + Math.floor(Math.random() * 1000);
         const enc = new TextEncoder();
@@ -764,7 +774,7 @@
         let idx = 0;
         
         pkt[idx++] = 16; pkt[idx++] = remLen; pkt[idx++] = 0; pkt[idx++] = 4;
-        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; 
+        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT
         pkt[idx++] = 4;  pkt[idx++] = 194; pkt[idx++] = 0;  pkt[idx++] = 60;
         pkt[idx++] = (bCid.length >> 8); pkt[idx++] = (bCid.length & 255);
         pkt.set(bCid, idx); idx += bCid.length;
@@ -866,7 +876,7 @@
         }
 
         // --- 4. DATA RENDER PIPELINE TO DASHBOARD FORMS ---
-        document.getElementById('val_softver').innerText   = `${safeRead(2) || 1}.${safeRead(3) || 3}.0`;
+        document.getElementById('val_softver').innerText   = `${safeRead(2) || 1}.${safeRead(3) || 7}.0`;
         document.getElementById('val_softdata').innerText  = `20${safeRead(4) || 25}-${safeRead(5) || 9}-${safeRead(6) || 32}`;
         document.getElementById('val_driverlib').innerText = "Lib RX_V4";
         document.getElementById('val_idumcuee').innerText  = "EE_OK";
