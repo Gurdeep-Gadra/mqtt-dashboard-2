@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Megmeet_Amber_Monitor Serverless Enterprise Hub</title>
+    <title>Megmeet_Amber_Monitor Multichannel Asset Hub</title>
     <style>
         /* Exact Windows Classic Forms Background Layout Theme */
         body { 
@@ -17,35 +17,12 @@
             user-select: none;
         }
 
-        /* --- NEW USER IDENTITY AUTH OVERLAYS --- */
-        .auth-gate-wrapper {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #D4D0C8;
-            display: flex; justify-content: center; align-items: center;
-            z-index: 99999;
-        }
-
-        .auth-win-frame {
-            background-color: #D4D0C8;
-            border: 2px solid #FFFFFF;
-            border-right-color: #808080; border-bottom-color: #808080;
-            width: 320px; padding: 12px;
-            box-shadow: 3px 3px 8px rgba(0,0,0,0.2);
-        }
-
-        .auth-header-strip {
-            background-color: #000080; color: #FFFFFF;
-            padding: 3px 6px; font-weight: bold; font-size: 11px;
-            margin-bottom: 12px;
-        }
-
-        /* --- NEW DEVICE MANAGEMENT LAYOUTS --- */
+        /* --- DEVICE ASSET ENGINE PANEL STYLES --- */
         .device-mgr-wrapper {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #D4D0C8;
-            display: none; justify-content: center; align-items: center;
+            display: flex; justify-content: center; align-items: center;
             z-index: 88888;
         }
 
@@ -53,8 +30,14 @@
             background-color: #D4D0C8;
             border: 2px solid #FFFFFF;
             border-right-color: #808080; border-bottom-color: #808080;
-            width: 520px; padding: 12px;
+            width: 600px; padding: 12px;
             box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .auth-header-strip {
+            background-color: #000080; color: #FFFFFF;
+            padding: 3px 6px; font-weight: bold; font-size: 11px;
+            margin-bottom: 12px;
         }
 
         .device-data-table {
@@ -72,11 +55,24 @@
             border: 1px solid #D4D0C8; padding: 4px; cursor: pointer;
         }
 
-        .device-data-table tr:hover td {
+        .device-data-table tr.active-row td {
             background-color: #000080; color: #FFFFFF;
         }
 
-        /* Standard Native Form Element Elements */
+        /* --- MULTICHANNEL REALTIME STATUS BADGES --- */
+        .status-badge-node {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 1px 6px;
+            border: 1px solid #808080;
+            text-align: center;
+            display: inline-block;
+            min-width: 60px;
+        }
+        .status-node-syncing { background-color: #FFFFE0; color: #B27A00; }
+        .status-node-online  { background-color: #D4EDDA; color: #155724; border-color: #C3E6CB; }
+        .status-node-offline { background-color: #F8D7DA; color: #721C24; border-color: #F5C6CB; }
+
         .form-txt-input {
             background-color: #FFFFFF; border: 1px solid #808080;
             border-right-color: #FFFFFF; border-bottom-color: #FFFFFF;
@@ -122,7 +118,7 @@
         .param-value-input {
             background-color: #FFFFFF; border: 1px solid #808080;
             border-right-color: #FFFFFF; border-bottom-color: #FFFFFF;
-            color: #0000ff; padding: 1px 4px; font-family: monospace;
+            color: #0000FF; padding: 1px 4px; font-family: monospace;
             font-size: 11px; font-weight: bold; flex: 1; height: 14px; display: flex; align-items: center;
         }
 
@@ -259,25 +255,7 @@
 </head>
 <body>
 
-    <!-- 1. OPERATOR SECURITY AUTHENTICATION GATE -->
-    <div id="auth_gate" class="auth-gate-wrapper">
-        <div class="auth-win-frame">
-            <div class="auth-header-strip">System Operator Login Validation</div>
-            <div style="margin-bottom: 8px;">
-                <label style="display:block; margin-bottom:2px;">Operator ID / Username:</label>
-                <input type="text" id="login_user" class="form-txt-input" value="admin">
-            </div>
-            <div style="margin-bottom: 12px;">
-                <label style="display:block; margin-bottom:2px;">Security Key / Password:</label>
-                <input type="password" id="login_pass" class="form-txt-input" value="1234">
-            </div>
-            <div style="display: flex; justify-content: flex-end;">
-                <button class="win-classic-btn" onclick="executeUserAuthentication()">Validate Account</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. SERVERLESS LOCALSTORAGE DEVICE INVENTORY INVENTORY MODULE -->
+    <!-- 1. MULTICHANNEL NETWORK INVENTORY MANAGEMENT OVERLAY -->
     <div id="device_manager" class="device-mgr-wrapper">
         <div class="device-mgr-frame">
             <div class="auth-header-strip">MQTT Target Diagnostic Unit Asset Inventory Register</div>
@@ -286,13 +264,14 @@
             <table class="device-data-table">
                 <thead>
                     <tr>
-                        <th>Hardware Node Identity Descriptor</th>
-                        <th>MQTT Topic Routing Link</th>
-                        <th>Action</th>
+                        <th style="width: 45%;">Hardware Node Identity Descriptor</th>
+                        <th style="width: 30%;">MQTT Topic Routing Link</th>
+                        <th style="width: 15%;">Status</th>
+                        <th style="width: 10%;">Action</th>
                     </tr>
                 </thead>
                 <tbody id="device_inventory_tbody">
-                    <!-- Dynamic database inventory inserts go here -->
+                    <!-- Dynamic multi-channel status table rows injected here -->
                 </tbody>
             </table>
 
@@ -313,18 +292,17 @@
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #808080; padding-top: 8px;">
-                <button class="win-classic-btn" style="color: #800000;" onclick="executeOperatorLogout()">Log Out Account</button>
-                <span style="font-size:10px; color:#555555; font-style:italic;">Click a row above to activate the live monitoring screen.</span>
+            <div style="display: flex; justify-content: flex-end; align-items: center; border-top: 1px dashed #808080; padding-top: 8px;">
+                <span style="font-size:11px; color:#333333; font-style:italic; font-weight:bold;">Double-click a row above to access its Live Telemetry screen.</span>
             </div>
         </div>
     </div>
 
-    <!-- MAIN SYSTEM TELEMETRY STRIP -->
+    <!-- MAIN SYSTEM WORKING BAR STRIP -->
     <div id="status_bar" class="broker-status-strip">
         <div>
             <div id="status_dot" class="status-beacon-dot"></div>
-            <span id="status_text">Pipeline Locked: Awaiting secure profile verification...</span>
+            <span id="status_text">Pipeline Idle: Please choose an active node path from your Asset Dashboard...</span>
         </div>
         <div style="display:flex; align-items:center; gap:12px;">
             <button class="win-classic-btn" style="padding: 1px 6px; font-size:10px;" onclick="returnToInventoryDashboard()">Asset Menu</button>
@@ -332,11 +310,11 @@
         </div>
     </div>
 
-    <!-- MAIN MONITOR WORKSPACE SPLIT CONTAINER -->
+    <!-- MAIN DASHBOARD SPLIT WORKSPACE WORKVIEW -->
     <div class="monitor-workspace-split">
         <div class="left-telemetry-column">
 
-            <!-- EVENT TEXT VIEWPORT BLOCK -->
+            <!-- EVENT LIVE MONITORING SCROLL FEED -->
             <div class="group-box-frame" style="height: 115px; overflow: hidden; margin-bottom: 6px;">
                 <div class="group-box-title">Event</div>
                 <div id="event_log_stream" style="height: 105px; overflow-y: auto; font-family: 'Tahoma', Arial, sans-serif; font-size: 11px; white-space: pre-wrap; padding-left: 2px; color: #000000; line-height: 1.3;"></div>
@@ -475,7 +453,6 @@
                     <div>Fan Type: <span id="lbl_fantype" style="font-weight: bold; color: #000000;">--</span></div>
                 </div>
 
-                <!-- EMBEDDED DESIGN LABEL -->
                 <div class="brand-logo-panel">
                     <div class="brand-logo-text">Meg</div>
                     <div id="lbl_branding_date" class="brand-sub-date">03-06-2026 01:21:45 AM</div>
@@ -484,7 +461,7 @@
         </div>
     </div> <!-- End of monitor-workspace-split -->
 
-    <!-- DUAL LOG VIEWPORT FRAMES -->
+    <!-- DUAL LOG VIEWPORT PANELS -->
     <div class="logger-panel-split">
         <div class="terminal-box-frame">
             <div class="terminal-box-header">live_packet_stream.log (Parallel Stream Engine Decodes)</div>
@@ -497,22 +474,27 @@
     </div>
 
     <script>
-    // --- STATIC HARDWARE CONSTANTS ---
+    // --- SERVERLESS NETWORK LAYER LAYOUT PROFILE ---
     const BROKER_HOST = "e897bc6d6145492e99f4a7f09df8ffd9.s1.eu.hivemq.cloud";
     const WEBSOCKET_PORT = 8884;
     const MQTT_USER = "Amber_IOT";
     const MQTT_PASS = "Amber@123";
-    let TOPIC_SUBSCRIBE = "TTW/LAB1"; // Managed dynamically via database
+    
+    let activeStreamTopic = null; // Topic dedicated to the main live dashboard layout view
+    let mainDashboardWs = null;   // WebSocket handle for the opened focus diagnostic window
+    let mainDashboardPingTimer = null;
 
-    let ws, pingTimer;
-    const statusBar = document.getElementById('status_bar');
-    const statusDot = document.getElementById('status_dot');
-    const statusText = document.getElementById('status_text');
+    // Discovery layer sockets register mapping key-value sets
+    let backgroundDiscoverySockets = {};
+    let activeDevicesHeartbeats = {}; // Tracks timestamp of the last verified frame packet per topic array
 
     setInterval(() => {
         const now = new Date();
         document.getElementById('live_clock').innerText = now.toLocaleTimeString();
         document.getElementById('lbl_branding_date').innerText = now.toLocaleString();
+        
+        // Background watch module loops through registered devices to transition timestamps after 5000ms
+        evaluateAllDeviceHeartbeats();
     }, 1000);
 
     function appendLine(text, cssClass) {
@@ -532,86 +514,22 @@
         eventBox.innerText += `${nowStr} >> ${text}\n`;
         eventBox.scrollTop = eventBox.scrollHeight;
     }
+    // ============================================================================
+    // PART 5 - SECTION A: MULTI-CHANNEL PARALLEL SOCKETS & HEARTBEAT DETECTION ENGINE
+    // ============================================================================
 
-    function connectNativeMQTT() {
-        appendEventLog("MegMeet pipeline starting subscription on: " + TOPIC_SUBSCRIBE);
-        const url = `wss://${BROKER_HOST}:${WEBSOCKET_PORT}/mqtt`;
-        ws = new WebSocket(url, ["mqtt"]);
-        ws.binaryType = "arraybuffer";
-
-        ws.onopen = () => { sendMqttConnectPacket(); };
-        ws.onclose = () => {
-            clearInterval(pingTimer);
-            statusBar.classList.remove('connected');
-            statusDot.classList.remove('connected');
-            statusText.innerText = "Status: Connection down. Reconnecting...";
-            setTimeout(connectNativeMQTT, 4000);
-        };
-        ws.onmessage = (event) => { handleIncomingMqttFrame(event); };
-    }
-    // ============================================================
-    // PART 5 - SECTION A: DATABASE CONTROLLERS & SECURE VALIDATORS
-    // ============================================================
-
-    // --- 1. USER ACCOUNT AUTHENTICATION ENGINE ---
-    function executeUserAuthentication() {
-        const uInput = document.getElementById('login_user').value;
-        const pInput = document.getElementById('login_pass').value;
-
-        // Structured matching check against credentials criteria
-        if (uInput === "admin" && pInput === "1234") {
-            document.getElementById('auth_gate').style.display = 'none';
-            document.getElementById('device_manager').style.display = 'flex';
-            appendEventLog("Operator 'admin' authenticated. Loading node inventory database...");
-            renderDeviceInventoryTable();
-        } else {
-            alert("CRITICAL ERROR: Access Denied. Invalid operator identifiers.");
-        }
-    }
-
-    function executeOperatorLogout() {
-        if(ws) ws.close();
-        document.getElementById('device_manager').style.display = 'none';
-        document.getElementById('auth_gate').style.display = 'flex';
-        statusBar.classList.remove('connected');
-        statusDot.classList.remove('connected');
-        statusText.innerText = "Pipeline Locked: Awaiting secure profile verification...";
-        appendEventLog("Operator logged out safely. Network loop frozen.");
-    }
-
-    // --- 2. LOCALSTORAGE DATABASE TRANSACTION ENGINE ---
+    // --- 1. LOCAL PERSISTENT DATABASE ENGINE MANAGERS ---
     function fetchDevicesFromRegistry() {
         const stored = localStorage.getItem('MEGMEET_NODES_DB');
-        if (stored) {
-            return JSON.parse(stored);
-        }
-        // Fallback default dataset profile array mapping if storage is empty
+        if (stored) return JSON.parse(stored);
+        
         const defaultNodes = [
             { name: "Megmeet_ODU_LAB1", topic: "TTW/LAB1" },
-            { name: "Megmeet_ODU_LAB2", topic: "TTW/LAB2" }
+            { name: "Megmeet_ODU_LAB2", topic: "TTW/LAB2" },
+            { name: "Test 2", topic: "TTW/LAB3" }
         ];
         localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(defaultNodes));
         return defaultNodes;
-    }
-
-    function renderDeviceInventoryTable() {
-        const tbody = document.getElementById('device_inventory_tbody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-
-        const devices = fetchDevicesFromRegistry();
-        devices.forEach((dev, idx) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="font-weight:bold; color:#000080;">🖥️ ${dev.name}</td>
-                <td style="font-family:monospace;">${dev.topic}</td>
-                <td><button class="win-classic-btn" style="padding:1px 6px; color:#800000; font-size:10px;" onclick="purgeDeviceEntry(event, ${idx})">Delete</button></td>
-            `;
-            
-            // Row selection callback sets up live stream focus hook
-            tr.onclick = () => launchDiagnosticMonitorScreen(dev.topic);
-            tbody.appendChild(tr);
-        });
     }
 
     function commitDeviceToDatabase() {
@@ -621,7 +539,7 @@
         const topic = topicEl.value.trim();
 
         if (!name || !topic) {
-            alert("Validation Failure: Labels and routing paths cannot be blank.");
+            alert("Validation Error: Configuration fields cannot be left empty.");
             return;
         }
 
@@ -631,35 +549,199 @@
         
         nameEl.value = '';
         topicEl.value = '';
+        
+        // Boot up an isolated background listener loop for the new device asset entry
+        initializeBackgroundDeviceScanner(topic);
         renderDeviceInventoryTable();
-        appendEventLog(`Successfully saved asset entry [${name}] to persistent system registers.`);
     }
 
-    function purgeDeviceEntry(event, index) {
-        event.stopPropagation(); // Prevents clicking delete from triggering table monitor row select launch
+    function purgeDeviceEntry(event, index, topic) {
+        event.stopPropagation(); // Stops deletion from launching focus monitor grid screen
         const devices = fetchDevicesFromRegistry();
         devices.splice(index, 1);
         localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(devices));
+        
+        // Safely detach the background listening socket handle for the deleted topic asset path
+        if (backgroundDiscoverySockets[topic]) {
+            try { backgroundDiscoverySockets[topic].close(); } catch(e){}
+            delete backgroundDiscoverySockets[topic];
+        }
+        delete activeDevicesHeartbeats[topic];
+        
         renderDeviceInventoryTable();
     }
 
-    function launchDiagnosticMonitorScreen(targetTopic) {
-        TOPIC_SUBSCRIBE = targetTopic;
+    // --- 2. MULTI-CHANNEL REFRESH ENGINE BINDINGS ---
+    function renderDeviceInventoryTable() {
+        const tbody = document.getElementById('device_inventory_tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        const devices = fetchDevicesFromRegistry();
+        devices.forEach((dev, idx) => {
+            const tr = document.createElement('tr');
+            
+            // Highlight row background if currently focused in the live telemetry layout view
+            if (activeStreamTopic === dev.topic) {
+                tr.className = 'active-row';
+            }
+
+            // Extract status value markers or default to yellow 'syncing' message layout indicators
+            let statusMarkupStr = `<span id="status_badge_${btoa(dev.topic)}" class="status-badge-node status-node-syncing">Syncing...</span>`;
+            const lastSeen = activeDevicesHeartbeats[dev.topic];
+            
+            if (lastSeen) {
+                const elapsedSec = (Date.now() - lastSeen) / 1000;
+                if (elapsedSec <= 5) {
+                    statusMarkupStr = `<span id="status_badge_${btoa(dev.topic)}" class="status-badge-node status-node-online">Online</span>`;
+                } else {
+                    statusMarkupStr = `<span id="status_badge_${btoa(dev.topic)}" class="status-badge-node status-node-offline">Offline</span>`;
+                }
+            }
+
+            tr.innerHTML = `
+                <td style="font-weight:bold; color:#000080;">🖥️ ${dev.name}</td>
+                <td style="font-family:monospace;">${dev.topic}</td>
+                <td>${statusMarkupStr}</td>
+                <td><button class="win-classic-btn" style="padding:1px 6px; color:#800000; font-size:10px;" onclick="purgeDeviceEntry(event, ${idx}, '${dev.topic}')">Delete</button></td>
+            `;
+            
+            // Double click trigger launches focus real-time monitoring panel screen
+            tr.ondblclick = () => launchDiagnosticMonitorScreen(dev.topic);
+            tbody.appendChild(tr);
+        });
+    }
+
+    // --- 3. BACKGROUND SIGNAL PULSE DETECTORS ---
+    function initializeParallelDiscoveryNetwork() {
+        appendEventLog("Asset register list loaded straight from storage. Provisioning background scanner web sockets...");
+        const devices = fetchDevicesFromRegistry();
+        
+        devices.forEach(dev => {
+            initializeBackgroundDeviceScanner(dev.topic);
+        });
+        
+        renderDeviceInventoryTable();
+    }
+
+    function initializeBackgroundDeviceScanner(topicStr) {
+        if (backgroundDiscoverySockets[topicStr]) return; // Stop redundant connection assignments
+
+        const url = `wss://${BROKER_HOST}:${WEBSOCKET_PORT}/mqtt`;
+        const tempWs = new WebSocket(url, ["mqtt"]);
+        tempWs.binaryType = "arraybuffer";
+
+        tempWs.onopen = () => {
+            sendMqttConnectPacketRaw(tempWs);
+        };
+
+        tempWs.onmessage = (event) => {
+            const payload = new Uint8Array(event.data);
+            if (payload.length === 0) return;
+            const packetType = payload[0] >> 4;
+
+            if (packetType === 2) { // CONNACK HANDSHAKE OK
+                sendMqttSubscribePacketRaw(tempWs, topicStr);
+            }
+
+            if (packetType === 3) { // TELEMETRY FRAME RECEIVED OVER WIRE
+                // Tick heartbeat timestamp marker row instantly
+                activeDevicesHeartbeats[topicStr] = Date.now();
+                
+                // Live visual grid text update shunts
+                const badge = document.getElementById(`status_badge_${btoa(topicStr)}`);
+                if (badge && !badge.classList.contains('status-node-online')) {
+                    badge.className = 'status-badge-node status-node-online';
+                    badge.innerText = 'Online';
+                }
+
+                // If this backdrop topic matches our focus viewer window, demux binary array straight down to form fields
+                if (activeStreamTopic === topicStr) {
+                    let idx = 1; let remLen = 0; let multiplier = 1;
+                    do { remLen += (payload[idx] & 127) * multiplier; multiplier *= 128; } while ((payload[idx++] & 128) !== 0);
+                    const topicLen = (payload[idx++] << 8) + payload[idx++]; idx += topicLen;
+                    const rawDataBytes = payload.subarray(idx);
+                    
+                    if (rawDataBytes.length >= 40) {
+                        parseMegmeetCorePacket(rawDataBytes);
+                    }
+                }
+            }
+        };
+
+        tempWs.onclose = () => {
+            delete backgroundDiscoverySockets[topicStr];
+            // Schedule an isolated backdrop reconnect pinger after 5000ms
+            setTimeout(() => initializeBackgroundDeviceScanner(topicStr), 5000);
+        };
+
+        backgroundDiscoverySockets[topicStr] = tempWs;
+    }
+
+    function evaluateAllDeviceHeartbeats() {
+        const devices = fetchDevicesFromRegistry();
+        devices.forEach(dev => {
+            const badge = document.getElementById(`status_badge_${btoa(dev.topic)}`);
+            if (!badge) return;
+
+            const lastSeen = activeDevicesHeartbeats[dev.topic];
+            if (!lastSeen) {
+                if (badge.innerText !== 'Syncing...') {
+                    badge.className = 'status-badge-node status-node-syncing';
+                    badge.innerText = 'Syncing...';
+                }
+                return;
+            }
+
+            const elapsedSec = (Date.now() - lastSeen) / 1000;
+            if (elapsedSec > 5) {
+                if (badge.innerText !== 'Offline') {
+                    badge.className = 'status-badge-node status-node-offline';
+                    badge.innerText = 'Offline';
+                }
+            } else {
+                if (badge.innerText !== 'Online') {
+                    badge.className = 'status-badge-node status-node-online';
+                    badge.innerText = 'Online';
+                }
+            }
+        });
+    }
+    // =========================================================================
+    // PART 5 - SECTION B: INTERFACE FOCUS ROUTER & PROTOCOL TRANSMITTERS
+    // =========================================================================
+
+    // --- 1. SYSTEM MONITOR MULTIPLEX ROUTING HOOKS ---
+    function launchDiagnosticMonitorScreen(targetTopicStr) {
+        activeStreamTopic = targetTopicStr;
+        
+        // Hide the inventory management backdrop panel curtain sheet view
         document.getElementById('device_manager').style.display = 'none';
-        connectNativeMQTT();
+        
+        // Update horizontal status strip color profiles and tracking parameters
+        statusBar.classList.add('connected');
+        statusDot.className = 'status-beacon-dot connected';
+        statusText.innerText = `Focus Stream: Connected and tracking realtime target [${targetTopicStr}]`;
+        
+        appendEventLog(`Workspace updated. Interface stream focus shifted to channel [${targetTopicStr}].`);
+        renderDeviceInventoryTable();
     }
 
     function returnToInventoryDashboard() {
-        if(ws) ws.close();
+        activeStreamTopic = null;
+        
+        // Restore overlay block grid dashboard sheet view
         document.getElementById('device_manager').style.display = 'flex';
+        
         statusBar.classList.remove('connected');
-        statusDot.classList.remove('connected');
-        statusText.innerText = "Pipeline Idle: Custom workspace dashboard hidden.";
+        statusDot.className = 'status-beacon-dot';
+        statusText.innerText = "Pipeline Idle: Please choose an active node path from your Asset Dashboard...";
+        
         renderDeviceInventoryTable();
     }
 
-    // --- 3. BINARY MQTT HANDSHAKE FORMATTERS ---
-    function sendMqttConnectPacket() {
+    // --- 2. BACKDROP NETWORK PROTOCOL UTILITIES ---
+    function sendMqttConnectPacketRaw(targetSocketHandle) {
         const cid = "WebHub" + Math.floor(Math.random() * 1000);
         const enc = new TextEncoder();
         const bUser = enc.encode(MQTT_USER);
@@ -671,7 +753,7 @@
         let idx = 0;
         
         pkt[idx++] = 16; pkt[idx++] = remLen; pkt[idx++] = 0; pkt[idx++] = 4;
-        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT binary markers
+        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT
         pkt[idx++] = 4;  pkt[idx++] = 194; pkt[idx++] = 0;  pkt[idx++] = 60;
         pkt[idx++] = (bCid.length >> 8); pkt[idx++] = (bCid.length & 255);
         pkt.set(bCid, idx); idx += bCid.length;
@@ -679,12 +761,13 @@
         pkt.set(bUser, idx); idx += bUser.length;
         pkt[idx++] = (bPass.length >> 8); pkt[idx++] = (bPass.length & 255);
         pkt.set(bPass, idx); idx += bPass.length;
-        ws.send(pkt);
+        
+        if (targetSocketHandle.readyState === 1) targetSocketHandle.send(pkt);
     }
 
-    function sendMqttSubscribePacket() {
+    function sendMqttSubscribePacketRaw(targetSocketHandle, topicStr) {
         const enc = new TextEncoder();
-        const bTopic = enc.encode(TOPIC_SUBSCRIBE);
+        const bTopic = enc.encode(topicStr);
         const remLen = 2 + 2 + bTopic.length + 1;
         const pkt = new Uint8Array(2 + remLen);
         let idx = 0;
@@ -693,43 +776,15 @@
         pkt[idx++] = (bTopic.length >> 8); pkt[idx++] = (bTopic.length & 255);
         for (var i = 0; i < bTopic.length; i++) { pkt[idx++] = bTopic[i]; }
         pkt[idx++] = 0;
-        ws.send(pkt);
+        
+        if (targetSocketHandle.readyState === 1) targetSocketHandle.send(pkt);
     }
-
-    function handleIncomingMqttFrame(event) {
-        const payload = new Uint8Array(event.data);
-        if (payload.length === 0) return;
-        const packetType = payload[0] >> 4; // Element state target isolated
-
-        if (packetType === 2) { 
-            statusBar.classList.add('connected');
-            statusDot.classList.add('connected');
-            statusText.innerText = `Connected: Listening live on topic parameter [${TOPIC_SUBSCRIBE}]`;
-            sendMqttSubscribePacket();
-            
-            clearInterval(pingTimer);
-            pingTimer = setInterval(() => {
-                if (ws.readyState === 1) ws.send(new Uint8Array([0xC0, 0x00]));
-            }, 15000);
-        }
-
-        if (packetType === 3) { 
-            let idx = 1; let remLen = 0; let multiplier = 1;
-            do { remLen += (payload[idx] & 127) * multiplier; multiplier *= 128; } while ((payload[idx++] & 128) !== 0);
-            const topicLen = (payload[idx++] << 8) + payload[idx++]; idx += topicLen;
-
-            const rawDataBytes = payload.subarray(idx);
-            if (rawDataBytes.length >= 40) {
-                parseMegmeetCorePacket(rawDataBytes);
-            }
-        }
-    }
-    // =========================================================
-    // PART 5 - SECTION B: BRACKETTED 0-BASED DATA GRID BINDER
-    // =========================================================
+    // =========================================================================
+    // PART 5 - SECTION C: RECESSED 0-offset DATA MATRIX PARSER & DOM CLOSING
+    // =========================================================================
 
     function parseMegmeetCorePacket(rawDataBytes) {
-        // --- 1. Pure 0-Based Core Extract (Matches Payload Documentation Explicitly) ---
+        // --- Core Parameter Extraction (Matches 0-Based Payload Specs) ---
         const tr   = rawDataBytes[9];  // Byte No. 9
         const ts   = rawDataBytes[8];  // Byte No. 8
         const te   = rawDataBytes[12]; // Byte No. 12
@@ -738,7 +793,6 @@
         const tc   = rawDataBytes[13]; // Byte No. 13
         const td   = rawDataBytes[11]; // Byte No. 11
 
-        // --- 2. Electrical, Speeds & Actuators ---
         const acVol    = rawDataBytes[14]; // Byte No. 14
         const acCur    = rawDataBytes[15]; // Byte No. 15
         const dcVol    = rawDataBytes[19]; // Byte No. 19
@@ -750,37 +804,33 @@
         const iduFan   = rawDataBytes[32]; // Byte No. 32
         const pcbType  = rawDataBytes[0];  // Byte No. 0
         const area     = rawDataBytes[23]; // Byte No. 23
-        const machine  = rawDataBytes[22]; // Byte No. 22
 
-        // Combined 16-Bit Big-Endian Compressor Timer (Byte 42 & 43)
+        // Big-Endian Uptime Clock calculation (Bytes 42 & 43)
         const CompTime = (rawDataBytes[42] << 8) | rawDataBytes[43];
 
-        // --- 3. Stepped Bottom Frequency Array Mapping (Indices 48 to 60) ---
-        const f1  = rawDataBytes[48] || 29; const f2  = rawDataBytes[49] || 34;
-        const f3  = rawDataBytes[50] || 40; const f4  = rawDataBytes[51] || 45;
-        const f5  = rawDataBytes[52] || 50; const f6  = rawDataBytes[53] || 55;
-        const f7  = rawDataBytes[54] || 62; const f8  = rawDataBytes[55] || 67;
-        const f9  = rawDataBytes[56] || 69; const f10 = rawDataBytes[57] || 75;
-        const f11 = rawDataBytes[58] || 78; const f12 = rawDataBytes[59] || 83;
+        // Bottom horizontal array slots indices mapping (Bytes 48-60)
+        const f1  = rawDataBytes[48] || 29;  const f2  = rawDataBytes[49] || 34;
+        const f3  = rawDataBytes[50] || 40;  const f4  = rawDataBytes[51] || 45;
+        const f5  = rawDataBytes[52] || 50;  const f6  = rawDataBytes[53] || 55;
+        const f7  = rawDataBytes[54] || 62;  const f8  = rawDataBytes[55] || 67;
+        const f9  = rawDataBytes[56] || 69;  const f10 = rawDataBytes[57] || 75;
+        const f11 = rawDataBytes[58] || 78;  const f12 = rawDataBytes[59] || 83;
         const f13 = rawDataBytes[60] || 90;
 
-        // --- 4. Dynamic String Lookup Mappers (Bytes 18, 1, and 31) ---
+        // Configuration Lookup Bytes
         const fanLevelCode  = rawDataBytes[18];
         const modeCode      = rawDataBytes[1];
         const eventCode     = rawDataBytes[31];
-        const targetFreqHz  = rawDataBytes[15]; 
+        const targetFreqHz  = rawDataBytes[15];
         const setFreqHz     = rawDataBytes[16];
         const realFreqHz    = rawDataBytes[17];
 
-        // Fan Level Lookup Array (Byte 18)
         const fanLevelArray = ["Stop", "Weak", "Silence", "Low", "Medium", "High", "Force"];
         const fanLevelStr   = fanLevelArray[fanLevelCode] || `Level ${fanLevelCode}`;
 
-        // Mode Lookup Array (Byte 1)
         const modeArray     = ["Standby", "Cool", "Heat", "FAN", "Dry"];
         const modeStr       = modeArray[modeCode] || `Mode ${modeCode}`;
 
-        // Event Display Ticker Lookup Array (Byte 31)
         const eventTextArray = [
             "System Idle Standby",
             "Receive indoor instructions Standby",
@@ -794,15 +844,15 @@
         ];
         const eventDisplayStr = eventTextArray[eventCode] || `Event Logic Code ${eventCode}`;
 
-        // Update top status log window ticker if change occurs
-        if (eventDisplayStr) {
+        // Print string message down into the local log layout if state changes
+        if (eventCode > 0 && eventCode < eventTextArray.length) {
             appendEventLog(eventDisplayStr);
         }
 
-        // --- 5. Render Values Directly to DOM Form Textboxes ---
+        // --- 4. DATA RENDER PIPELINE TO DASHBOARD FORMS ---
         document.getElementById('val_softver').innerText   = `${rawDataBytes[2] || 1}.${rawDataBytes[3] || 0}.0`;
         document.getElementById('val_softdata').innerText  = `20${rawDataBytes[4] || 25}-${rawDataBytes[5] || 9}-${rawDataBytes[6] || 3}`;
-        document.getElementById('val_driverlib').innerText = "Lib RX_V3";
+        document.getElementById('val_driverlib').innerText = "Lib RX_V4";
         document.getElementById('val_idumcuee').innerText  = "EE_OK";
         document.getElementById('val_odumcuee').innerText  = "EE_OK";
 
@@ -834,12 +884,12 @@
         document.getElementById('val_fanipm').innerText  = (fanIpm || 0) + " °C";
         document.getElementById('Comp_Time').innerText   = `Off[${CompTime || 5030}]Sec`;
 
-        // Sidebar Frequency Displays
+        // Sidebar Mini Indicators
         document.getElementById('ui_target_freq').innerText = `F${targetFreqHz || 3}`;
         document.getElementById('ui_set_freq').innerText    = `F${setFreqHz || 0}`;
         document.getElementById('ui_real_freq').innerText   = realFreqHz === 0 ? "0rpm / (0Hz)" : `${realFreqHz}Hz`;
 
-        // Update Bottom Meter Frequencies
+        // Update 13-Column Alignment Cells
         document.getElementById('f_f1').innerText  = f1; document.getElementById('f_f2').innerText  = f2;
         document.getElementById('f_f3').innerText  = f3; document.getElementById('f_f4').innerText  = f4;
         document.getElementById('f_f5').innerText  = f5; document.getElementById('f_f6').innerText  = f6;
@@ -848,7 +898,7 @@
         document.getElementById('f_f11').innerText = f11; document.getElementById('f_f12').innerText = f12;
         document.getElementById('f_f13').innerText = f13;
 
-        // --- 6. Process Hardware Bitmasks to Color Checkbox Indicators ---
+        // --- 5. PROCESS SIDE INDICATOR CHECKBOX MASKS ---
         toggleStatusIndicator('chk_fault',      (rawDataBytes[39] & 0x01), 'active-green');
         toggleStatusIndicator('chk_protect',    (rawDataBytes[40] & 0x01), 'active-red');
         toggleStatusIndicator('chk_limitfreq',  (rawDataBytes[7]  & 0x01), 'active-green');
@@ -857,18 +907,18 @@
         toggleStatusIndicator('chk_comp',       (rawDataBytes[17] & 0x01), 'active-green');
         toggleStatusIndicator('chk_defrost',    (rawDataBytes[17] & 0x08), 'active-green');
         toggleStatusIndicator('chk_4way',       (rawDataBytes[17] & 0x10), 'active-green');
-        toggleStatusIndicator('chk_retoil',     (rawDataBytes[17] & 0x40), 'active-green');
-        toggleStatusIndicator('chk_outfan',     (rawDataBytes[17] & 0x20), 'active-green');
+        toggleStatusIndicator('chk_retoil',     (rawDataBytes[17] & 0x80), 'active-green');
+        toggleStatusIndicator('chk_outfan',     (rawDataBytes[17] & 0x40), 'active-green');
         toggleStatusIndicator('chk_test',       (rawDataBytes[17] & 0x04), 'active-green');
         toggleStatusIndicator('chk_preheat',    (rawDataBytes[17] & 0x02), 'active-green');
-        toggleStatusIndicator('chk_collectf',   (rawDataBytes[17] & 0x08), 'active-green');
+        toggleStatusIndicator('chk_collectf',   (rawDataBytes[17] & 0x20), 'active-green');
         
-        toggleStatusIndicator('chk_pfc',        (rawDataBytes[26] & 0x20) || 1, 'active-orange'); 
+        toggleStatusIndicator('chk_pfc',        (rawDataBytes[26] & 0x02) || 1, 'active-orange'); 
         toggleStatusIndicator('chk_eco',        (rawDataBytes[26] & 0x08), 'active-orange');
         toggleStatusIndicator('chk_everoff',    (rawDataBytes[26] & 0x02), 'active-red');
         toggleStatusIndicator('chk_idufault',   (rawDataBytes[26] & 0x04) || 1, 'active-red'); 
 
-        // --- 7. Print to Raw Terminal Console Display ---
+        // --- 6. TERMINAL VIEWPORT HEX WRITERS ---
         const timeStr = new Date().toLocaleTimeString();
         const hexColumn = Array.from(rawDataBytes).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
         const asciiColumn = Array.from(rawDataBytes).map(b => (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.').join('');
@@ -886,6 +936,9 @@
             el.className = 'indicator-square-box';
         }
     }
+
+    // --- AUTOMATED BACKGROUND MONITOR SELECTION NET INITIALIZE ---
+    initializeParallelDiscoveryNetwork();
 </script>
 </body>
 </html>
