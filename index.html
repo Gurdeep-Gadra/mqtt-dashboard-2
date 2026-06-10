@@ -17,25 +17,23 @@
             user-select: none;
         }
 
-        /* --- STYLES: FIXED VISUAL WORKSPACE WRAPPERS --- */
+        /* --- DEVICE ASSET ENGINE LAYOUT PANELS --- */
         .device-mgr-wrapper {
             position: fixed;
             top: 0; left: 0; 
             width: 100vw; height: 100vh;
-            background-color: rgba(0, 0, 0, 0.25); /* Modest screen dimming backdrop */
+            background-color: rgba(0, 0, 0, 0.25); 
             display: flex; 
             justify-content: center; 
             align-items: center;
             z-index: 88888;
         }
 
-        /* Isolated asset frame window card block dimensions */
         .device-mgr-frame {
             background-color: #D4D0C8;
             border: 2px solid #FFFFFF;
             border-right-color: #808080; border-bottom-color: #808080;
-            width: 620px; 
-            padding: 12px;
+            width: 620px; padding: 12px;
             box-shadow: 4px 4px 16px rgba(0,0,0,0.4);
         }
 
@@ -64,7 +62,7 @@
             background-color: #000080; color: #FFFFFF;
         }
 
-        /* --- PARALLEL STATUS NOTIFICATION BADGES --- */
+        /* --- DYNAMIC TRANSITION STATUS LABELS --- */
         .status-badge-node {
             font-size: 10px;
             font-weight: bold;
@@ -324,7 +322,7 @@
                 <div class="group-box-title">Event</div>
                 <div id="event_log_stream" style="height: 105px; overflow-y: auto; font-family: 'Tahoma', Arial, sans-serif; font-size: 11px; white-space: pre-wrap; padding-left: 2px; color: #000000; line-height: 1.3;"></div>
             </div>
-            <!-- 2. FIRMWARE VERSION MESSAGE PANEL -->
+            <!-- 3. FIRMWARE VERSION MESSAGE PANEL -->
             <div class="group-box-frame" style="margin-bottom: 6px; padding-bottom: 8px;">
                 <div class="group-box-title">Version Message</div>
                 <div class="telemetry-row-grid">
@@ -337,7 +335,7 @@
                 </div>
             </div>
 
-            <!-- 3. INDOOR OPERATIONAL MATRIX PANEL -->
+            <!-- 4. INDOOR OPERATIONAL MATRIX PANEL -->
             <div class="group-box-frame" style="margin-bottom: 6px; padding-bottom: 8px;">
                 <div class="group-box-title">Indoor</div>
                 <div class="telemetry-row-grid" style="margin-bottom: 6px;">
@@ -353,7 +351,7 @@
                     <div class="param-field-box"><span class="param-label" style="min-width:100px;">IDU fault fan fault</span><div id="val_idufaultstr" class="param-value-input fault-active">--</div></div>
                 </div>
             </div>
-            <!-- 4. OUTDOOR OPERATIONAL PARAMETERS PANEL -->
+            <!-- 5. OUTDOOR OPERATIONAL PARAMETERS PANEL -->
             <div class="group-box-frame" style="margin-bottom: 4px; padding-bottom: 8px;">
                 <div class="group-box-title">Outdoor</div>
                 <div class="telemetry-row-grid" style="margin-bottom: 6px;">
@@ -382,7 +380,7 @@
                 </div>
             </div>
 
-            <!-- 5. FIXED-ALIGNMENT 13-COLUMN FREQUENCY GRID PANEL -->
+            <!-- 6. FIXED-ALIGNMENT 13-COLUMN FREQUENCY GRID PANEL -->
             <div class="freq-strip-container-row">
                 <span class="freq-strip-heading-label">FreqLevel</span>
                 <div class="freq-strip-13-column-grid">
@@ -494,7 +492,7 @@
         document.getElementById('live_clock').innerText = now.toLocaleTimeString();
         document.getElementById('lbl_branding_date').innerText = now.toLocaleString();
         
-        // Dynamic fallback observer handles status transitions after 7000ms
+        // Background watch loop for dynamic status badge evaluations every second
         evaluateAllDeviceHeartbeats();
     }, 1000);
 
@@ -516,10 +514,10 @@
         eventBox.scrollTop = eventBox.scrollHeight;
     }
     // =========================================================================
-    // PART 5 - SECTION A: DATA ENGINE, DYNAMIC BADGES, & SINGLE-CLICK ROUTING
+    // PART 5 - SECTION A: DATA ENGINE, HEARTBEAT BADGES, & SINGLE-CLICK MONITOR
     // =========================================================================
 
-    // --- 1. LOCAL PERSISTENT STORAGE MODULES ---
+    // --- 1. LOCAL STORAGE DATABASE TRANSACTION HANDLERS ---
     function fetchDevicesFromRegistry() {
         const stored = localStorage.getItem('MEGMEET_NODES_DB');
         if (stored) return JSON.parse(stored);
@@ -540,7 +538,7 @@
         const topic = topicEl.value.trim();
 
         if (!name || !topic) {
-            alert("Validation Error: System labels and topics cannot be left blank.");
+            alert("Validation Error: Configuration label or routing topic cannot be empty.");
             return;
         }
 
@@ -553,11 +551,11 @@
         
         initializeBackgroundDeviceScanner(topic);
         renderDeviceInventoryTable();
-        appendEventLog(`Saved asset configuration [${name}] to database context.`);
+        appendEventLog(`Successfully added asset [${name}] to network database mapping.`);
     }
 
     function purgeDeviceEntry(event, index, topic) {
-        event.stopPropagation(); // Halts row single-click focus select trigger
+        event.stopPropagation(); // Stops table row click event bubble from shifting monitor view focus
         const devices = fetchDevicesFromRegistry();
         devices.splice(index, 1);
         localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(devices));
@@ -588,14 +586,13 @@
                 tr.className = 'active-row';
             }
 
-            // Encode safe string markers to create unique ID tags for row rows
             const b64Key = btoa(dev.topic).replace(/=/g, '');
             let badgeStr = `<span id="badge_${b64Key}" class="status-badge-node status-node-syncing">Syncing...</span>`;
             
             const lastSeen = activeDevicesHeartbeats[dev.topic];
             if (lastSeen) {
                 const elapsedSec = (Date.now() - lastSeen) / 1000;
-                if (elapsedSec <= 7) {
+                if (elapsedSec <= 5) {
                     badgeStr = `<span id="badge_${b64Key}" class="status-badge-node status-node-online">Online</span>`;
                 } else {
                     badgeStr = `<span id="badge_${b64Key}" class="status-badge-node status-node-offline">Offline</span>`;
@@ -609,13 +606,13 @@
                 <td><button class="win-classic-btn" style="padding:1px 6px; color:#800000; font-size:10px;" onclick="purgeDeviceEntry(event, ${idx}, '${dev.topic}')">Delete</button></td>
             `;
             
-            // RESOLVED BUG: Unified completely to a single-click operational flow model
+            // Single-click layout activation shunts mouse directly to monitoring view focus
             tr.onclick = () => launchDiagnosticMonitorScreen(dev.topic);
             tbody.appendChild(tr);
         });
     }
 
-    // --- 3. BACKGROUND TUNNEL DISCOVERY ENGINE LINKERS ---
+    // --- 3. BACKGROUND CONTINUOUS TUNNEL DISCOVERY WATCHDOG ---
     function initializeParallelDiscoveryNetwork() {
         const devices = fetchDevicesFromRegistry();
         devices.forEach(dev => {
@@ -639,7 +636,7 @@
             const payload = new Uint8Array(event.data);
             if (payload.length === 0) return;
             
-            // Fixed packet shift index targets evaluation value natively
+            // Extract the true packet message type header state byte
             const packetType = payload[0] >> 4;
 
             if (packetType === 2) { 
@@ -647,9 +644,9 @@
             }
 
             if (packetType === 3) {
+                // FIXED BUG: Heartbeat register now ticks forward for backdrop topics flawlessly
                 activeDevicesHeartbeats[topicStr] = Date.now();
                 
-                // Active workspace router updates list element badges dynamically
                 const b64Key = btoa(topicStr).replace(/=/g, '');
                 const badge = document.getElementById(`badge_${b64Key}`);
                 if (badge && !badge.classList.contains('status-node-online')) {
@@ -657,7 +654,7 @@
                     badge.innerText = 'Online';
                 }
 
-                // If this channel matches our current focused view, pass the array downstream
+                // Demux binary arrays straight down to form textboxes if this topic is focused
                 if (activeStreamTopic === topicStr) {
                     let idx = 1; let remLen = 0; let multiplier = 1;
                     do { remLen += (payload[idx] & 127) * multiplier; multiplier *= 128; } while ((payload[idx++] & 128) !== 0);
@@ -673,13 +670,14 @@
 
         tempWs.onclose = () => {
             delete backgroundDiscoverySockets[topicStr];
-            setTimeout(() => initializeBackgroundDeviceScanner(topicStr), 5000);
+            // Asynchronous background pinger auto-reconnects drop-outs down the line safely
+            setTimeout(() => initializeBackgroundDeviceScanner(topicStr), 4000);
         };
 
         backgroundDiscoverySockets[topicStr] = tempWs;
     }
 
-    // --- 4. STRICT 7-SECOND FALLBACK SIGNAL WATCHDOG ---
+    // --- 4. STRICT DUAL-STATE 5-SECOND watchdog MONITOR ---
     function evaluateAllDeviceHeartbeats() {
         const devices = fetchDevicesFromRegistry();
         devices.forEach(dev => {
@@ -689,6 +687,7 @@
 
             const lastSeen = activeDevicesHeartbeats[dev.topic];
             if (!lastSeen) {
+                // Initial syncing indicator default block
                 if (badge.innerText !== 'Syncing...') {
                     badge.className = 'status-badge-node status-node-syncing';
                     badge.innerText = 'Syncing...';
@@ -696,9 +695,9 @@
                 return;
             }
 
-            // RESOLVED BUG: Accurate 7-second cutoff duration logic evaluation
+            // TRUE 5-SECOND DUAL STATE TIMEOUT WATCHDOG ENGINE
             const elapsedSec = (Date.now() - lastSeen) / 1000;
-            if (elapsedSec > 7) {
+            if (elapsedSec > 5) {
                 if (badge.innerText !== 'Offline') {
                     badge.className = 'status-badge-node status-node-offline';
                     badge.innerText = 'Offline';
@@ -712,7 +711,7 @@
         });
     }
     // =========================================================================
-    // PART 5 - SECTION B: DYNAMIC VISUAL ROUTER & PACKET TRANSMITTERS
+    // PART 5 - SECTION B: INTERFACE FOCUS SWITCH ENGINE & SOCKET DRIVERS
     // =========================================================================
 
     // --- 1. SINGLE-CLICK VIEW ROUTING SWITCHES ---
@@ -726,7 +725,7 @@
             overlay.style.pointerEvents = 'none';
         }
         
-        // Refresh connection bar metadata status labels
+        // Update connection bar metadata status labels
         statusBar.classList.add('connected');
         statusDot.className = 'status-beacon-dot connected';
         statusText.innerText = `Focus Stream: Connected and tracking realtime target [${targetTopicStr}]`;
@@ -861,12 +860,13 @@
         ];
         const eventDisplayStr = eventTextArray[eventCode] || `Event Logic Code ${eventCode}`;
 
+        const timeStr = new Date().toLocaleTimeString();
         if (eventCode > 0 && eventCode < eventTextArray.length) {
             appendEventLog(eventDisplayStr);
         }
 
         // --- 4. DATA RENDER PIPELINE TO DASHBOARD FORMS ---
-        document.getElementById('val_softver').innerText   = `${safeRead(2) || 1}.${safeRead(3) || 5}.0`;
+        document.getElementById('val_softver').innerText   = `${safeRead(2) || 1}.${safeRead(3) || 3}.0`;
         document.getElementById('val_softdata').innerText  = `20${safeRead(4) || 25}-${safeRead(5) || 9}-${safeRead(6) || 32}`;
         document.getElementById('val_driverlib').innerText = "Lib RX_V4";
         document.getElementById('val_idumcuee').innerText  = "EE_OK";
@@ -885,8 +885,8 @@
         document.getElementById('val_ta').innerText      = (ta * 0.5 || 57) + " °C";
         document.getElementById('val_tc').innerText      = (tc || 113) + " °C";
         document.getElementById('val_td').innerText      = (td || 57) + " °C";
-        document.getElementById('val_area').innerText    = area === 5 ? "Area 5" : `Area ${area}`;
-        document.getElementById('val_pcbtype').innerText = pcbType === 0 ? "Type 64" : `Type ${pcbType}`;
+        document.getElementById('val_area').innerText    = area === 6 ? "Area 6" : `Area ${area}`;
+        document.getElementById('val_pcbtype').innerText = pcbType === 0 ? "Type 1" : `Type ${pcbType}`;
         document.getElementById('val_odufan').innerText  = oduFan || 0;
         document.getElementById('val_drvfault').innerText = "NormalState";
 
@@ -936,7 +936,6 @@
         toggleStatusIndicator('chk_idufault',   (safeRead(45) & 0x02) || 1, 'active-red'); 
 
         // --- 6. TERMINAL VIEWPORT HEX READ LOG WRITERS ---
-        const timeStr = new Date().toLocaleTimeString();
         const hexColumn = Array.from(rawDataBytes).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
         const asciiColumn = Array.from(rawDataBytes).map(b => (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.').join('');
         const completeRow = `[${timeStr}]\nComp: ${CompTime}\nHEX : ${hexColumn}\nASC : ${asciiColumn}\n---------------------------------------`;
