@@ -683,13 +683,14 @@ function initializeParallelDiscoveryNetwork() {
         tempWs.onmessage = (event) => {
             const payload = new Uint8Array(event.data);
             if (payload.length === 0) return;
-            const packetType = payload[payload.length] //>> 4;
+            const packetType = payload[0] >> 4;
 
-           /* if (packetType === 2) { // CONNACK HANDSHAKE OK
+            if (packetType === 2) { // CONNACK HANDSHAKE OK
                 sendMqttSubscribePacketRaw(tempWs, topicStr);
-            }*/
+            }
 
-                 if (packetType === 0xAA) { // TELEMETRY FRAME RECEIVED OVER WIRE 
+                 //if (packetType === 3) { // TELEMETRY FRAME RECEIVED OVER WIRE 
+            if(payload[payload.length-1]==0xAA){
         // Tick heartbeat timestamp marker row instantly 
         activeDevicesHeartbeats[topicStr] = Date.now(); 
         
