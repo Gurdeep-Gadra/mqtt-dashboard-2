@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Megmeet_Amber_Monitor Multichannel Asset Hub</title>
+    <title>Monitor Realtime Megmeet data fetching</title>
     <style>
         /* Exact Windows Classic Forms Background Layout Theme */
         body { 
@@ -258,7 +258,7 @@
            <!-- 1. MULTICHANNEL NETWORK INVENTORY MANAGEMENT OVERLAY -->
         <div id="device_manager" class="device-mgr-wrapper">
          <div class="device-mgr-frame">
-         <div class="auth-header-strip">MQTT Target Diagnostic Unit Asset Inventory Register</div>
+         <div class="auth-header-strip">Inventory Register</div>
          
          <!-- NEW: PERSISTENT BROKER CONTEXT SETTINGS CONTROL GROUP -->
          <div class="group-box-frame" style="background-color: #D4D0C8; padding-top: 14px; margin-bottom: 10px;">
@@ -309,7 +309,7 @@
             </div>
 
             <div style="display: flex; justify-content: flex-end; align-items: center; border-top: 1px dashed #808080; padding-top: 8px;">
-                <span style="font-size:11px; color:#333333; font-style:italic; font-weight:bold;">Double-click a row above to access its Live Telemetry screen.</span>
+                <span style="font-size:11px; color:#333333; font-style:italic; font-weight:bold;">Click a row above to access its Live Telemetry screen.</span>
             </div>
         </div>
     </div>
@@ -566,7 +566,7 @@ setInterval(() => {
         const defaultNodes = [
             { name: "Megmeet_ODU_LAB1", topic: "TTW/LAB1" },
             { name: "Megmeet_ODU_LAB2", topic: "TTW/LAB2" },
-            { name: "Test 2", topic: "TTW/LAB3" }
+            { name: "Megmeet_ODU_LAB3", topic: "TTW/LAB3" }
         ];
         localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(defaultNodes));
         return defaultNodes;
@@ -683,13 +683,13 @@ function initializeParallelDiscoveryNetwork() {
         tempWs.onmessage = (event) => {
             const payload = new Uint8Array(event.data);
             if (payload.length === 0) return;
-            const packetType = payload[0] >> 4;
+            const packetType = payload[payload.length-1] //>> 4;
 
-            if (packetType === 2) { // CONNACK HANDSHAKE OK
+           /* if (packetType === 2) { // CONNACK HANDSHAKE OK
                 sendMqttSubscribePacketRaw(tempWs, topicStr);
-            }
+            }*/
 
-                 if (packetType === 3) { // TELEMETRY FRAME RECEIVED OVER WIRE 
+                 if (packetType === 0xAA) { // TELEMETRY FRAME RECEIVED OVER WIRE 
         // Tick heartbeat timestamp marker row instantly 
         activeDevicesHeartbeats[topicStr] = Date.now(); 
         
