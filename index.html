@@ -685,7 +685,7 @@ function initializeParallelDiscoveryNetwork() {
                 sendMqttSubscribePacketRaw(tempWs, topicStr);
             }
 
-               if (packetType === 3) { // TELEMETRY FRAME RECEIVED OVER WIRE 
+                 if (packetType === 3) { // TELEMETRY FRAME RECEIVED OVER WIRE 
         // Tick heartbeat timestamp marker row instantly 
         activeDevicesHeartbeats[topicStr] = Date.now(); 
         
@@ -698,11 +698,12 @@ function initializeParallelDiscoveryNetwork() {
         
         // If this backdrop topic matches our focus viewer window, demux binary array straight down to form fields 
         if (activeStreamTopic === topicStr) { 
-            // CORRECTED: Force master status bar updates alongside active payload parsing tracks
+            // CORRECTED: Dynamically update status elements only if they aren't currently marked connected
             const panelStatusText = document.getElementById('status_text');
-            if (panelStatusText && !panelStatusText.innerText.includes("Focus Stream")) {
+            const panelStatusDot = document.getElementById('status_dot');
+            if (panelStatusText && panelStatusDot) {
                 panelStatusText.innerText = `Focus Stream: Connected and tracking realtime target [${topicStr}]`;
-                document.getElementById('status_dot').className = 'status-beacon-dot connected';
+                panelStatusDot.className = 'status-beacon-dot connected';
             }
 
             let idx = 1; 
@@ -722,6 +723,7 @@ function initializeParallelDiscoveryNetwork() {
         } 
     }
 
+
         };
 
         tempWs.onclose = () => {
@@ -733,35 +735,54 @@ function initializeParallelDiscoveryNetwork() {
         backgroundDiscoverySockets[topicStr] = tempWs;
     }
 
-    function evaluateAllDeviceHeartbeats() {
-        const devices = fetchDevicesFromRegistry();
-        devices.forEach(dev => {
-            const badge = document.getElementById(`status_badge_${btoa(dev.topic)}`);
-            if (!badge) return;
+   function evaluateAllDeviceHeartbeats() {
+    const devices = fetchDevicesFromRegistry();
+    devices.forEach(dev => {
+        const badge = document.getElementById(`status_badge_${btoa(dev.topic)}`);
+        const lastSeen = activeDevicesHeartbeats[dev.topic];
+        let currentDeviceStateOnline = false;
 
-            const lastSeen = activeDevicesHeartbeats[dev.topic];
-            if (!lastSeen) {
-                if (badge.innerText !== 'Syncing...') {
-                    badge.className = 'status-badge-node status-node-syncing';
-                    badge.innerText = 'Syncing...';
-                }
-                return;
+        if (!lastSeen) {
+            if (badge && badge.innerText !== 'Syncing...') {
+                badge.className = 'status-badge-node status-node-syncing';
+                badge.innerText = 'Syncing...';
             }
-
+        } else {
             const elapsedSec = (Date.now() - lastSeen) / 1000;
             if (elapsedSec > 5) {
-                if (badge.innerText !== 'Offline') {
+                if (badge && badge.innerText !== 'Offline') {
                     badge.className = 'status-badge-node status-node-offline';
                     badge.innerText = 'Offline';
                 }
             } else {
-                if (badge.innerText !== 'Online') {
+                currentDeviceStateOnline = true;
+                if (badge && badge.innerText !== 'Online') {
                     badge.className = 'status-badge-node status-node-online';
                     badge.innerText = 'Online';
                 }
             }
-        });
-    }
+        }
+
+        // CORRECTED: If this device is the focused dashboard screen, bind its live network state to the master status bar
+        if (activeStreamTopic === dev.topic) {
+            const mText = document.getElementById('status_text');
+            const mDot = document.getElementById('status_dot');
+            if (mText && mDot) {
+                if (!lastSeen) {
+                    mText.innerText = `Focus Stream: Syncing target node context [${dev.topic}]...`;
+                    mDot.className = 'status-beacon-dot'; // Neutral state
+                } else if (!currentDeviceStateOnline) {
+                    mText.innerText = `Focus Stream Idle: Realtime connection lost / timeout window tripped [${dev.topic}]`;
+                    mDot.className = 'status-beacon-dot'; // Turns off green glowing active state indicator class
+                } else {
+                    mText.innerText = `Focus Stream: Connected and tracking realtime target [${dev.topic}]`;
+                    mDot.className = 'status-beacon-dot connected'; // Retains green active beacon status
+                }
+            }
+        }
+    });
+}
+
     // =========================================================================
     // PART 5 - SECTION B: INTERFACE FOCUS ROUTER & PROTOCOL TRANSMITTERS
     // =========================================================================
