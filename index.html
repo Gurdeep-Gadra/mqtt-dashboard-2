@@ -707,7 +707,7 @@ function initializeParallelDiscoveryNetwork() {
             const panelStatusText = document.getElementById('status_text');
             const panelStatusDot = document.getElementById('status_dot');
             if (panelStatusText && panelStatusDot) {
-                panelStatusText.innerText = `Focus Stream: Connected and tracking realtime target [${topicStr}]`;
+                panelStatusText.innerText = `Selected Stream: Connected and tracking realtime target [${topicStr}]`;
                 panelStatusDot.className = 'status-beacon-dot connected';
             }
 
@@ -876,23 +876,23 @@ function initializeParallelDiscoveryNetwork() {
             }, 80);
         }
         // --- Core Parameter Extraction (Matches 0-Based Payload Specs) ---
-        const tr   = rawDataBytes[9];  // Byte No. 9
-        const ts   = rawDataBytes[8];  // Byte No. 8
-        const te   = rawDataBytes[12]; // Byte No. 12
-        const tsu  = rawDataBytes[30]; // Byte No. 30
-        const ta   = rawDataBytes[10]; // Byte No. 10 (Raw Readout index)
-        const tc   = rawDataBytes[13]; // Byte No. 13
-        const td   = rawDataBytes[11]; // Byte No. 11
+        const tr   = (rawDataBytes[9]/2)-30;  // Byte No. 9 
+        const ts   = (rawDataBytes[8]/2)-30;  // Byte No. 8
+        const te   = (rawDataBytes[12]/2)-30; // Byte No. 12
+        const tsu  = (rawDataBytes[30]/2)-30; // Byte No. 30
+        const ta   = (rawDataBytes[10]/2)-30; // Byte No. 10 (Raw Readout index)
+        const tc   = (rawDataBytes[13]/2)-30; // Byte No. 13
+        const td   = (rawDataBytes[11]/2)-30; // Byte No. 11
 
-        const acVol    = rawDataBytes[14]; // Byte No. 14
-        const acCur    = rawDataBytes[15]; // Byte No. 15
-        const dcVol    = rawDataBytes[19]; // Byte No. 19
-        const dcCur    = rawDataBytes[20]; // Byte No. 20
-        const eev      = rawDataBytes[24]; // Byte No. 24
-        const tipm     = rawDataBytes[25]; // Byte No. 25
+        const acVol    = rawDataBytes[14]*2; // Byte No. 14
+        const acCur    = rawDataBytes[15]/10; // Byte No. 15
+        const dcVol    = rawDataBytes[19]*2; // Byte No. 19
+        const dcCur    = rawDataBytes[20]/10; // Byte No. 20
+        const eev      = rawDataBytes[24]*2; // Byte No. 24
+        const tipm     = rawDataBytes[25]*2; // Byte No. 25
         const fanIpm   = rawDataBytes[44]; // Byte No. 44
-        const oduFan   = rawDataBytes[21]; // Byte No. 21
-        const iduFan   = rawDataBytes[32]; // Byte No. 32
+        const oduFan   = rawDataBytes[21]*10; // Byte No. 21
+        const iduFan   = rawDataBytes[32]*10; // Byte No. 32
         const pcbType  = rawDataBytes[0];  // Byte No. 0
         const area     = rawDataBytes[23]; // Byte No. 23
 
@@ -912,9 +912,9 @@ function initializeParallelDiscoveryNetwork() {
         const fanLevelCode  = rawDataBytes[18];
         const modeCode      = rawDataBytes[1];
         const eventCode     = rawDataBytes[31];
-        const targetFreqHz  = rawDataBytes[15];
-        const setFreqHz     = rawDataBytes[16];
-        const realFreqHz    = rawDataBytes[17];
+        const targetFreqHz  = rawDataBytes[3];
+        const setFreqHz     = rawDataBytes[4];
+        const realFreqHz    = rawDataBytes[2];
 
         const fanLevelArray = ["Stop", "Weak", "Silence", "Low", "Medium", "High", "Force"];
         const fanLevelStr   = fanLevelArray[fanLevelCode] || `Level ${fanLevelCode}`;
@@ -923,7 +923,7 @@ function initializeParallelDiscoveryNetwork() {
         const modeStr       = modeArray[modeCode] || `Mode ${modeCode}`;
 
         const eventTextArray = [
-            "System Idle Standby",
+            "System Idle ",
             "Receive indoor instructions Standby",
             "Mode change,Compressor stop",
             "Indoor room temp reach to stop",
