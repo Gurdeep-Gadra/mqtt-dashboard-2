@@ -794,18 +794,16 @@ function initializeParallelDiscoveryNetwork() {
     // Hide the inventory management backdrop panel curtain sheet view 
     document.getElementById('device_manager').style.display = 'none'; 
     
-    // CORRECTED: Target correct DOM element IDs to clear the idle notification
-    const statusDot = document.getElementById('status_dot');
-    const statusText = document.getElementById('status_text');
-    
-    if (statusDot && statusText) {
-        statusDot.className = 'status-beacon-dot connected'; 
-        statusText.innerText = `Focus Stream: Connected and tracking realtime target [${targetTopicStr}]`; 
+    // CORRECTED: Let evaluateAllDeviceHeartbeats assign the accurate color status on the next execution loop
+    const mText = document.getElementById('status_text');
+    if (mText) {
+        mText.innerText = `Focus Stream: Checking data link integrity for channel [${targetTopicStr}]...`;
     }
     
     appendEventLog(`Workspace updated. Interface stream focus shifted to channel [${targetTopicStr}].`); 
     renderDeviceInventoryTable(); 
 }
+
 
 
     function returnToInventoryDashboard() {
