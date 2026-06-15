@@ -689,8 +689,8 @@ function initializeParallelDiscoveryNetwork() {
                 sendMqttSubscribePacketRaw(tempWs, topicStr);
             }
 
-                 //if (packetType === 3) { // TELEMETRY FRAME RECEIVED OVER WIRE 
-            if(payload[payload.length-1]==0xAA){
+        //if (packetType === 3) { // TELEMETRY FRAME RECEIVED OVER WIRE 
+        if(payload[payload.length-1]==0xAA){
         // Tick heartbeat timestamp marker row instantly 
         activeDevicesHeartbeats[topicStr] = Date.now(); 
         
@@ -774,13 +774,13 @@ function initializeParallelDiscoveryNetwork() {
             const mDot = document.getElementById('status_dot');
             if (mText && mDot) {
                 if (!lastSeen) {
-                    mText.innerText = `Focus Stream: Syncing target node context [${dev.topic}]...`;
+                    mText.innerText = `Selected Stream: Syncing target node context [${dev.topic}]...`;
                     mDot.className = 'status-beacon-dot'; // Neutral state
                 } else if (!currentDeviceStateOnline) {
-                    mText.innerText = `Focus Stream Idle: Realtime connection lost / timeout window tripped [${dev.topic}]`;
+                    mText.innerText = `Selected Stream Idle: Realtime connection lost / timeout window tripped [${dev.topic}]`;
                     mDot.className = 'status-beacon-dot'; // Turns off green glowing active state indicator class
                 } else {
-                    mText.innerText = `Focus Stream: Connected and tracking realtime target [${dev.topic}]`;
+                    mText.innerText = `Selected Stream: Connected and tracking realtime target [${dev.topic}]`;
                     mDot.className = 'status-beacon-dot connected'; // Retains green active beacon status
                 }
             }
@@ -802,7 +802,7 @@ function initializeParallelDiscoveryNetwork() {
     // CORRECTED: Let evaluateAllDeviceHeartbeats assign the accurate color status on the next execution loop
     const mText = document.getElementById('status_text');
     if (mText) {
-        mText.innerText = `Focus Stream: Checking data link integrity for channel [${targetTopicStr}]...`;
+        mText.innerText = `Selected Stream: Checking data link integrity for channel [${targetTopicStr}]...`;
     }
     
     appendEventLog(`Workspace updated. Interface stream focus shifted to channel [${targetTopicStr}].`); 
@@ -900,13 +900,13 @@ function initializeParallelDiscoveryNetwork() {
         const CompTime = (rawDataBytes[42] << 8) | rawDataBytes[43];
 
         // Bottom horizontal array slots indices mapping (Bytes 48-60)
-        const f1  = rawDataBytes[48] || 29;  const f2  = rawDataBytes[49] || 34;
-        const f3  = rawDataBytes[50] || 40;  const f4  = rawDataBytes[51] || 45;
-        const f5  = rawDataBytes[52] || 50;  const f6  = rawDataBytes[53] || 55;
-        const f7  = rawDataBytes[54] || 62;  const f8  = rawDataBytes[55] || 67;
-        const f9  = rawDataBytes[56] || 69;  const f10 = rawDataBytes[57] || 75;
-        const f11 = rawDataBytes[58] || 78;  const f12 = rawDataBytes[59] || 83;
-        const f13 = rawDataBytes[60] || 90;
+        const f1  = rawDataBytes[47];  const f2  = rawDataBytes[48];
+        const f3  = rawDataBytes[49];  const f4  = rawDataBytes[50];
+        const f5  = rawDataBytes[51];  const f6  = rawDataBytes[52];
+        const f7  = rawDataBytes[53];  const f8  = rawDataBytes[54];
+        const f9  = rawDataBytes[55];  const f10 = rawDataBytes[56];
+        const f11 = rawDataBytes[57];  const f12 = rawDataBytes[58];
+        const f13 = rawDataBytes[59];
 
         // Configuration Lookup Bytes
         const fanLevelCode  = rawDataBytes[18];
@@ -973,8 +973,10 @@ function initializeParallelDiscoveryNetwork() {
         document.getElementById('val_eev').innerText     = (eev * 10 || 230) + "P";
         document.getElementById('val_tipm').innerText    = (tipm || 38) + " °C";
         document.getElementById('val_fanipm').innerText  = (fanIpm || 0) + " °C";
-        document.getElementById('Comp_Time').innerText   = `Off[${CompTime || 5030}]Sec`;
-
+        if(rawDataBytes[41]==0)
+            document.getElementById('Comp_Time').innerText   = `Off[${CompTime}]Sec`;
+        else if(rawDataBytes[41]==1)
+            document.getElementById('Comp_Time').innerText   = `On[${CompTime}]Sec`;
         // Sidebar Mini Indicators
         document.getElementById('ui_target_freq').innerText = `F${targetFreqHz || 3}`;
         document.getElementById('ui_set_freq').innerText    = `F${setFreqHz || 0}`;
