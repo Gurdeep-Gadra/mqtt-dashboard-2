@@ -1,263 +1,274 @@
-/* Custom Windows-Classic Industrial Dark/Silver SCADA Design Elements */
-:root {
-    --bg-color: #D4D0C8;
-    --panel-bg: #D4D0C8;
-    --window-frame: #4A4A4A;
-    --text-color: #000000;
-    --input-bg: #FFFFFF;
-    --border-light: #FFFFFF;
-    --border-dark: #808080;
-    --accent-green: #00A86B;
-    --alert-red: #FF0000;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Megmeet Diagnostic Control Platform</title>
+    <style>
+        /* Custom Windows-Classic Industrial Dark/Silver SCADA Design Elements */
+        :root {
+            --bg-color: #D4D0C8;
+            --panel-bg: #D4D0C8;
+            --window-frame: #4A4A4A;
+            --text-color: #000000;
+            --input-bg: #FFFFFF;
+            --border-light: #FFFFFF;
+            --border-dark: #808080;
+            --accent-green: #00A86B;
+            --alert-red: #FF0000;
+        }
 
-body {
-    background-color: var(--bg-color);
-    font-family: "MS Sans Serif", "Segoe UI", Tahoma, sans-serif;
-    font-size: 12px;
-    color: var(--text-color);
-    margin: 0;
-    padding: 10px;
-    user-select: none;
-}
+        body {
+            background-color: var(--bg-color);
+            font-family: "MS Sans Serif", "Segoe UI", Tahoma, sans-serif;
+            font-size: 12px;
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+            user-select: none;
+        }
 
-.main-container {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 10px;
-    max-width: 1600px;
-    margin: 0 auto;
-}
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 10px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
 
-.left-column {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-.panel {
-    border-top: 2px solid var(--border-light);
-    border-left: 2px solid var(--border-light);
-    border-right: 2px solid var(--border-dark);
-    border-bottom: 2px solid var(--border-dark);
-    background-color: var(--panel-bg);
-    padding: 12px;
-    position: relative;
-}
+        .panel {
+            border-top: 2px solid var(--border-light);
+            border-left: 2px solid var(--border-light);
+            border-right: 2px solid var(--border-dark);
+            border-bottom: 2px solid var(--border-dark);
+            background-color: var(--panel-bg);
+            padding: 12px;
+            position: relative;
+        }
 
-.panel-title {
-    position: absolute;
-    top: -8px;
-    left: 12px;
-    background-color: var(--bg-color);
-    padding: 0 6px;
-    font-weight: bold;
-    font-size: 11px;
-    color: #303030;
-}
+        .panel-title {
+            position: absolute;
+            top: -8px;
+            left: 12px;
+            background-color: var(--bg-color);
+            padding: 0 6px;
+            font-weight: bold;
+            font-size: 11px;
+            color: #303030;
+        }
 
-.pipeline-status {
-    color: var(--alert-red);
-    font-weight: bold;
-    margin-bottom: 5px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
+        .pipeline-status {
+            color: var(--alert-red);
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-.status-dot {
-    width: 8px;
-    height: 8px;
-    background-color: var(--alert-red);
-    border-radius: 50%;
-    display: inline-block;
-}
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--alert-red);
+            border-radius: 50%;
+            display: inline-block;
+        }
 
-.status-dot.connected {
-    background-color: var(--accent-green);
-}
-.grid-4-col {
-    display: grid;
-    grid-template-columns: 90px 140px 90px 140px;
-    gap: 8px 12px;
-    margin-top: 5px;
-}
+        .status-dot.connected {
+            background-color: var(--accent-green);
+        }
+        .grid-4-col {
+            display: grid;
+            grid-template-columns: 90px 140px 90px 140px;
+            gap: 8px 12px;
+            margin-top: 5px;
+        }
 
-.grid-6-col {
-    display: grid;
-    grid-template-columns: 80px 100px 80px 100px 80px 100px;
-    gap: 8px 12px;
-    margin-top: 5px;
-}
+        .grid-6-col {
+            display: grid;
+            grid-template-columns: 80px 100px 80px 100px 80px 100px;
+            gap: 8px 12px;
+            margin-top: 5px;
+        }
 
-.field-group {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
+        .field-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-.field-group label {
-    white-space: nowrap;
-    color: #404040;
-}
+        .field-group label {
+            white-space: nowrap;
+            color: #404040;
+        }
 
-.readout {
-    background-color: var(--input-bg);
-    border-top: 2px solid var(--border-dark);
-    border-left: 2px solid var(--border-dark);
-    border-right: 1px solid var(--border-light);
-    border-bottom: 1px solid var(--border-light);
-    padding: 2px 6px;
-    min-height: 16px;
-    font-family: "Courier New", Courier, monospace;
-    font-weight: bold;
-    text-align: center;
-    width: 100px;
-}
+        .readout {
+            background-color: var(--input-bg);
+            border-top: 2px solid var(--border-dark);
+            border-left: 2px solid var(--border-dark);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            padding: 2px 6px;
+            min-height: 16px;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
+            text-align: center;
+            width: 100px;
+        }
 
-.right-column {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-.freq-display-box {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    align-items: flex-end;
-    margin-top: 8px;
-}
+        .freq-display-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-end;
+            margin-top: 8px;
+        }
 
-.checkbox-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 8px;
-}
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
 
-.checkbox-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-.checkbox-item input[type="checkbox"] {
-    margin: 0;
-    pointer-events: none;
-}
+        .checkbox-item input[type="checkbox"] {
+            margin: 0;
+            pointer-events: none;
+        }
 
-.fault-indicator {
-    margin-top: 10px;
-    padding: 6px;
-    border: 1px solid var(--border-dark);
-    font-weight: bold;
-    text-align: center;
-    background-color: #E4E0D8;
-}
+        .fault-indicator {
+            margin-top: 10px;
+            padding: 6px;
+            border: 1px solid var(--border-dark);
+            font-weight: bold;
+            text-align: center;
+            background-color: #E4E0D8;
+        }
 
-.fault-indicator.active {
-    background-color: var(--alert-red);
-    color: white;
-    animation: blink 1s infinite;
-}
+        .fault-indicator.active {
+            background-color: var(--alert-red);
+            color: white;
+            animation: blink 1s infinite;
+        }
 
-@keyframes blink {
-    50% { opacity: 0.5; }
-}
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
 
-.log-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    grid-column: span 2;
-    margin-top: 5px;
-}
+        .log-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            grid-column: span 2;
+            margin-top: 5px;
+        }
 
-.log-container {
-    display: flex;
-    flex-direction: column;
-}
+        .log-container {
+            display: flex;
+            flex-direction: column;
+        }
 
-.log-title {
-    background-color: #000080;
-    color: white;
-    padding: 2px 8px;
-    font-weight: bold;
-    font-size: 11px;
-}
+        .log-title {
+            background-color: #000080;
+            color: white;
+            padding: 2px 8px;
+            font-weight: bold;
+            font-size: 11px;
+        }
 
-.log-window {
-    background-color: #FFFFFF;
-    border: 2px solid var(--border-dark);
-    height: 120px;
-    overflow-y: auto;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 11px;
-    padding: 4px;
-    white-space: pre-wrap;
-}
+        .log-window {
+            background-color: #FFFFFF;
+            border: 2px solid var(--border-dark);
+            height: 120px;
+            overflow-y: auto;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 11px;
+            padding: 4px;
+            white-space: pre-wrap;
+        }
 
-.brand-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    margin-top: auto;
-    padding-top: 20px;
-}
+        .brand-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-top: auto;
+            padding-top: 20px;
+        }
 
-.brand-logo {
-    font-size: 28px;
-    font-weight: 900;
-    color: var(--accent-green);
-    letter-spacing: -1px;
-    line-height: 1;
-}
+        .brand-logo {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--accent-green);
+            letter-spacing: -1px;
+            line-height: 1;
+        }
 
-.timestamp {
-    font-size: 11px;
-    color: #606060;
-    margin-top: 4px;
-}
-/* Fixed 13-Column Layout Matrix Matching Bytes 47 to 59 */
-.freq-table-container {
-    margin-top: 5px;
-}
+        .timestamp {
+            font-size: 11px;
+            color: #606060;
+            margin-top: 4px;
+        }
+        /* Fixed 13-Column Layout Matrix Matching Bytes 47 to 59 */
+        .freq-table-container {
+            margin-top: 5px;
+        }
 
-.freq-grid {
-    display: grid;
-    grid-template-columns: 80px repeat(13, 1fr);
-    border-top: 1px solid var(--border-dark);
-    border-left: 1px solid var(--border-dark);
-    background-color: var(--input-bg);
-}
+        .freq-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(13, 1fr);
+            border-top: 1px solid var(--border-dark);
+            border-left: 1px solid var(--border-dark);
+            background-color: var(--input-bg);
+        }
 
-.freq-cell {
-    border-right: 1px solid var(--border-dark);
-    border-bottom: 1px solid var(--border-dark);
-    padding: 4px 2px;
-    text-align: center;
-    font-size: 11px;
-}
+        .freq-cell {
+            border-right: 1px solid var(--border-dark);
+            border-bottom: 1px solid var(--border-dark);
+            padding: 4px 2px;
+            text-align: center;
+            font-size: 11px;
+        }
 
-.freq-header {
-    background-color: #E4E0D8;
-    font-weight: bold;
-}
+        .freq-header {
+            background-color: #E4E0D8;
+            font-weight: bold;
+        }
 
-.freq-val {
-    font-family: "Courier New", Courier, monospace;
-    font-weight: bold;
-}
+        .freq-val {
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
 <div class="main-container">
     
+    <!-- LEFT SYSTEM READOUT TRACKS -->
     <div class="left-column">
         <div class="pipeline-status">
             <span class="status-dot" id="statusDot"></span>
             <span id="statusText">Pipeline Idle: Please choose a node path from your Asset Dashboard window...</span>
         </div>
 
-        <!-- VERSION BLOCK -->
+        <!-- VERSION METADATA -->
         <div class="panel">
             <div class="panel-title">Version Message</div>
             <div class="grid-6-col">
@@ -269,7 +280,7 @@ body {
             </div>
         </div>
 
-        <!-- INDOOR PARAMETERS -->
+        <!-- INDOOR SYSTEM PARAMETERS -->
         <div class="panel">
             <div class="panel-title">Indoor</div>
             <div class="grid-4-col">
@@ -284,7 +295,7 @@ body {
             </div>
         </div>
 
-        <!-- OUTDOOR PARAMETERS -->
+        <!-- OUTDOOR SYSTEM PARAMETERS -->
         <div class="panel">
             <div class="panel-title">Outdoor</div>
             <div class="grid-4-col">
@@ -307,7 +318,7 @@ body {
             </div>
         </div>
 
-        <!-- 13-COLUMN ARRAY -->
+        <!-- 13-COLUMN FREQUENCY SPECTRUM ROW LAYOUT -->
         <div class="panel">
             <div class="panel-title">Freq Display Spectrum Grid</div>
             <div class="freq-table-container">
@@ -332,8 +343,7 @@ body {
             </div>
         </div>
     </div>
-
-    <!-- SIDEBAR CONTROL MODULES -->
+    <!-- RIGHT CRITICAL PARAMETER STATUS SIDEBAR -->
     <div class="right-column">
         <div class="panel">
             <div class="panel-title">Freq Display</div>
@@ -380,7 +390,7 @@ body {
         </div>
     </div>
 
-    <!-- LOWER TERMINAL LOG OUTPUTS -->
+    <!-- LOWER SYSTEM TERMINAL LOG CONSOLES -->
     <div class="log-section">
         <div class="log-container">
             <div class="log-title">live_packet_stream.log (Parallel Stream Engine Decodes)</div>
@@ -388,162 +398,170 @@ body {
         </div>
         <div class="log-container">
             <div class="log-title">system_event_tracker.log</div>
-// Live UI Running Clock
-function updateClock() {
-    const now = new Date();
-    document.getElementById('liveClock').textContent = now.toISOString().replace('T', ' ').substring(0, 19);
-}
-setInterval(updateClock, 1000);
-
-// Core Processing Engine matching byte array offsets precisely to the protocol maps
-function parsePayloadArray(rawBuffer) {
-    try {
-        if (!rawBuffer || rawBuffer.length < 76) {
-            throw new Error(`Invalid frame size: ${rawBuffer ? rawBuffer.length : 0}/76 bytes.`);
-        }
-
-        // Update Pipeline status visually
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
-        statusDot.className = "status-dot connected";
-        statusText.textContent = "Pipeline Active: Processing Telemetry Stream Frame";
-        statusText.style.color = "#00A86B";
-
-        // 1. Basic Configurations (Bytes 0 - 4)
-        document.getElementById('cell-pcb-type').textContent = rawBuffer[0];
-        document.getElementById('cell-mode').textContent = rawBuffer[1];
-        document.getElementById('side-real-freq').textContent = rawBuffer[2] + " Hz";
-        document.getElementById('side-target-freq').textContent = rawBuffer[3] + " Hz";
-        document.getElementById('side-set-freq').textContent = rawBuffer[4] + " Hz";
-
-        // 2. Air Conditioning Environment Sensors (Bytes 8 - 13)
-        document.getElementById('cell-ts').textContent = rawBuffer[8] + " °C";
-        document.getElementById('cell-tr').textContent = rawBuffer[9] + " °C";
-        document.getElementById('cell-ta').textContent = rawBuffer[10] + " °C";
-        document.getElementById('cell-td').textContent = rawBuffer[11] + " °C";
-        document.getElementById('cell-te').textContent = rawBuffer[12] + " °C";
-        document.getElementById('cell-tc').textContent = rawBuffer[13] + " °C";
-
-        // 3. Electrical Quantities (Bytes 14 - 15, 19 - 20)
-        document.getElementById('cell-ac-voltage').textContent = rawBuffer[14] + " V";
-        document.getElementById('cell-ac-current').textContent = (rawBuffer[15] * 0.1).toFixed(1) + " A";
-        document.getElementById('cell-dc-voltage').textContent = rawBuffer[19] + " V";
-        document.getElementById('cell-dc-current').textContent = (rawBuffer[20] * 0.1).toFixed(1) + " A";
-
-        // 4. Component RPMs & Metadata (Bytes 18, 21 - 25, 30, 32, 36)
-        document.getElementById('cell-fan-level').textContent = rawBuffer[18];
-        document.getElementById('cell-odu-rpm').textContent = (rawBuffer[21] * 10) + " RPM";
-        document.getElementById('cell-machine-type').textContent = "0x" + rawBuffer[22].toString(16).toUpperCase();
-        document.getElementById('cell-area').textContent = rawBuffer[23];
-        document.getElementById('cell-eev').textContent = rawBuffer[24] + " P";
-        document.getElementById('cell-tipm').textContent = rawBuffer[25] + " °C";
-        document.getElementById('cell-tsu').textContent = rawBuffer[30] + " °C";
-        document.getElementById('cell-idu-rpm').textContent = (rawBuffer[32] * 10) + " RPM";
-        document.getElementById('cell-packet-no').textContent = "#" + rawBuffer[36];
-
-        // 5. Software Details (Bytes 28, 29, 33, 34, 35)
-        document.getElementById('cell-soft-ver').textContent = "V" + rawBuffer[28] + "." + rawBuffer[29];
-        document.getElementById('cell-soft-date').textContent = "20" + rawBuffer[33] + "-" + 
-            String(rawBuffer[34]).padStart(2, '0') + "-" + String(rawBuffer[35]).padStart(2, '0');
-
-        // 6. Remaining Modules (Bytes 41, 42, 44)
-        document.getElementById('cell-comp-time').textContent = rawBuffer[42] + " Min";
-        document.getElementById('cell-fan-ipm').textContent = rawBuffer[44] + " °C";
-
-        // 7. Dynamic 13-Column Compressor Frequency Matrix [Bytes 47 to 59]
-        for (let i = 47; i <= 59; i++) {
-            document.getElementById(`f-${i}`).textContent = rawBuffer[i] + " Hz";
-        }
-
-        // 8. Boolean Status Coils
-        document.getElementById('chk-fault').checked = rawBuffer[5] > 0 || rawBuffer[39] > 0;
-        document.getElementById('chk-protect').checked = rawBuffer[6] > 0 || rawBuffer[40] > 0;
-        document.getElementById('chk-limit').checked = (rawBuffer[7] & 0x01) > 0;
-        document.getElementById('chk-down').checked = (rawBuffer[27] & 0x01) > 0;
-        document.getElementById('chk-comp').checked = rawBuffer[41] === 1;
-
-        // 9. Error Mapping System & Banner Alerts (Byte 45)
-        const iduFault = rawBuffer[45];
-        document.getElementById('cell-drv-fault').textContent = "0x" + rawBuffer[16].toString(16).toUpperCase();
-        document.getElementById('cell-drv-fault-2').textContent = "0x" + rawBuffer[16].toString(16).toUpperCase();
-        document.getElementById('cell-idu-fault').textContent = "0x" + iduFault.toString(16).toUpperCase();
-        document.getElementById('cell-idu-fault-raw').textContent = iduFault;
-        
-        const banner = document.getElementById('ui-idu-fault-banner');
-        if (iduFault > 0) {
-            banner.textContent = "CRITICAL INDOOR FAULT: CODE E" + iduFault;
-            banner.classList.add('active');
-        } else {
-            banner.textContent = "IDU Fault Status: OK";
-            banner.classList.remove('active');
-        }
-
-        logStream(`Frame received successfully. Packet: #${rawBuffer[36]} | Target: ${rawBuffer[33]}Hz | Real: ${rawBuffer[2]}Hz`);
-        
-    } catch (err) {
-        logEvent(`Parsing Exception raised: ${err.message}`);
+            <div class="log-window" id="eventLog">System Diagnostics Initialized. Pipeline Ready.</div>
+        </div>
+    </div>
+</div>
+<script>
+    // Live UI Running Clock
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('liveClock').textContent = now.toISOString().replace('T', ' ').substring(0, 19);
     }
-}
+    setInterval(updateClock, 1000);
 
-function logStream(msg) {
-    const win = document.getElementById('streamLog');
-    win.textContent += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
-    win.scrollTop = win.scrollHeight;
-}
+    // Core Processing Engine matching byte array offsets precisely to the protocol maps
+    function parsePayloadArray(rawBuffer) {
+        try {
+            if (!rawBuffer || rawBuffer.length < 76) {
+                throw new Error(`Invalid frame size: ${rawBuffer ? rawBuffer.length : 0}/76 bytes.`);
+            }
 
-function logEvent(msg) {
-    const win = document.getElementById('eventLog');
-    win.textContent += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
-    win.scrollTop = win.scrollHeight;
-}
+            // Update Pipeline status visually
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            statusDot.className = "status-dot connected";
+            statusText.textContent = "Pipeline Active: Processing Telemetry Stream Frame";
+            statusText.style.color = "#00A86B";
 
-// SIMULATION HANDLER
-function triggerSimulatedDataStream() {
-    const mockPacket = new Array(76).fill(0);
-    
-    mockPacket[0] = 4;    // PCB Type
-    mockPacket[1] = 1;    // Mode
-    mockPacket[2] = 55;   // Real Freq
-    mockPacket[3] = 60;   // Target Freq
-    mockPacket[4] = 60;   // Set Freq
-    mockPacket[5] = 0;    // Fault 2
-    mockPacket[8] = 22;   // Ts
-    mockPacket[9] = 24;   // Tr
-    mockPacket[10] = 31;  // Ta
-    mockPacket[11] = 78;  // Td
-    mockPacket[12] = 6;   // Te
-    mockPacket[13] = 42;  // Tc
-    mockPacket[14] = 220; // AC Voltage
-    mockPacket[15] = 45;  // AC Current (4.5A)
-    mockPacket[19] = 310; // DC Voltage
-    mockPacket[20] = 12;  // DC Current (1.2A)
-    mockPacket[21] = 82;  // ODU Fan RPM (820)
-    mockPacket[22] = 0x3A;// Machine Type
-    mockPacket[24] = 180; // EEV Opening
-    mockPacket[25] = 52;  // Tipm
-    mockPacket[28] = 2;   // Software Ver Major
-    mockPacket[29] = 4;   // Software Ver Minor
-    mockPacket[30] = 18;  // Tsu
-    mockPacket[32] = 75;  // IDU Fan RPM (750)
-    mockPacket[33] = 26;  // Year (2026)
-    mockPacket[34] = 6;   // Month
-    mockPacket[35] = 15;  // Day
-    mockPacket[36] = 114; // Packet Counter No
-    mockPacket[41] = 1;   // Comp state ON
-    mockPacket[42] = 48;  // Comp Runtime (Mins)
-    mockPacket[44] = 38;  // Fan IPM Temp
-    mockPacket[45] = 0;   // IDU Fault Code (0 = OK)
+            // 1. Basic Configurations (Bytes 0 - 4)
+            document.getElementById('cell-pcb-type').textContent = rawBuffer[0];
+            document.getElementById('cell-mode').textContent = rawBuffer[1];
+            document.getElementById('side-real-freq').textContent = rawBuffer[2] + " Hz";
+            document.getElementById('side-target-freq').textContent = rawBuffer[3] + " Hz";
+            document.getElementById('side-set-freq').textContent = rawBuffer[4] + " Hz";
 
-    const sampleFreqs =;
-    for(let i = 0; i < 13; i++) { 
-        mockPacket[47 + i] = sampleFreqs[i]; 
+            // 2. Air Conditioning Environment Sensors (Bytes 8 - 13)
+            document.getElementById('cell-ts').textContent = rawBuffer[8] + " °C";
+            document.getElementById('cell-tr').textContent = rawBuffer[9] + " °C";
+            document.getElementById('cell-ta').textContent = rawBuffer[10] + " °C";
+            document.getElementById('cell-td').textContent = rawBuffer[11] + " °C";
+            document.getElementById('cell-te').textContent = rawBuffer[12] + " °C";
+            document.getElementById('cell-tc').textContent = rawBuffer[13] + " °C";
+
+            // 3. Electrical Quantities (Bytes 14 - 15, 19 - 20)
+            document.getElementById('cell-ac-voltage').textContent = rawBuffer[14] + " V";
+            document.getElementById('cell-ac-current').textContent = (rawBuffer[15] * 0.1).toFixed(1) + " A";
+            document.getElementById('cell-dc-voltage').textContent = rawBuffer[19] + " V";
+            document.getElementById('cell-dc-current').textContent = (rawBuffer[20] * 0.1).toFixed(1) + " A";
+
+            // 4. Component RPMs & Metadata (Bytes 18, 21 - 25, 30, 32, 36)
+            document.getElementById('cell-fan-level').textContent = rawBuffer[18];
+            document.getElementById('cell-odu-rpm').textContent = (rawBuffer[21] * 10) + " RPM";
+            document.getElementById('cell-machine-type').textContent = "0x" + rawBuffer[22].toString(16).toUpperCase();
+            document.getElementById('cell-area').textContent = rawBuffer[23];
+            document.getElementById('cell-eev').textContent = rawBuffer[24] + " P";
+            document.getElementById('cell-tipm').textContent = rawBuffer[25] + " °C";
+            document.getElementById('cell-tsu').textContent = rawBuffer[30] + " °C";
+            document.getElementById('cell-idu-rpm').textContent = (rawBuffer[32] * 10) + " RPM";
+            document.getElementById('cell-packet-no').textContent = "#" + rawBuffer[36];
+
+            // 5. Software Details (Bytes 28, 29, 33, 34, 35)
+            document.getElementById('cell-soft-ver').textContent = "V" + rawBuffer[28] + "." + rawBuffer[29];
+            document.getElementById('cell-soft-date').textContent = "20" + rawBuffer[33] + "-" + 
+                String(rawBuffer[34]).padStart(2, '0') + "-" + String(rawBuffer[35]).padStart(2, '0');
+
+            // 6. Remaining Modules (Bytes 41, 42, 44)
+            document.getElementById('cell-comp-time').textContent = rawBuffer[41] + " Min";
+            document.getElementById('cell-fan-ipm').textContent = rawBuffer[42] + " °C";
+
+            // 7. Dynamic 13-Column Compressor Frequency Matrix [Bytes 47 to 59]
+            for (let i = 47; i <= 59; i++) {
+                document.getElementById(`f-${i}`).textContent = rawBuffer[i] + " Hz";
+            }
+
+            // 8. Boolean Status Coils
+            document.getElementById('chk-fault').checked = rawBuffer[5] > 0 || rawBuffer[6] > 0;
+            document.getElementById('chk-protect').checked = rawBuffer[5] > 0 || rawBuffer[6] > 0;
+            document.getElementById('chk-limit').checked = (rawBuffer[7] & 0x01) > 0;
+            document.getElementById('chk-down').checked = (rawBuffer[7] & 0x01) > 0;
+            document.getElementById('chk-comp').checked = rawBuffer[31] === 1;
+
+            // 9. Error Mapping System & Banner Alerts (Byte 45)
+            const iduFault = rawBuffer[45];
+            document.getElementById('cell-drv-fault').textContent = "0x" + rawBuffer[5].toString(16).toUpperCase();
+            document.getElementById('cell-drv-fault-2').textContent = "0x" + rawBuffer[6].toString(16).toUpperCase();
+            document.getElementById('cell-idu-fault').textContent = "0x" + iduFault.toString(16).toUpperCase();
+            document.getElementById('cell-idu-fault-raw').textContent = iduFault;
+            
+            const banner = document.getElementById('ui-idu-fault-banner');
+            if (iduFault > 0) {
+                banner.textContent = "CRITICAL INDOOR FAULT: CODE E" + iduFault;
+                banner.classList.add('active');
+            } else {
+                banner.textContent = "IDU Fault Status: OK";
+                banner.classList.remove('active');
+            }
+
+            logStream(`Frame parsed. Packet: #${rawBuffer[36]} | Target: ${rawBuffer[3]}Hz | Real: ${rawBuffer[2]}Hz`);
+            
+        } catch (err) {
+            logEvent(`Parsing Exception raised: ${err.message}`);
+        }
     }
 
-    parsePayloadArray(mockPacket);
-}
+    function logStream(msg) {
+        const win = document.getElementById('streamLog');
+        win.textContent += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
+        win.scrollTop = win.scrollHeight;
+    }
 
-// Auto-fire simulation event sequence after 2.5 seconds to populate dashboard metrics
-setTimeout(() => {
-    logEvent("MQTT WebSocket Engine connected successfully.");
-    triggerSimulatedDataStream();
-}, 2500);
+    function logEvent(msg) {
+        const win = document.getElementById('eventLog');
+        win.textContent += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
+        win.scrollTop = win.scrollHeight;
+    }
+
+    // SIMULATION ENGINE HANDLER
+    function triggerSimulatedDataStream() {
+        const mockPacket = new Array(76).fill(0);
+        
+        mockPacket[0] = 4;    // PCB Type
+        mockPacket[1] = 1;    // Mode
+        mockPacket[2] = 55;   // Real Freq
+        mockPacket[3] = 60;   // Target Freq
+        mockPacket[4] = 60;   // Set Freq
+        mockPacket[5] = 0;    // Fault 2
+        mockPacket[8] = 22;   // Ts
+        mockPacket[9] = 24;   // Tr
+        mockPacket[10] = 31;  // Ta
+        mockPacket[11] = 78;  // Td
+        mockPacket[12] = 6;   // Te
+        mockPacket[13] = 42;  // Tc
+        mockPacket[14] = 220; // AC Voltage
+        mockPacket[15] = 45;  // AC Current (4.5A)
+        mockPacket[19] = 310; // DC Voltage
+        mockPacket[20] = 12;  // DC Current (1.2A)
+        mockPacket[21] = 82;  // ODU Fan RPM (820)
+        mockPacket[22] = 0x3A;// Machine Type
+        mockPacket[24] = 180; // EEV Opening
+        mockPacket[25] = 52;  // Tipm
+        mockPacket[28] = 2;   // Software Ver Major
+        mockPacket[29] = 4;   // Software Ver Minor
+        mockPacket[30] = 18;  // Tsu
+        mockPacket[32] = 75;  // IDU Fan RPM (750)
+        mockPacket[33] = 26;  // Year (2026)
+        mockPacket[34] = 6;   // Month
+        mockPacket[35] = 15;  // Day
+        mockPacket[36] = 114; // Packet Counter No
+        mockPacket[31] = 1;   // Comp state ON
+        mockPacket[41] = 48;  // Comp Runtime (Mins)
+        mockPacket[42] = 38;  // Fan IPM Temp
+        mockPacket[45] = 0;   // IDU Fault Code (0 = OK)
+
+        const sampleFreqs =;
+        for(let i = 0; i < 13; i++) { 
+            mockPacket[47 + i] = sampleFreqs[i]; 
+        }
+
+        parsePayloadArray(mockPacket);
+    }
+
+    // Auto-fire simulation sequence after 2.5 seconds to populate metrics
+    setTimeout(() => {
+        logEvent("MQTT WebSocket Engine connected successfully.");
+        triggerSimulatedDataStream();
+    }, 2500);
+</script>
+</body>
+</html>
