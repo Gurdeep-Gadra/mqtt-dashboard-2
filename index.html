@@ -683,7 +683,7 @@ function initializeParallelDiscoveryNetwork() {
         tempWs.onmessage = (event) => {
             const payload = new Uint8Array(event.data);
             if (payload.length === 0) return;
-            const packetType = payload[payload.length-1] //>> 4;
+            const packetType = payload[payload.length] //>> 4;
 
            /* if (packetType === 2) { // CONNACK HANDSHAKE OK
                 sendMqttSubscribePacketRaw(tempWs, topicStr);
