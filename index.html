@@ -469,10 +469,14 @@
                     <div>Fan Type: <span id="lbl_fantype" style="font-weight: bold; color: #000000;">--</span></div>
                 </div>
 
-                <div class="brand-logo-panel">
-                    <div class="brand-logo-text">Meg</div>
-                    <div id="lbl_branding_date" class="brand-sub-date">03-06-2026 01:21:45 AM</div>
-                </div>
+                 <div class="brand-logo-panel">
+                 <!-- UPGRADE: Removed 'Meg' text logo and replaced with a low-level binary hardware signal flash pulse beacon -->
+                 <div style="display: flex; justify-content: flex-end; align-items: center; gap: 6px; margin-bottom: 4px;">
+                 <span style="font-size: 10px; font-weight: bold; color: #000000; font-family: 'Tahoma', sans-serif;">RX_DATA_PULSE:</span>
+                 <div id="rx_pulse_beacon" style="width: 14px; height: 14px; border: 2px solid #808080; background-color: #00FF00; box-shadow: inset 1px 1px 0px #FFFFFF; transition: background-color 0.05s ease;"></div>
+                 </div>
+                 <div id="lbl_branding_date" class="brand-sub-date">03-06-2026 01:21:45 AM</div>
+                 </div>
             </div>
         </div>
     </div> <!-- End of monitor-workspace-split -->
@@ -863,6 +867,13 @@ function initializeParallelDiscoveryNetwork() {
     // =========================================================================
 
     function parseMegmeetCorePacket(rawDataBytes) {
+        const pulseBeacon = document.getElementById('rx_pulse_beacon');
+        if (pulseBeacon) {
+            pulseBeacon.style.backgroundColor = '#FF0000'; // Turn instantly to RED on byte arrival
+            setTimeout(() => {
+                pulseBeacon.style.backgroundColor = '#00FF00'; // Flash back to GREEN resting state after 80ms
+            }, 80);
+        }
         // --- Core Parameter Extraction (Matches 0-Based Payload Specs) ---
         const tr   = rawDataBytes[9];  // Byte No. 9
         const ts   = rawDataBytes[8];  // Byte No. 8
