@@ -685,29 +685,43 @@ function initializeParallelDiscoveryNetwork() {
                 sendMqttSubscribePacketRaw(tempWs, topicStr);
             }
 
-            if (packetType === 3) { // TELEMETRY FRAME RECEIVED OVER WIRE
-                // Tick heartbeat timestamp marker row instantly
-                activeDevicesHeartbeats[topicStr] = Date.now();
-                
-                // Live visual grid text update shunts
-                const badge = document.getElementById(`status_badge_${btoa(topicStr)}`);
-                if (badge && !badge.classList.contains('status-node-online')) {
-                    badge.className = 'status-badge-node status-node-online';
-                    badge.innerText = 'Online';
-                }
-
-                // If this backdrop topic matches our focus viewer window, demux binary array straight down to form fields
-                if (activeStreamTopic === topicStr) {
-                    let idx = 1; let remLen = 0; let multiplier = 1;
-                    do { remLen += (payload[idx] & 127) * multiplier; multiplier *= 128; } while ((payload[idx++] & 128) !== 0);
-                    const topicLen = (payload[idx++] << 8) + payload[idx++]; idx += topicLen;
-                    const rawDataBytes = payload.subarray(idx);
-                    
-                    if (rawDataBytes.length >= 40) {
-                        parseMegmeetCorePacket(rawDataBytes);
-                    }
-                }
+               if (packetType === 3) { // TELEMETRY FRAME RECEIVED OVER WIRE 
+        // Tick heartbeat timestamp marker row instantly 
+        activeDevicesHeartbeats[topicStr] = Date.now(); 
+        
+        // Live visual grid text update shunts 
+        const badge = document.getElementById(`status_badge_${btoa(topicStr)}`); 
+        if (badge && !badge.classList.contains('status-node-online')) { 
+            badge.className = 'status-badge-node status-node-online'; 
+            badge.innerText = 'Online'; 
+        } 
+        
+        // If this backdrop topic matches our focus viewer window, demux binary array straight down to form fields 
+        if (activeStreamTopic === topicStr) { 
+            // CORRECTED: Force master status bar updates alongside active payload parsing tracks
+            const panelStatusText = document.getElementById('status_text');
+            if (panelStatusText && !panelStatusText.innerText.includes("Focus Stream")) {
+                panelStatusText.innerText = `Focus Stream: Connected and tracking realtime target [${topicStr}]`;
+                document.getElementById('status_dot').className = 'status-beacon-dot connected';
             }
+
+            let idx = 1; 
+            let remLen = 0; 
+            let multiplier = 1; 
+            do { 
+                remLen += (payload[idx] & 127) * multiplier; 
+                multiplier *= 128; 
+            } while ((payload[idx++] & 128) !== 0); 
+            
+            const topicLen = (payload[idx++] << 8) + payload[idx++]; 
+            idx += topicLen; 
+            const rawDataBytes = payload.subarray(idx); 
+            if (rawDataBytes.length >= 40) { 
+                parseMegmeetCorePacket(rawDataBytes); 
+            } 
+        } 
+    }
+
         };
 
         tempWs.onclose = () => {
@@ -753,20 +767,25 @@ function initializeParallelDiscoveryNetwork() {
     // =========================================================================
 
     // --- 1. SYSTEM MONITOR MULTIPLEX ROUTING HOOKS ---
-    function launchDiagnosticMonitorScreen(targetTopicStr) {
-        activeStreamTopic = targetTopicStr;
-        
-        // Hide the inventory management backdrop panel curtain sheet view
-        document.getElementById('device_manager').style.display = 'none';
-        
-        // Update horizontal status strip color profiles and tracking parameters
-        statusBar.classList.add('connected');
-        statusDot.className = 'status-beacon-dot connected';
-        statusText.innerText = `Focus Stream: Connected and tracking realtime target [${targetTopicStr}]`;
-        
-        appendEventLog(`Workspace updated. Interface stream focus shifted to channel [${targetTopicStr}].`);
-        renderDeviceInventoryTable();
+  function launchDiagnosticMonitorScreen(targetTopicStr) { 
+    activeStreamTopic = targetTopicStr; 
+    
+    // Hide the inventory management backdrop panel curtain sheet view 
+    document.getElementById('device_manager').style.display = 'none'; 
+    
+    // CORRECTED: Target correct DOM element IDs to clear the idle notification
+    const statusDot = document.getElementById('status_dot');
+    const statusText = document.getElementById('status_text');
+    
+    if (statusDot && statusText) {
+        statusDot.className = 'status-beacon-dot connected'; 
+        statusText.innerText = `Focus Stream: Connected and tracking realtime target [${targetTopicStr}]`; 
     }
+    
+    appendEventLog(`Workspace updated. Interface stream focus shifted to channel [${targetTopicStr}].`); 
+    renderDeviceInventoryTable(); 
+}
+
 
     function returnToInventoryDashboard() {
         activeStreamTopic = null;
