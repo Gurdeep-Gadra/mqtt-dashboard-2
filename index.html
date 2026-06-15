@@ -255,25 +255,41 @@
 </head>
 <body>
 
-    <!-- 1. MULTICHANNEL NETWORK INVENTORY MANAGEMENT OVERLAY -->
-    <div id="device_manager" class="device-mgr-wrapper">
-        <div class="device-mgr-frame">
-            <div class="auth-header-strip">MQTT Target Diagnostic Unit Asset Inventory Register</div>
-            
-            <p style="margin: 0 0 6px 0; font-weight: bold;">Registered Nodes Database List:</p>
-            <table class="device-data-table">
-                <thead>
-                    <tr>
-                        <th style="width: 45%;">Hardware Node Identity Descriptor</th>
-                        <th style="width: 30%;">MQTT Topic Routing Link</th>
-                        <th style="width: 15%;">Status</th>
-                        <th style="width: 10%;">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="device_inventory_tbody">
-                    <!-- Dynamic multi-channel status table rows injected here -->
-                </tbody>
-            </table>
+           <!-- 1. MULTICHANNEL NETWORK INVENTORY MANAGEMENT OVERLAY -->
+        <div id="device_manager" class="device-mgr-wrapper">
+         <div class="device-mgr-frame">
+         <div class="auth-header-strip">MQTT Target Diagnostic Unit Asset Inventory Register</div>
+         
+         <!-- NEW: PERSISTENT BROKER CONTEXT SETTINGS CONTROL GROUP -->
+         <div class="group-box-frame" style="background-color: #D4D0C8; padding-top: 14px; margin-bottom: 10px;">
+         <div class="group-box-title">MQTT Cloud Broker Connection Properties</div>
+         <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 6px; margin-bottom: 6px;">
+         <div>
+         <span style="font-size:10px;">Broker Host (wss:// Address URI)</span>
+         <input type="text" id="cfg_broker_host" class="form-txt-input" onchange="saveBrokerCredentialsToRegistry()">
+         </div>
+         <div>
+         <span style="font-size:10px;">MQTT Auth User</span>
+         <input type="text" id="cfg_mqtt_user" class="form-txt-input" onchange="saveBrokerCredentialsToRegistry()">
+         </div>
+         <div>
+         <span style="font-size:10px;">MQTT Auth Password</span>
+         <input type="password" id="cfg_mqtt_pass" class="form-txt-input" onchange="saveBrokerCredentialsToRegistry()">
+         </div>
+         </div>
+         </div>
+        
+         <p style="margin: 0 0 6px 0; font-weight: bold;">Registered Nodes Database List:</p>
+         <table class="device-data-table">
+         <thead>
+         <tr>
+         <th style="width: 45%;">Hardware Node Identity Descriptor</th> <th style="width: 30%;">MQTT Topic Routing Link</th> <th style="width: 15%;">Status</th> <th style="width: 10%;">Action</th>
+         </tr>
+         </thead>
+         <tbody id="device_inventory_tbody">
+         <!-- Dynamic multi-channel status table rows injected here -->
+         </tbody>
+         </table>
 
             <div class="group-box-frame" style="background-color: #D4D0C8; padding-top: 14px; margin-bottom: 10px;">
                 <div class="group-box-title">Register New Diagnostic Node Asset</div>
@@ -475,27 +491,47 @@
 
     <script>
     // --- SERVERLESS NETWORK LAYER LAYOUT PROFILE ---
-    const BROKER_HOST = "e897bc6d6145492e99f4a7f09df8ffd9.s1.eu.hivemq.cloud";
-    const WEBSOCKET_PORT = 8884;
-    const MQTT_USER = "Amber_IOT";
-    const MQTT_PASS = "Amber@123";
+// Dynamically retrieve user configurations or apply hardcoded fallbacks if empty
+const getStoredConfig = (key, fallback) => localStorage.getItem(key) || fallback;
+
+let BROKER_HOST = getStoredConfig('MEGMEET_HOST', "e897bc6d6145492e99f4a7f09df8ffd9.s1.eu.hivemq.cloud");
+let WEBSOCKET_PORT = 8884;
+let MQTT_USER = getStoredConfig('MEGMEET_USER', "Amber_IOT");
+let MQTT_PASS = getStoredConfig('MEGMEET_PASS', "Amber@123");
+
+let activeStreamTopic = null; // Topic dedicated to the main live dashboard layout view
+let mainDashboardWs = null; // WebSocket handle for the opened focus diagnostic window
+let mainDashboardPingTimer = null; // Discovery layer sockets register mapping key-value sets
+let backgroundDiscoverySockets = {};
+let activeDevicesHeartbeats = {}; // Tracks timestamp of the last verified frame packet per topic array
+
+// NEW: Commits modified form configurations to local disk and triggers automatic reconnect sequences
+function saveBrokerCredentialsToRegistry() {
+    BROKER_HOST = document.getElementById('cfg_broker_host').value.trim();
+    MQTT_USER = document.getElementById('cfg_mqtt_user').value.trim();
+    MQTT_PASS = document.getElementById('cfg_mqtt_pass').value.trim();
     
-    let activeStreamTopic = null; // Topic dedicated to the main live dashboard layout view
-    let mainDashboardWs = null;   // WebSocket handle for the opened focus diagnostic window
-    let mainDashboardPingTimer = null;
+    localStorage.setItem('MEGMEET_HOST', BROKER_HOST);
+    localStorage.setItem('MEGMEET_USER', MQTT_USER);
+    localStorage.setItem('MEGMEET_PASS', MQTT_PASS);
+    
+    appendEventLog("Network connection profiles altered. Resetting parallel socket pools...");
+    
+    // Purge existing loops to immediately execute hot-reconnect using new credentials
+    Object.keys(backgroundDiscoverySockets).forEach(topicStr => {
+        try { backgroundDiscoverySockets[topicStr].close(); } catch(e){}
+        delete backgroundDiscoverySockets[topicStr];
+    });
+}
 
-    // Discovery layer sockets register mapping key-value sets
-    let backgroundDiscoverySockets = {};
-    let activeDevicesHeartbeats = {}; // Tracks timestamp of the last verified frame packet per topic array
+setInterval(() => {
+ const now = new Date();
+ document.getElementById('live_clock').innerText = now.toLocaleTimeString();
+ document.getElementById('lbl_branding_date').innerText = now.toLocaleString();
+ // Background watch module loops through registered devices to transition timestamps after 5000ms
+ evaluateAllDeviceHeartbeats();
+ }, 1000);
 
-    setInterval(() => {
-        const now = new Date();
-        document.getElementById('live_clock').innerText = now.toLocaleTimeString();
-        document.getElementById('lbl_branding_date').innerText = now.toLocaleString();
-        
-        // Background watch module loops through registered devices to transition timestamps after 5000ms
-        evaluateAllDeviceHeartbeats();
-    }, 1000);
 
     function appendLine(text, cssClass) {
         const consoleBox = document.getElementById('console_output');
@@ -613,17 +649,21 @@
         });
     }
 
-    // --- 3. BACKGROUND SIGNAL PULSE DETECTORS ---
-    function initializeParallelDiscoveryNetwork() {
-        appendEventLog("Asset register list loaded straight from storage. Provisioning background scanner web sockets...");
-        const devices = fetchDevicesFromRegistry();
-        
-        devices.forEach(dev => {
-            initializeBackgroundDeviceScanner(dev.topic);
-        });
-        
-        renderDeviceInventoryTable();
-    }
+   // --- 3. BACKGROUND SIGNAL PULSE DETECTORS ---
+function initializeParallelDiscoveryNetwork() {
+    // Populate form entries with existing local configurations on startup
+    document.getElementById('cfg_broker_host').value = BROKER_HOST;
+    document.getElementById('cfg_mqtt_user').value = MQTT_USER;
+    document.getElementById('cfg_mqtt_pass').value = MQTT_PASS;
+
+    appendEventLog("Asset register list loaded straight from storage. Provisioning background scanner web sockets...");
+    const devices = fetchDevicesFromRegistry();
+    devices.forEach(dev => {
+        initializeBackgroundDeviceScanner(dev.topic);
+    });
+    renderDeviceInventoryTable();
+}
+
 
     function initializeBackgroundDeviceScanner(topicStr) {
         if (backgroundDiscoverySockets[topicStr]) return; // Stop redundant connection assignments
