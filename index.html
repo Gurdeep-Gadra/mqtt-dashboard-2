@@ -966,9 +966,9 @@ function initializeParallelDiscoveryNetwork() {
         document.getElementById('val_drvfault').innerText = "NormalState";
 
         document.getElementById('val_dccur').innerText   = (dcCur || 0) + "A";
-        document.getElementById('val_dcvol').innerText   = (dcVol * 10 || 248) + "V";
+        document.getElementById('val_dcvol').innerText   = dcVol + "V";
         document.getElementById('val_accur').innerText   = (acCur || 0) + "A";
-        document.getElementById('val_acvol').innerText   = (acVol * 10 || 124) + "V";
+        document.getElementById('val_acvol').innerText   = acVol  + "V";
 
         document.getElementById('val_eev').innerText     = (eev * 10 || 230) + "P";
         document.getElementById('val_tipm').innerText    = (tipm || 38) + " °C";
