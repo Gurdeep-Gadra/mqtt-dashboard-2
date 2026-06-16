@@ -689,8 +689,8 @@ function initializeParallelDiscoveryNetwork() {
                 sendMqttSubscribePacketRaw(tempWs, topicStr);
             }
 
-        //if (packetType === 3) { // TELEMETRY FRAME RECEIVED OVER WIRE 
-        if(payload[payload.length-1]==0xAA){
+        if (packetType === 3) { // TELEMETRY FRAME RECEIVED OVER WIRE 
+        //if(payload[payload.length-1]==0xAA){
         // Tick heartbeat timestamp marker row instantly 
         activeDevicesHeartbeats[topicStr] = Date.now(); 
         
