@@ -722,7 +722,7 @@ function initializeParallelDiscoveryNetwork() {
             const topicLen = (payload[idx++] << 8) + payload[idx++]; 
             idx += topicLen; 
             const rawDataBytes = payload.subarray(idx); 
-            if (rawDataBytes.length >= 40) { 
+            if (rawDataBytes.length >= 70 && rawDataBytes[rawDataBytes.length-1]==0xAA) { 
                 parseMegmeetCorePacket(rawDataBytes); 
             } 
         } 
