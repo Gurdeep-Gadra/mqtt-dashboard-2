@@ -954,13 +954,13 @@ function initializeParallelDiscoveryNetwork() {
         document.getElementById('val_odumcuee').innerText  = "- - - -"//"EE_OK";
 
         document.getElementById('val_mode').innerText        = `-${modeStr}`;
-        document.getElementById('val_tr').innerText          = tr+ " °C";//(tr * 0.5) + " °C";
-        document.getElementById('val_ts').innerText          = ts + " °C";
-        document.getElementById('val_te').innerText          = te + " °C";
+        document.getElementById('val_tr').innerText          = tr+ "°C";//(tr * 0.5) + " °C";
+        document.getElementById('val_ts').innerText          = ts + "°C";
+        document.getElementById('val_te').innerText          = te + "°C";
         document.getElementById('val_ratedmode').innerText   = "- - - -";//modeCode === 0 ? "None" : modeStr;
         document.getElementById('val_fanlevel').innerText    = `-${fanLevelStr}`;
-        document.getElementById('val_idufan').innerText      = iduFan + " RPM";
-        if(rawDataBytes[45] & 0x01)
+        document.getElementById('val_idufan').innerText      = iduFan + "RPM";
+        if(rawDataBytes[45] & 0x01) //IDU fault
             document.getElementById('val_idufaultstr').innerText = "Fan fault";
         else if(rawDataBytes[45] & 0x02)
             document.getElementById('val_idufaultstr').innerText = "Te fault";
@@ -972,24 +972,30 @@ function initializeParallelDiscoveryNetwork() {
             document.getElementById('val_idufaultstr').innerText = "WiFi fault";
         else if(rawDataBytes[45])
             document.getElementById('val_idufaultstr').innerText = "IDU fault";
-        document.getElementById('val_tsu').innerText     = tsu + " °C";
-        document.getElementById('val_ta').innerText      = ta  + " °C";
-        document.getElementById('val_tc').innerText      = tc" °C";
-        document.getElementById('val_td').innerText      = td + " °C";
+        document.getElementById('val_tsu').innerText     = tsu + "°C";
+        document.getElementById('val_ta').innerText      = ta  + "°C";
+        document.getElementById('val_tc').innerText      = tc"°C";
+        document.getElementById('val_td').innerText      = td + "°C";
         document.getElementById('val_area').innerText    = area === 23 ? "F_area" : `Area ${area}`;
         document.getElementById('val_pcbtype').innerText = pcbType === 0 ? "Rx23Tx" : `Type ${pcbType}`;
-        document.getElementById('val_odufan').innerText  = oduFan + " RPM;
-        document.getElementById('val_drvfault').innerText = "NormalState";
-
-        document.getElementById('val_dccur').innerText   = (dcCur || 0) + "A";
+        document.getElementById('val_odufan').innerText  = oduFan + "RPM;
+        if(rawDataBytes[16] & 0x02)     //Drv Fault
+            document.getElementById('val_drvfault').innerText = "Over Current";
+        else if(rawDataBytes[16] & 0x04)     //Drv Fault
+            document.getElementById('val_drvfault').innerText = "Over Voltage";
+        else if(rawDataBytes[16] & 0x08)     //Drv Fault
+            document.getElementById('val_drvfault').innerText = "Step Out";
+        else if(rawDataBytes[16] & 0x10)     //Drv Fault
+            document.getElementById('val_drvfault').innerText = "Reverse";
+        document.getElementById('val_dccur').innerText   = dcCur + "A";
         document.getElementById('val_dcvol').innerText   = dcVol + "V";
-        document.getElementById('val_accur').innerText   = (acCur || 0) + "A";
+        document.getElementById('val_accur').innerText   = acCur+ "A";
         document.getElementById('val_acvol').innerText   = acVol  + "V";
 
-        document.getElementById('val_eev').innerText     = (eev * 10 || 230) + "P";
-        document.getElementById('val_tipm').innerText    = (tipm || 38) + " °C";
-        document.getElementById('val_fanipm').innerText  = (fanIpm || 0) + " °C";
-        if(rawDataBytes[41]==0)
+        document.getElementById('val_eev').innerText     = eev+ "P";
+        document.getElementById('val_tipm').innerText    = tipm + " °C";
+        document.getElementById('val_fanipm').innerText  = fanIpm+ " °C";
+        if(rawDataBytes[41]==0) //Compressor ON or OFF
             document.getElementById('Comp_Time').innerText   = `Off[${CompTime}]Sec`;
         else if(rawDataBytes[41]==1)
             document.getElementById('Comp_Time').innerText   = `On[${CompTime}]Sec`;
