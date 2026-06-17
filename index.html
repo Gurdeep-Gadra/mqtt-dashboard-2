@@ -1048,7 +1048,7 @@ function initializeParallelDiscoveryNetwork() {
         if (protectLabelTextElement) {
             protectLabelTextElement.innerText = activeProtections.length > 0 ? activeProtections.join(", ") : ""; // Clear completely if no protection bits are tripped
         }
-        //txt_Limitfreq_type txt_downfreq_type
+        //txt_Limitfreq_type
         const Limitfreq_protectByte = rawDataBytes[7]; // LimitFreq
         const Limitfreq_activeProtections = [];      
         if (Limitfreq_protectByte & 0x01) activeProtections.push("DC Current Limit");
@@ -1061,8 +1061,18 @@ function initializeParallelDiscoveryNetwork() {
         if (Limitfreq_protectByte & 0x80) activeProtections.push("Td Limit");        
         toggleStatusIndicator('chk_limitfreq', Limitfreq_protectByte, 'active-green');        
         document.getElementById('txt_Limitfreq_type').innerText = Limitfreq_activeProtections.length > 0 ? Limitfreq_activeProtections.join(", ") : ""; // Clear completely if no protection bits are tripped
-        
-        toggleStatusIndicator('chk_downfreq',   (rawDataBytes[27] & 0x01), 'active-green');
+
+         //txt_downfreq_type
+        const Downfreq_protectByte = rawDataBytes[27]; // Down Freq
+        const Downfreq_activeProtections = [];      
+        if (Downfreq_protectByte & 0x01) activeProtections.push("Condenser temp"); //Condenser temp down freq/ Limit FX Run
+        if (Downfreq_protectByte & 0x02) activeProtections.push("Evaporator temp");
+        if (Downfreq_protectByte & 0x04) activeProtections.push("Comp dischrg temp");// Compressor discharge temp down freq
+        if (Downfreq_protectByte & 0x08) activeProtections.push("AC current");
+        if (Downfreq_protectByte & 0x10) activeProtections.push("Compressor phase current");
+        if (Downfreq_protectByte & 0x20) activeProtections.push("IPM temperature");    
+        toggleStatusIndicator('chk_downfreq', Downfreq_protectByte, 'active-green');        
+        document.getElementById('txt_downfreq_type').innerText = Downfreq_activeProtections.length > 0 ? Downfreq_activeProtections.join(", ") : ""; // Clear completely if no protection bits are tripped
         
         toggleStatusIndicator('chk_comp',       (rawDataBytes[17] & 0x01), 'active-green');
         toggleStatusIndicator('chk_defrost',    (rawDataBytes[17] & 0x08), 'active-green');
