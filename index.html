@@ -506,6 +506,7 @@ let MQTT_PASS = getStoredConfig('MEGMEET_PASS', "Amber@123");
 let activeStreamTopic = null; // Topic dedicated to the main live dashboard layout view
 let mainDashboardWs = null; // WebSocket handle for the opened focus diagnostic window
 let mainDashboardPingTimer = null; // Discovery layer sockets register mapping key-value sets
+let lastRecordedEventCodeValue = null;
 let backgroundDiscoverySockets = {};
 let activeDevicesHeartbeats = {}; // Tracks timestamp of the last verified frame packet per topic array
 
@@ -924,7 +925,7 @@ function initializeParallelDiscoveryNetwork() {
 
         const modeArray     = ["Standby", "Cool", "Heat", "FAN", "Dry"];
         const modeStr       = modeArray[modeCode] || `Mode ${modeCode}`;
-
+        const eventCode     = rawDataBytes[31];
         const eventTextArray = [
             "System Idle ",
             "Receive indoor instructions Standby",
@@ -939,8 +940,9 @@ function initializeParallelDiscoveryNetwork() {
         const eventDisplayStr = eventTextArray[eventCode] || `Event Logic Code ${eventCode}`;
 
         // Print string message down into the local log layout if state changes
-        if (eventCode > 0 && eventCode < eventTextArray.length) {
+        if (eventCode!==lastRecordedEventCodeValue && eventCode > 0 && eventCode < eventTextArray.length) {
             appendEventLog(eventDisplayStr);
+            lastRecordedEventCodeValue=eventCode;
         }
 
         // --- 4. DATA RENDER PIPELINE TO DASHBOARD FORMS ---
