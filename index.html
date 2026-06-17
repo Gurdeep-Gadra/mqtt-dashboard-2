@@ -925,7 +925,8 @@ function initializeParallelDiscoveryNetwork() {
 
         const modeArray     = ["Standby", "Cool", "Heat", "FAN", "Dry"];
         const modeStr       = modeArray[modeCode] || `Mode ${modeCode}`;
-        const eventCode     = rawDataBytes[31];
+         setFreqHz     = rawDataBytes[31];
+         realFreqHz    = lastRecordedEventCodeValue;
         const eventTextArray = [
             "System Idle ",
             "Receive indoor instructions Standby",
