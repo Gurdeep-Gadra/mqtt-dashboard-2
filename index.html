@@ -436,7 +436,8 @@
             <div class="group-box-frame" style="flex: 1; padding-bottom: 8px; margin-bottom: 0;">
                 <div class="sidebar-indicator-layout">
                     <div class="checkbox-row-item"><div id="chk_fault" class="indicator-square-box"></div><span>Fault</span></div>
-                    <div class="checkbox-row-item"><div id="chk_protect" class="indicator-square-box"></div><span style="color: #FF0000; font-weight: bold;">Protect</span></div>
+                    <div class="checkbox-row-item"><div id="chk_protect" class="indicator-square-box"></div><span>Protect</span>
+                    <span id="txt_protect_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div>
                     <div class="checkbox-row-item"><div id="chk_limitfreq" class="indicator-square-box"></div><span>LimitFreq</span></div>
                     <div class="checkbox-row-item"><div id="chk_downfreq" class="indicator-square-box"></div><span>DowmFreq</span></div>
                     
@@ -1013,6 +1014,35 @@ function initializeParallelDiscoveryNetwork() {
 
         // --- 5. PROCESS SIDE INDICATOR CHECKBOX MASKS ---
         toggleStatusIndicator('chk_fault',      (rawDataBytes[39] & 0x01), 'active-green');
+        
+        const protectByte1 = rawDataBytes[40]; // Protection 1                      //protection
+        const protectByte2 = rawDataBytes[6]; // Protection 2 to stop protection
+        const activeProtections = [];
+        if (protectByte1 & 0x01) activeProtections.push("DC Volt Stop");
+        if (protectByte1 & 0x02) activeProtections.push("DC Current Protection to Stop");
+        if (protectByte1 & 0x04) activeProtections.push("Tc freeze protect");
+        if (protectByte1 & 0x08) activeProtections.push("Te overload protect");
+        if (protectByte1 & 0x10) activeProtections.push("IPM over temp protect");
+        if (protectByte1 & 0x20) activeProtections.push("IPM protect permanent");
+        if (protectByte1 & 0x40) activeProtections.push("Start Fail Preheat");        
+        //
+        if (protectByte2 & 0x01) activeProtections.push("Tr Protect to stop");
+        if (protectByte2 & 0x02) activeProtections.push("Tc Protect to stop");
+        if (protectByte2 & 0x04) activeProtections.push("Te protect to stop");
+        if (protectByte2 & 0x08) activeProtections.push("Ta protect to stop");
+        if (protectByte2 & 0x10) activeProtections.push("AC current protect to stop");
+        if (protectByte2 & 0x20) activeProtections.push("AC volt protect to stop");
+        if (protectByte2 & 0x40) activeProtections.push("Compressor protect(permanent stop)");
+        if (protectByte2 & 0x80) activeProtections.push("Td Protect");
+        
+        // 4. Toggle the master checkbox indicator square box if EITHER byte has any bit active (> 0)
+        const isAnyProtectionActive = (protectByte1 > 0) || (protectByte2 > 0);
+        toggleStatusIndicator('chk_protect', isAnyProtectionActive, 'active-red');        
+        // 5. Output the combined results to the text placeholder on the right side of the label
+        const protectLabelTextElement = document.getElementById('txt_protect_type');
+        if (protectLabelTextElement) {
+            protectLabelTextElement.innerText = activeProtections.length > 0 ? activeProtections.join(", ") : ""; // Clear completely if no protection bits are tripped
+        }
         toggleStatusIndicator('chk_protect',    (rawDataBytes[40] & 0x01), 'active-red');
         toggleStatusIndicator('chk_limitfreq',  (rawDataBytes[7]  & 0x01), 'active-green');
         toggleStatusIndicator('chk_downfreq',   (rawDataBytes[27] & 0x01), 'active-green');
