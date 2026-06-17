@@ -1060,10 +1060,7 @@ function initializeParallelDiscoveryNetwork() {
         if (Limitfreq_protectByte & 0x40) activeProtections.push("AC Current Limit");
         if (Limitfreq_protectByte & 0x80) activeProtections.push("Td Limit");        
         toggleStatusIndicator('chk_limitfreq', Limitfreq_protectByte, 'active-green');        
-        const protectLabelTextElement = document.getElementById('txt_protect_type');
-        if (protectLabelTextElement) {
-            document.getElementById('txt_Limitfreq_type').innerText = Limitfreq_activeProtections.length > 0 ? Limitfreq_activeProtections.join(", ") : ""; // Clear completely if no protection bits are tripped
-        }
+        document.getElementById('txt_Limitfreq_type').innerText = Limitfreq_activeProtections.length > 0 ? Limitfreq_activeProtections.join(", ") : ""; // Clear completely if no protection bits are tripped
         
         toggleStatusIndicator('chk_downfreq',   (rawDataBytes[27] & 0x01), 'active-green');
         
