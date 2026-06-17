@@ -925,8 +925,8 @@ function initializeParallelDiscoveryNetwork() {
 
         const modeArray     = ["Standby", "Cool", "Heat", "FAN", "Dry"];
         const modeStr       = modeArray[modeCode] || `Mode ${modeCode}`;
-         setFreqHz     = rawDataBytes[31];
-         realFreqHz    = lastRecordedEventCodeValue;
+         //setFreqHz     = rawDataBytes[31];
+         //realFreqHz    = lastRecordedEventCodeValue;
         const eventTextArray = [
             "System Idle ",
             "Receive indoor instructions Standby",
@@ -947,8 +947,8 @@ function initializeParallelDiscoveryNetwork() {
         }
 
         // --- 4. DATA RENDER PIPELINE TO DASHBOARD FORMS ---
-        document.getElementById('val_softver').innerText   = `${rawDataBytes[2] || 1}.${rawDataBytes[3] || 0}.0`;
-        document.getElementById('val_softdata').innerText  = `20${rawDataBytes[4] || 25}-${rawDataBytes[5] || 9}-${rawDataBytes[6] || 3}`;
+        document.getElementById('val_softver').innerText   = `${rawDataBytes[28]}.${rawDataBytes[29]}.0`;
+        document.getElementById('val_softdata').innerText  = `20${rawDataBytes[33]}-${rawDataBytes[34]}-${rawDataBytes[35]}`;
         document.getElementById('val_driverlib').innerText = "Lib RX_V4";
         document.getElementById('val_idumcuee').innerText  = "EE_OK";
         document.getElementById('val_odumcuee').innerText  = "EE_OK";
