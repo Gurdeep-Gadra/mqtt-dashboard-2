@@ -970,13 +970,13 @@ function initializeParallelDiscoveryNetwork() {
             document.getElementById('val_idufaultstr').innerText = "WiFi fault";
         else if(rawDataBytes[45])
             document.getElementById('val_idufaultstr').innerText = "IDU fault";
-        /*document.getElementById('val_tsu').innerText     = tsu + "°C";
+        document.getElementById('val_tsu').innerText     = tsu + "°C";
         document.getElementById('val_ta').innerText      = ta  + "°C";
         document.getElementById('val_tc').innerText      = tc + "°C";
         document.getElementById('val_td').innerText      = td + "°C";
         document.getElementById('val_area').innerText    = area === 23 ? "F_area" : `Area ${area}`;
         document.getElementById('val_pcbtype').innerText = pcbType === 0 ? "Rx23Tx" : `Type ${pcbType}`;
-        document.getElementById('val_odufan').innerText  = oduFan + "RPM;*/
+        document.getElementById('val_odufan').innerText  = oduFan + "RPM";
         if(rawDataBytes[16] & 0x02)     //Drv Fault
             document.getElementById('val_drvfault').innerText = "Over Current";
         else if(rawDataBytes[16] & 0x04)     //Drv Fault
