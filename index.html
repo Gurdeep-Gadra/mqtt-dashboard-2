@@ -435,11 +435,14 @@
             <!-- BITWISE INDICATOR CONTROL GROUP -->
             <div class="group-box-frame" style="flex: 1; padding-bottom: 8px; margin-bottom: 0;">
                 <div class="sidebar-indicator-layout">
-                    <div class="checkbox-row-item"><div id="chk_fault" class="indicator-square-box"></div><span>Fault</span></div>
+                    <div class="checkbox-row-item"><div id="chk_fault" class="indicator-square-box"></div><span>Fault</span>
+                    <span id="txt_fault_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div>
                     <div class="checkbox-row-item"><div id="chk_protect" class="indicator-square-box"></div><span>Protect</span>
                     <span id="txt_protect_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div>
-                    <div class="checkbox-row-item"><div id="chk_limitfreq" class="indicator-square-box"></div><span>LimitFreq</span></div>
-                    <div class="checkbox-row-item"><div id="chk_downfreq" class="indicator-square-box"></div><span>DowmFreq</span></div>
+                    <div class="checkbox-row-item"><div id="chk_limitfreq" class="indicator-square-box"></div><span>LimitFreq</span>
+                    <span id="txt_Limitfreq_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div>
+                    <div class="checkbox-row-item"><div id="chk_downfreq" class="indicator-square-box"></div><span>DowmFreq</span>
+                    <span id="txt_downfreq_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div> 
                     
                     <div style="border-top: 1px dashed #808080; margin: 4px 0;"></div>
                     
@@ -1013,7 +1016,13 @@ function initializeParallelDiscoveryNetwork() {
         document.getElementById('f_f13').innerText = f13;
 
         // --- 5. PROCESS SIDE INDICATOR CHECKBOX MASKS ---
-        toggleStatusIndicator('chk_fault',      (rawDataBytes[39] & 0x01), 'active-green');
+        toggleStatusIndicator('chk_fault',      rawDataBytes[39], 'active-green');   //txt_fault_type  
+         if(rawDataBytes[39] & 0x02)     //Drv Fault
+            document.getElementById('txt_fault_type').innerText  = "Communication to drive";
+        else if(rawDataBytes[39] & 0x04)     //Drv Fault
+            document.getElementById('txt_fault_type').innerText  = "TSU Sensor";
+        else if(rawDataBytes[39] & 0x08)     //Drv Fault
+            document.getElementById('txt_fault_type').innerText  = "NoFo";
         
         const protectByte1 = rawDataBytes[40]; // Protection 1                      //protection
         const protectByte2 = rawDataBytes[6]; // Protection 2 to stop protection
@@ -1025,26 +1034,37 @@ function initializeParallelDiscoveryNetwork() {
         if (protectByte1 & 0x10) activeProtections.push("IPM over temp protect");
         if (protectByte1 & 0x20) activeProtections.push("IPM protect permanent");
         if (protectByte1 & 0x40) activeProtections.push("Start Fail Preheat");        
-        //
-        if (protectByte2 & 0x01) activeProtections.push("Tr Protect to stop");
-        if (protectByte2 & 0x02) activeProtections.push("Tc Protect to stop");
-        if (protectByte2 & 0x04) activeProtections.push("Te protect to stop");
-        if (protectByte2 & 0x08) activeProtections.push("Ta protect to stop");
-        if (protectByte2 & 0x10) activeProtections.push("AC current protect to stop");
-        if (protectByte2 & 0x20) activeProtections.push("AC volt protect to stop");
+        if (protectByte2 & 0x01) activeProtections.push("Tr Protect");
+        if (protectByte2 & 0x02) activeProtections.push("Tc Protect");
+        if (protectByte2 & 0x04) activeProtections.push("Te protect");
+        if (protectByte2 & 0x08) activeProtections.push("Ta protect");
+        if (protectByte2 & 0x10) activeProtections.push("AC current");
+        if (protectByte2 & 0x20) activeProtections.push("AC voltage");
         if (protectByte2 & 0x40) activeProtections.push("Compressor protect(permanent stop)");
-        if (protectByte2 & 0x80) activeProtections.push("Td Protect");
-        
-        // 4. Toggle the master checkbox indicator square box if EITHER byte has any bit active (> 0)
+        if (protectByte2 & 0x80) activeProtections.push("Td Protect");        
         const isAnyProtectionActive = (protectByte1 > 0) || (protectByte2 > 0);
-        toggleStatusIndicator('chk_protect', isAnyProtectionActive, 'active-red');        
-        // 5. Output the combined results to the text placeholder on the right side of the label
+        toggleStatusIndicator('chk_protect', isAnyProtectionActive, 'active-green');        
         const protectLabelTextElement = document.getElementById('txt_protect_type');
         if (protectLabelTextElement) {
             protectLabelTextElement.innerText = activeProtections.length > 0 ? activeProtections.join(", ") : ""; // Clear completely if no protection bits are tripped
         }
-        toggleStatusIndicator('chk_protect',    (rawDataBytes[40] & 0x01), 'active-red');
-        toggleStatusIndicator('chk_limitfreq',  (rawDataBytes[7]  & 0x01), 'active-green');
+        //txt_Limitfreq_type txt_downfreq_type
+        const Limitfreq_protectByte = rawDataBytes[7]; // LimitFreq
+        const Limitfreq_activeProtections = [];      
+        if (Limitfreq_protectByte & 0x01) activeProtections.push("DC Current Limit");
+        if (Limitfreq_protectByte & 0x02) activeProtections.push("IPM Limit");
+        if (Limitfreq_protectByte & 0x04) activeProtections.push("Tc Limit");
+        if (Limitfreq_protectByte & 0x08) activeProtections.push("Te Limit");
+        if (Limitfreq_protectByte & 0x10) activeProtections.push("Ta Limit");
+        if (Limitfreq_protectByte & 0x20) activeProtections.push("AC Voltage Limit");
+        if (Limitfreq_protectByte & 0x40) activeProtections.push("AC Current Limit");
+        if (Limitfreq_protectByte & 0x80) activeProtections.push("Td Limit");        
+        toggleStatusIndicator('chk_limitfreq', Limitfreq_protectByte, 'active-green');        
+        const protectLabelTextElement = document.getElementById('txt_protect_type');
+        if (protectLabelTextElement) {
+            document.getElementById('txt_Limitfreq_type').innerText = Limitfreq_activeProtections.length > 0 ? Limitfreq_activeProtections.join(", ") : ""; // Clear completely if no protection bits are tripped
+        }
+        
         toggleStatusIndicator('chk_downfreq',   (rawDataBytes[27] & 0x01), 'active-green');
         
         toggleStatusIndicator('chk_comp',       (rawDataBytes[17] & 0x01), 'active-green');
