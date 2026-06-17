@@ -1000,7 +1000,7 @@ function initializeParallelDiscoveryNetwork() {
         // Sidebar Mini Indicators
         document.getElementById('ui_target_freq').innerText = `F${targetFreqHz}`;
         document.getElementById('ui_set_freq').innerText    = `F${setFreqHz}`;
-        document.getElementById('ui_real_freq').innerText   = realFreqHz === 0 ? "0rpm / (0Hz)" : `${realFreqHz}Hz`;
+        document.getElementById('ui_real_freq').innerText   = `${realFreqHz*60}rpm/(${realFreqHz}Hz)`;
 
         // Update 13-Column Alignment Cells
         document.getElementById('f_f1').innerText  = f1; document.getElementById('f_f2').innerText  = f2;
