@@ -925,8 +925,6 @@ function initializeParallelDiscoveryNetwork() {
 
         const modeArray     = ["Standby", "Cool", "Heat", "FAN", "Dry"];
         const modeStr       = modeArray[modeCode] || `Mode ${modeCode}`;
-         //const setFreqHz     = rawDataBytes[31];
-         //const realFreqHz    = lastRecordedEventCodeValue;
         const eventTextArray = [
             "System Idle ",
             "Receive indoor instructions Standby",
@@ -974,7 +972,7 @@ function initializeParallelDiscoveryNetwork() {
             document.getElementById('val_idufaultstr').innerText = "IDU fault";
         document.getElementById('val_tsu').innerText     = tsu + "°C";
         document.getElementById('val_ta').innerText      = ta  + "°C";
-        document.getElementById('val_tc').innerText      = tc"°C";
+        document.getElementById('val_tc').innerText      = tc + "°C";
         document.getElementById('val_td').innerText      = td + "°C";
         document.getElementById('val_area').innerText    = area === 23 ? "F_area" : `Area ${area}`;
         document.getElementById('val_pcbtype').innerText = pcbType === 0 ? "Rx23Tx" : `Type ${pcbType}`;
@@ -1000,8 +998,8 @@ function initializeParallelDiscoveryNetwork() {
         else if(rawDataBytes[41]==1)
             document.getElementById('Comp_Time').innerText   = `On[${CompTime}]Sec`;
         // Sidebar Mini Indicators
-        document.getElementById('ui_target_freq').innerText = `F${targetFreqHz || 3}`;
-        document.getElementById('ui_set_freq').innerText    = `F${setFreqHz || 0}`;
+        document.getElementById('ui_target_freq').innerText = `F${targetFreqHz}`;
+        document.getElementById('ui_set_freq').innerText    = `F${setFreqHz}`;
         document.getElementById('ui_real_freq').innerText   = realFreqHz === 0 ? "0rpm / (0Hz)" : `${realFreqHz}Hz`;
 
         // Update 13-Column Alignment Cells
