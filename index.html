@@ -772,6 +772,7 @@ function initializeParallelDiscoveryNetwork() {
         if (activeStreamTopic === dev.topic) {
             const mText = document.getElementById('status_text');
             const mDot = document.getElementById('status_dot');
+            const pulseBeacon = document.getElementById('rx_pulse_beacon');
             if (mText && mDot) {
                 if (!lastSeen) {
                     mText.innerText = `Selected Stream: Syncing target node context [${dev.topic}]...`;
@@ -779,6 +780,7 @@ function initializeParallelDiscoveryNetwork() {
                 } else if (!currentDeviceStateOnline) {
                     mText.innerText = `Selected Stream Idle: Realtime connection lost / timeout window tripped [${dev.topic}]`;
                     mDot.className = 'status-beacon-dot'; // Turns off green glowing active state indicator class
+                    pulseBeacon.style.backgroundColor = '#FF0000'; // Turn instantly to RED 
                 } else {
                     mText.innerText = `Selected Stream: Connected and tracking realtime target [${dev.topic}]`;
                     mDot.className = 'status-beacon-dot connected'; // Retains green active beacon status
@@ -872,8 +874,8 @@ function initializeParallelDiscoveryNetwork() {
         if (pulseBeacon) {
             pulseBeacon.style.backgroundColor = '#FF0000'; // Turn instantly to RED on byte arrival
             setTimeout(() => {
-                pulseBeacon.style.backgroundColor = '#00FF00'; // Flash back to GREEN resting state after 80ms
-            }, 80);
+                pulseBeacon.style.backgroundColor = '#00FF00'; // Flash back to GREEN resting state after 120ms
+            }, 120);
         }
         // --- Core Parameter Extraction (Matches 0-Based Payload Specs) ---
         const tr   = (rawDataBytes[9]/2)-30;  // Byte No. 9 
