@@ -777,6 +777,7 @@ function initializeParallelDiscoveryNetwork() {
                 if (!lastSeen) {
                     mText.innerText = `Selected Stream: Syncing target node context [${dev.topic}]...`;
                     mDot.className = 'status-beacon-dot'; // Neutral state
+                    pulseBeacon.style.backgroundColor = '#FF0000'; // Turn instantly to RED 
                 } else if (!currentDeviceStateOnline) {
                     mText.innerText = `Selected Stream Idle: Realtime connection lost / timeout window tripped [${dev.topic}]`;
                     mDot.className = 'status-beacon-dot'; // Turns off green glowing active state indicator class
