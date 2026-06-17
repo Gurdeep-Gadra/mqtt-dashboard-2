@@ -358,10 +358,10 @@
                     <div class="param-field-box"><span class="param-label">Te</span><div id="val_te" class="param-value-input">--</div></div>
                 </div>
                 <div class="telemetry-row-grid" style="border-top: 1px dashed #808080; padding-top: 6px;">
-                    <div class="param-field-box"><span class="param-label">Rated Mode</span><div id="val_ratedmode" class="param-value-input fault-active">--</div></div>
+                    <div class="param-field-box"><span class="param-label">Rated Mode</span><div id="val_ratedmode" class="param-value-input">--</div></div>
                     <div class="param-field-box"><span class="param-label">Fan Level</span><div id="val_fanlevel" class="param-value-input">--</div></div>
                     <div class="param-field-box"><span class="param-label">Fan rpm</span><div id="val_idufan" class="param-value-input">--</div></div>
-                    <div class="param-field-box"><span class="param-label" style="min-width:100px;">IDU fault fan fault</span><div id="val_idufaultstr" class="param-value-input fault-active">--</div></div>
+                    <div class="param-field-box"><span class="param-label" style="min-width:100px;">IDU fault</span><div id="val_idufaultstr" class="param-value-input fault-active">--</div></div>
                 </div>
             </div>
             <!-- 5. OUTDOOR OPERATIONAL PARAMETERS PANEL -->
@@ -925,8 +925,8 @@ function initializeParallelDiscoveryNetwork() {
 
         const modeArray     = ["Standby", "Cool", "Heat", "FAN", "Dry"];
         const modeStr       = modeArray[modeCode] || `Mode ${modeCode}`;
-         //setFreqHz     = rawDataBytes[31];
-         //realFreqHz    = lastRecordedEventCodeValue;
+         //const setFreqHz     = rawDataBytes[31];
+         //const realFreqHz    = lastRecordedEventCodeValue;
         const eventTextArray = [
             "System Idle ",
             "Receive indoor instructions Standby",
@@ -949,19 +949,29 @@ function initializeParallelDiscoveryNetwork() {
         // --- 4. DATA RENDER PIPELINE TO DASHBOARD FORMS ---
         document.getElementById('val_softver').innerText   = `${rawDataBytes[28]}.${rawDataBytes[29]}.0`;
         document.getElementById('val_softdata').innerText  = `20${rawDataBytes[33]}-${rawDataBytes[34]}-${rawDataBytes[35]}`;
-        document.getElementById('val_driverlib').innerText = "Lib RX_V4";
-        document.getElementById('val_idumcuee').innerText  = "EE_OK";
-        document.getElementById('val_odumcuee').innerText  = "EE_OK";
+        document.getElementById('val_driverlib').innerText = "- - - -"//"Lib RX_V4";
+        document.getElementById('val_idumcuee').innerText  = "- - - -"//"EE_OK";
+        document.getElementById('val_odumcuee').innerText  = "- - - -"//"EE_OK";
 
         document.getElementById('val_mode').innerText        = `-${modeStr}`;
-        document.getElementById('val_tr').innerText          = (tr * 0.5 || 25.5) + " °C";
-        document.getElementById('val_ts').innerText          = (ts || 24) + " °C";
-        document.getElementById('val_te').innerText          = (te || 26) + " °C";
-        document.getElementById('val_ratedmode').innerText   = modeCode === 0 ? "None" : modeStr;
+        document.getElementById('val_tr').innerText          = tr+ " °C";//(tr * 0.5) + " °C";
+        document.getElementById('val_ts').innerText          = ts + " °C";
+        document.getElementById('val_te').innerText          = te + " °C";
+        document.getElementById('val_ratedmode').innerText   = "- - - -";//modeCode === 0 ? "None" : modeStr;
         document.getElementById('val_fanlevel').innerText    = `-${fanLevelStr}`;
-        document.getElementById('val_idufan').innerText      = (iduFan || 0) + " rpm";
-        document.getElementById('val_idufaultstr').innerText = "IDU fault fan fault";
-
+        document.getElementById('val_idufan').innerText      = iduFan + " RPM";
+        if(rawDataBytes[45] & 0x01)
+            document.getElementById('val_idufaultstr').innerText = "Fan fault";
+        else if(rawDataBytes[45] & 0x02)
+            document.getElementById('val_idufaultstr').innerText = "Te fault";
+        else if(rawDataBytes[45] & 0x04)
+            document.getElementById('val_idufaultstr').innerText = "Tr fault";
+        else if(rawDataBytes[45] & 0x08)
+            document.getElementById('val_idufaultstr').innerText = "NoFo fault";
+        else if(rawDataBytes[45] & 0x10)
+            document.getElementById('val_idufaultstr').innerText = "WiFi fault";
+        else if(rawDataBytes[45])
+            document.getElementById('val_idufaultstr').innerText = "IDU fault";
         document.getElementById('val_tsu').innerText     = (tsu || 26) + " °C";
         document.getElementById('val_ta').innerText      = (ta * 0.5 || 26.5) + " °C";
         document.getElementById('val_tc').innerText      = (tc || 26) + " °C";
