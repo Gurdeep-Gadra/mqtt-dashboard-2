@@ -460,11 +460,11 @@
                     <div style="border-top: 1px dashed #808080; margin: 4px 0;"></div>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-                        <div class="checkbox-row-item"><div id="chk_pfc" class="indicator-square-box"></div><span style="color: #FF6600; font-weight: bold;">PFC:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_eco" class="indicator-square-box"></div><span style="color: #FF6600; font-weight: bold;">ECO:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_pfc" class="indicator-square-box"></div><span>PFC:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_eco" class="indicator-square-box"></div><span>ECO:</span></div>
                     </div>
-                    <div class="checkbox-row-item"><div id="chk_everoff" class="indicator-square-box"></div><span style="color: #FF0000; font-weight: bold;">Ever Off:</span></div>
-                    <div class="checkbox-row-item"><div id="chk_idufault" class="indicator-square-box"></div><span style="color: #FF0000; font-weight: bold;">IDU Fault:</span></div>
+                    <div class="checkbox-row-item"><div id="chk_everoff" class="indicator-square-box"></div><span>Ever Off:</span></div>
+                    <div class="checkbox-row-item"><div id="chk_idufault" class="indicator-square-box"></div><span>IDU Fault:</span></div>
                 </div>
 
                 <div style="margin-top: 8px; font-size: 11px; line-height: 1.4; color: #444444;">
@@ -1085,7 +1085,7 @@ function initializeParallelDiscoveryNetwork() {
         
         toggleStatusIndicator('chk_pfc',        (rawDataBytes[26] & 0x10), 'active-orange'); 
         toggleStatusIndicator('chk_eco',        (rawDataBytes[26] & 0x08), 'active-orange');
-        toggleStatusIndicator('chk_everoff',    (rawDataBytes[26] & 0x01), 'active-red');
+        toggleStatusIndicator('chk_everoff',    (rawDataBytes[26] & 0x01), 'active-orange');
         toggleStatusIndicator('chk_idufault',   (rawDataBytes[26] & 0x02) , 'active-red'); 
         //toggleStatusIndicator('',   (rawDataBytes[26] & 0x04) , 'active-red'); //Enter mildew,evaporator temperature：10℃(Display only)
 
