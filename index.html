@@ -441,7 +441,7 @@
                     <span id="txt_protect_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div>
                     <div class="checkbox-row-item"><div id="chk_limitfreq" class="indicator-square-box"></div><span>LimitFreq</span>
                     <span id="txt_Limitfreq_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div>
-                    <div class="checkbox-row-item"><div id="chk_downfreq" class="indicator-square-box"></div><span>DowmFreq</span>
+                    <div class="checkbox-row-item"><div id="chk_downfreq" class="indicator-square-box"></div><span>DownFreq</span>
                     <span id="txt_downfreq_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div> 
                     
                     <div style="border-top: 1px dashed #808080; margin: 4px 0;"></div>
@@ -890,14 +890,14 @@ function initializeParallelDiscoveryNetwork() {
         const tsu  = (rawDataBytes[30]/2)-30; // Byte No. 30
         const ta   = (rawDataBytes[10]/2)-30; // Byte No. 10 (Raw Readout index)
         const tc   = (rawDataBytes[13]/2)-30; // Byte No. 13
-        const td   = (rawDataBytes[11]/2)-30; // Byte No. 11
+        const td   = rawDataBytes[11]-30; // Byte No. 11
 
         const acVol    = rawDataBytes[14]*2; // Byte No. 14
         const acCur    = rawDataBytes[15]/10; // Byte No. 15
         const dcVol    = rawDataBytes[19]*2; // Byte No. 19
         const dcCur    = rawDataBytes[20]/10; // Byte No. 20
         const eev      = rawDataBytes[24]*2; // Byte No. 24
-        const tipm     = rawDataBytes[25]*2; // Byte No. 25
+        const tipm     = rawDataBytes[25]; // Byte No. 25
         const fanIpm   = rawDataBytes[44]; // Byte No. 44
         const oduFan   = rawDataBytes[21]*10; // Byte No. 21
         const iduFan   = rawDataBytes[32]*10; // Byte No. 32
