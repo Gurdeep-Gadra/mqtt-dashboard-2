@@ -533,13 +533,13 @@ function saveBrokerCredentialsToRegistry() {
     });
 }
 
-setInterval(() => {
+/*setInterval(() => {
  const now = new Date();
  document.getElementById('live_clock').innerText = now.toLocaleTimeString();
  document.getElementById('lbl_branding_date').innerText = now.toLocaleString();
  // Background watch module loops through registered devices to transition timestamps after 5000ms
  evaluateAllDeviceHeartbeats();
- }, 1000);
+ }, 1000);*/
 
 
     function appendLine(text, cssClass) {
@@ -772,7 +772,7 @@ function initializeParallelDiscoveryNetwork() {
                 }
             }
         }
-        currentDeviceStateOnline = true;///////////////////////////////
+        //let currentDeviceStateOnline = true;///////////////////////////////
         // CORRECTED: If this device is the focused dashboard screen, bind its live network state to the master status bar
         if (activeStreamTopic === dev.topic) {
             const mText = document.getElementById('status_text');
