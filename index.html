@@ -569,9 +569,9 @@ setInterval(() => {
         if (stored) return JSON.parse(stored);
         
         const defaultNodes = [
-            { name: "Megmeet_ODU_LAB1", topic: "TTW/LAB1" },
-            { name: "Megmeet_ODU_LAB2", topic: "TTW/LAB2" },
-            { name: "Megmeet_ODU_LAB3", topic: "TTW/LAB3" }
+            { name: "Megmeet_TTW_LAB1", topic: "TTW/LAB1" },
+            { name: "Megmeet_TTW_LAB2", topic: "TTW/LAB2" },
+            { name: "Megmeet_TTW_LAB3", topic: "TTW/LAB3" }
         ];
         localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(defaultNodes));
         return defaultNodes;
@@ -772,7 +772,7 @@ function initializeParallelDiscoveryNetwork() {
                 }
             }
         }
-
+        currentDeviceStateOnline = true;///////////////////////////////
         // CORRECTED: If this device is the focused dashboard screen, bind its live network state to the master status bar
         if (activeStreamTopic === dev.topic) {
             const mText = document.getElementById('status_text');
@@ -1109,7 +1109,7 @@ function initializeParallelDiscoveryNetwork() {
     }
 
     // --- AUTOMATED BACKGROUND MONITOR SELECTION NET INITIALIZE ---
-    //initializeParallelDiscoveryNetwork();
+    initializeParallelDiscoveryNetwork();
 </script>
 </body>
 </html>
