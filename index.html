@@ -1074,19 +1074,20 @@ function initializeParallelDiscoveryNetwork() {
         toggleStatusIndicator('chk_downfreq', Downfreq_protectByte, 'active-green');        
         document.getElementById('txt_downfreq_type').innerText = Downfreq_activeProtections.length > 0 ? Downfreq_activeProtections.join(", ") : ""; // Clear completely if no protection bits are tripped
         
-        toggleStatusIndicator('chk_comp',       (rawDataBytes[17] & 0x01), 'active-green');
-        toggleStatusIndicator('chk_defrost',    (rawDataBytes[17] & 0x08), 'active-green');
-        toggleStatusIndicator('chk_4way',       (rawDataBytes[17] & 0x10), 'active-green');
-        toggleStatusIndicator('chk_retoil',     (rawDataBytes[17] & 0x80), 'active-green');
-        toggleStatusIndicator('chk_outfan',     (rawDataBytes[17] & 0x40), 'active-green');
-        toggleStatusIndicator('chk_test',       (rawDataBytes[17] & 0x04), 'active-green');
-        toggleStatusIndicator('chk_preheat',    (rawDataBytes[17] & 0x02), 'active-green');
-        toggleStatusIndicator('chk_collectf',   (rawDataBytes[17] & 0x20), 'active-green');
+        toggleStatusIndicator('chk_comp',       (rawDataBytes[17] & 0x80), 'active-green');
+        toggleStatusIndicator('chk_defrost',    (rawDataBytes[17] & 0x04), 'active-green');
+        toggleStatusIndicator('chk_4way',       (rawDataBytes[17] & 0x08), 'active-green');
+        toggleStatusIndicator('chk_retoil',     (rawDataBytes[17] & 0x40), 'active-green');
+        toggleStatusIndicator('chk_outfan',     (rawDataBytes[17] & 0x20), 'active-green');
+        toggleStatusIndicator('chk_test',       (rawDataBytes[17] & 0x02), 'active-green');
+        toggleStatusIndicator('chk_preheat',    (rawDataBytes[17] & 0x01), 'active-green');
+        toggleStatusIndicator('chk_collectf',   (rawDataBytes[17] & 0x10), 'active-green');
         
-        toggleStatusIndicator('chk_pfc',        (rawDataBytes[26] & 0x02) || 1, 'active-orange'); 
+        toggleStatusIndicator('chk_pfc',        (rawDataBytes[26] & 0x10), 'active-orange'); 
         toggleStatusIndicator('chk_eco',        (rawDataBytes[26] & 0x08), 'active-orange');
-        toggleStatusIndicator('chk_everoff',    (rawDataBytes[26] & 0x02), 'active-red');
-        toggleStatusIndicator('chk_idufault',   (rawDataBytes[26] & 0x04) || 1, 'active-red'); 
+        toggleStatusIndicator('chk_everoff',    (rawDataBytes[26] & 0x01), 'active-red');
+        toggleStatusIndicator('chk_idufault',   (rawDataBytes[26] & 0x02) , 'active-red'); 
+        //toggleStatusIndicator('',   (rawDataBytes[26] & 0x04) , 'active-red'); //Enter mildew,evaporator temperature：10℃(Display only)
 
         // --- 6. TERMINAL VIEWPORT HEX WRITERS ---
         const timeStr = new Date().toLocaleTimeString();
