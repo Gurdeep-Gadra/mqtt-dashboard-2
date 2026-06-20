@@ -493,7 +493,7 @@
         </div>
         <div class="terminal-box-frame">
             <div class="terminal-box-header">system_event_tracker.log</div>
-            <pre id="event_log_stream"></pre>
+            <pre id="event_log_stream_terminal"></pre>
         </div>
     </div>
 
@@ -533,13 +533,13 @@ function saveBrokerCredentialsToRegistry() {
     });
 }
 
-/*setInterval(() => {
+setInterval(() => {
  const now = new Date();
  document.getElementById('live_clock').innerText = now.toLocaleTimeString();
  document.getElementById('lbl_branding_date').innerText = now.toLocaleString();
  // Background watch module loops through registered devices to transition timestamps after 5000ms
  evaluateAllDeviceHeartbeats();
- }, 1000);*/
+ }, 1000);
 
 
     function appendLine(text, cssClass) {
@@ -692,6 +692,16 @@ function initializeParallelDiscoveryNetwork() {
 
             if (packetType === 2) { // CONNACK HANDSHAKE OK
                 sendMqttSubscribePacketRaw(tempWs, topicStr);
+                // BUGFIX: the CONNECT packet declares a 60s Keep Alive, but nothing
+                // was ever sent to honor it. The broker was silently dropping the
+                // connection once that window lapsed -> this is the ~54-57s disconnect.
+                // Sending a PINGREQ well inside that window keeps the session alive.
+                if (tempWs.pingTimer) clearInterval(tempWs.pingTimer);
+                tempWs.pingTimer = setInterval(() => sendMqttPingreqPacketRaw(tempWs), 25000);
+            }
+
+            if (packetType === 13) { // PINGRESP - broker acknowledged our keep-alive ping
+                // No action needed; receiving this just confirms the link is healthy.
             }
 
         if (packetType === 3) { // TELEMETRY FRAME RECEIVED OVER WIRE 
@@ -737,6 +747,11 @@ function initializeParallelDiscoveryNetwork() {
         };
 
         tempWs.onclose = () => {
+            // BUGFIX: stop the keep-alive ping interval tied to this dead socket
+            if (tempWs.pingTimer) {
+                clearInterval(tempWs.pingTimer);
+                tempWs.pingTimer = null;
+            }
             delete backgroundDiscoverySockets[topicStr];
             // Schedule an isolated backdrop reconnect pinger after 5000ms
             setTimeout(() => initializeBackgroundDeviceScanner(topicStr), 5000);
@@ -825,9 +840,13 @@ function initializeParallelDiscoveryNetwork() {
         // Restore overlay block grid dashboard sheet view
         document.getElementById('device_manager').style.display = 'flex';
         
-        statusBar.classList.remove('connected');
-        statusDot.className = 'status-beacon-dot';
-        statusText.innerText = "Pipeline Idle: Please choose an active node path from your Asset Dashboard...";
+        // BUGFIX: statusBar/statusDot/statusText were referenced as bare globals
+        // that never existed, throwing a ReferenceError and aborting this function
+        // before renderDeviceInventoryTable() ran.
+        const statusDotEl = document.getElementById('status_dot');
+        const statusTextEl = document.getElementById('status_text');
+        if (statusDotEl) statusDotEl.className = 'status-beacon-dot';
+        if (statusTextEl) statusTextEl.innerText = "Pipeline Idle: Please choose an active node path from your Asset Dashboard...";
         
         renderDeviceInventoryTable();
     }
@@ -870,6 +889,16 @@ function initializeParallelDiscoveryNetwork() {
         pkt[idx++] = 0;
         
         if (targetSocketHandle.readyState === 1) targetSocketHandle.send(pkt);
+    }
+
+    // BUGFIX: MQTT PINGREQ transmitter. Fixed 2-byte control packet (type 12,
+    // remaining length 0). Sending this on an interval shorter than the 60s
+    // Keep Alive declared in CONNECT is what keeps HiveMQ Cloud from dropping
+    // the WebSocket every ~55-60 seconds.
+    function sendMqttPingreqPacketRaw(targetSocketHandle) {
+        if (targetSocketHandle.readyState === 1) {
+            targetSocketHandle.send(new Uint8Array([0xC0, 0x00]));
+        }
     }
     // =========================================================================
     // PART 5 - SECTION C: RECESSED 0-offset DATA MATRIX PARSER & DOM CLOSING
