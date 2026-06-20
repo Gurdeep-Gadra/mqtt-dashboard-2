@@ -421,15 +421,15 @@
             <div class="freq-strip-container-row" style="margin-top: 1px;">
                 <span class="freq-strip-heading-label">Heat</span>
                 <div class="freq-strip-13-column-grid">
-                    <div id="f_f1" class="freq-grid-data-textbox">--</div><div id="f_f2" class="freq-grid-data-textbox">--</div>
-                    <div id="f_f3" class="freq-grid-data-textbox">--</div><div id="f_f4" class="freq-grid-data-textbox">--</div>
-                    <div id="f_f5" class="freq-grid-data-textbox">--</div><div id="f_f6" class="freq-grid-data-textbox">--</div>
-                    <div id="f_f7" class="freq-grid-data-textbox">--</div><div id="f_f8" class="freq-grid-data-textbox">--</div>
-                    <div id="f_f9" class="freq-grid-data-textbox">--</div><div id="f_f10" class="freq-grid-data-textbox">--</div>
-                    <div id="f_f11" class="freq-grid-data-textbox">--</div><div id="f_f12" class="freq-grid-data-textbox">--</div>
-                    <div id="f_f13" class="freq-grid-data-textbox">--</div>
+                    <div id="Hf_f1" class="freq-grid-data-textbox">--</div><div id="Hf_f2" class="freq-grid-data-textbox">--</div>
+                    <div id="Hf_f3" class="freq-grid-data-textbox">--</div><div id="Hf_f4" class="freq-grid-data-textbox">--</div>
+                    <div id="Hf_f5" class="freq-grid-data-textbox">--</div><div id="Hf_f6" class="freq-grid-data-textbox">--</div>
+                    <div id="Hf_f7" class="freq-grid-data-textbox">--</div><div id="Hf_f8" class="freq-grid-data-textbox">--</div>
+                    <div id="Hf_f9" class="freq-grid-data-textbox">--</div><div id="Hf_f10" class="freq-grid-data-textbox">--</div>
+                    <div id="Hf_f11" class="freq-grid-data-textbox">--</div><div id="Hf_f12" class="freq-grid-data-textbox">--</div>
+                    <div id="Hf_f13" class="freq-grid-data-textbox">--</div>
                 </div>
-            </div>    
+            </div>
         </div> <!-- End of left-telemetry-column -->
         <!-- 7. RIGHT SIDEBAR STATUS DISPLAY COLUMN -->
         <div class="right-sidebar-column">
@@ -957,6 +957,14 @@ function initializeParallelDiscoveryNetwork() {
         const f11 = rawDataBytes[57];  const f12 = rawDataBytes[58];
         const f13 = rawDataBytes[59];
 
+        const Hf1  = rawDataBytes[60];  const Hf2  = rawDataBytes[61];
+        const Hf3  = rawDataBytes[62];  const Hf4  = rawDataBytes[63];
+        const Hf5  = rawDataBytes[64];  const Hf6  = rawDataBytes[65];
+        const Hf7  = rawDataBytes[66];  const Hf8  = rawDataBytes[67];
+        const Hf9  = rawDataBytes[68];  const Hf10 = rawDataBytes[69];
+        const Hf11 = rawDataBytes[70];  const Hf12 = rawDataBytes[71];
+        const Hf13 = rawDataBytes[72];
+    
         // Configuration Lookup Bytes
         const fanLevelCode  = rawDataBytes[18];
         const modeCode      = rawDataBytes[1];
@@ -1055,6 +1063,14 @@ function initializeParallelDiscoveryNetwork() {
         document.getElementById('f_f9').innerText  = f9; document.getElementById('f_f10').innerText = f10;
         document.getElementById('f_f11').innerText = f11; document.getElementById('f_f12').innerText = f12;
         document.getElementById('f_f13').innerText = f13;
+
+        document.getElementById('Hf_f1').innerText  = Hf1; document.getElementById('Hf_f2').innerText  = Hf2;
+        document.getElementById('Hf_f3').innerText  = Hf3; document.getElementById('Hf_f4').innerText  = Hf4;
+        document.getElementById('Hf_f5').innerText  = Hf5; document.getElementById('Hf_f6').innerText  = Hf6;
+        document.getElementById('Hf_f7').innerText  = Hf7; document.getElementById('Hf_f8').innerText  = Hf8;
+        document.getElementById('Hf_f9').innerText  = Hf9; document.getElementById('Hf_f10').innerText = Hf10;
+        document.getElementById('Hf_f11').innerText = Hf11; document.getElementById('Hf_f12').innerText = Hf12;
+        document.getElementById('Hf_f13').innerText = Hf13;
 
         // --- 5. PROCESS SIDE INDICATOR CHECKBOX MASKS ---
         toggleStatusIndicator('chk_fault',      rawDataBytes[39], 'active-green');   //txt_fault_type  
