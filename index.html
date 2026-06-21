@@ -50,13 +50,9 @@
             background-color: #000080; color: #FFFFFF;
         }
         .status-badge-node {
-            font-size: 10px;
-            font-weight: bold;
-            padding: 1px 6px;
-            border: 1px solid #808080;
-            text-align: center;
-            display: inline-block;
-            min-width: 60px;
+            font-size: 10px; font-weight: bold;
+            padding: 1px 6px; border: 1px solid #808080;
+            text-align: center; display: inline-block; min-width: 60px;
         }
         .status-node-syncing { background-color: #FFFFE0; color: #B27A00; }
         .status-node-online  { background-color: #D4EDDA; color: #155724; border-color: #C3E6CB; }
@@ -105,105 +101,28 @@
         .broker-status-strip { background-color: #D4D0C8; border: 1px solid #808080; padding: 2px 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 11px; }
         .status-beacon-dot { width: 6px; height: 6px; background-color: #FF0000; border-radius: 50%; display: inline-block; margin-right: 4px; }
         .status-beacon-dot.connected { background-color: #00FF00; box-shadow: 0 0 4px #00FF00; }
-        .sidebar-indicator-layout {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            margin-top: 4px;
-        }
-        .checkbox-row-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            height: 16px;
-        }
-        .indicator-square-box {
-            width: 10px;
-            height: 10px;
-            border: 1px solid #808080;
-            background-color: #FFFFFF;
-        }
-        .indicator-square-box.active-green { background-color: #00FF00 !important; }
+        .sidebar-indicator-layout { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
+        .checkbox-row-item { display: flex; align-items: center; gap: 6px; font-size: 11px; height: 16px; }
+        .indicator-square-box { width: 10px; height: 10px; border: 1px solid #808080; background-color: #FFFFFF; }
+        .indicator-square-box.active-green  { background-color: #00FF00 !important; }
         .indicator-square-box.active-orange { background-color: #FF9900 !important; }
-        .indicator-square-box.active-red { background-color: #FF0000 !important; }
-        .freq-strip-container-row {
-            display: flex;
-            align-items: center;
-            background-color: #D4D0C8;
-            padding: 2px 4px;
-            margin-top: 2px;
-        }
-        .freq-strip-heading-label {
-            font-size: 11px;
-            color: #000000;
-            width: 70px;
-            white-space: nowrap;
-        }
-        .freq-strip-13-column-grid {
-            display: grid;
-            grid-template-columns: repeat(13, minmax(28px, 1fr));
-            gap: 4px;
-            flex: 1;
-        }
-        .freq-grid-label-text {
-            font-size: 11px;
-            color: #000000;
-            text-align: center;
-        }
+        .indicator-square-box.active-red    { background-color: #FF0000 !important; }
+        .freq-strip-container-row { display: flex; align-items: center; background-color: #D4D0C8; padding: 2px 4px; margin-top: 2px; }
+        .freq-strip-heading-label { font-size: 11px; color: #000000; width: 70px; white-space: nowrap; }
+        .freq-strip-13-column-grid { display: grid; grid-template-columns: repeat(13, minmax(28px, 1fr)); gap: 4px; flex: 1; }
+        .freq-grid-label-text { font-size: 11px; color: #000000; text-align: center; }
         .freq-grid-data-textbox {
-            background-color: #FFFFFF;
-            border: 1px solid #808080;
-            color: #000000;
-            font-family: 'Tahoma', Arial, sans-serif;
-            font-size: 11px;
-            text-align: center;
-            padding: 1px 0;
-            height: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: #FFFFFF; border: 1px solid #808080;
+            color: #000000; font-family: 'Tahoma', Arial, sans-serif;
+            font-size: 11px; text-align: center; padding: 1px 0;
+            height: 14px; display: flex; align-items: center; justify-content: center;
         }
-        .logger-panel-split {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-top: 8px;
-        }
-        .terminal-box-frame {
-            border: 1px solid #808080;
-            background-color: #FFFFFF;
-        }
-        .terminal-box-header {
-            background-color: #000080;
-            color: #FFFFFF;
-            padding: 2px 6px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-        pre {
-            margin: 0;
-            padding: 4px;
-            height: 100px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 11px;
-            color: #000000;
-            background-color: #FFFFFF;
-            line-height: 1.2;
-            white-space: pre-wrap;
-        }
-        .brand-logo-panel {
-            text-align: right;
-            padding: 8px 4px 0 0;
-            position: relative;
-        }
-        .brand-sub-date {
-            font-family: 'Tahoma', Arial, sans-serif;
-            font-size: 11px;
-            color: #000000;
-            margin-top: 2px;
-        }
+        .logger-panel-split { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
+        .terminal-box-frame { border: 1px solid #808080; background-color: #FFFFFF; }
+        .terminal-box-header { background-color: #000080; color: #FFFFFF; padding: 2px 6px; font-size: 11px; font-weight: bold; }
+        pre { margin: 0; padding: 4px; height: 100px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 11px; color: #000000; background-color: #FFFFFF; line-height: 1.2; white-space: pre-wrap; }
+        .brand-logo-panel { text-align: right; padding: 8px 4px 0 0; position: relative; }
+        .brand-sub-date { font-family: 'Tahoma', Arial, sans-serif; font-size: 11px; color: #000000; margin-top: 2px; }
     </style>
 </head>
 <body>
@@ -347,11 +266,11 @@
             <div class="freq-strip-container-row" style="margin-top: 1px;">
                 <span class="freq-strip-heading-label">Cool</span>
                 <div class="freq-strip-13-column-grid">
-                    <div id="f_f1" class="freq-grid-data-textbox">--</div><div id="f_f2" class="freq-grid-data-textbox">--</div>
-                    <div id="f_f3" class="freq-grid-data-textbox">--</div><div id="f_f4" class="freq-grid-data-textbox">--</div>
-                    <div id="f_f5" class="freq-grid-data-textbox">--</div><div id="f_f6" class="freq-grid-data-textbox">--</div>
-                    <div id="f_f7" class="freq-grid-data-textbox">--</div><div id="f_f8" class="freq-grid-data-textbox">--</div>
-                    <div id="f_f9" class="freq-grid-data-textbox">--</div><div id="f_f10" class="freq-grid-data-textbox">--</div>
+                    <div id="f_f1"  class="freq-grid-data-textbox">--</div><div id="f_f2"  class="freq-grid-data-textbox">--</div>
+                    <div id="f_f3"  class="freq-grid-data-textbox">--</div><div id="f_f4"  class="freq-grid-data-textbox">--</div>
+                    <div id="f_f5"  class="freq-grid-data-textbox">--</div><div id="f_f6"  class="freq-grid-data-textbox">--</div>
+                    <div id="f_f7"  class="freq-grid-data-textbox">--</div><div id="f_f8"  class="freq-grid-data-textbox">--</div>
+                    <div id="f_f9"  class="freq-grid-data-textbox">--</div><div id="f_f10" class="freq-grid-data-textbox">--</div>
                     <div id="f_f11" class="freq-grid-data-textbox">--</div><div id="f_f12" class="freq-grid-data-textbox">--</div>
                     <div id="f_f13" class="freq-grid-data-textbox">--</div>
                 </div>
@@ -359,11 +278,11 @@
             <div class="freq-strip-container-row" style="margin-top: 1px;">
                 <span class="freq-strip-heading-label">Heat</span>
                 <div class="freq-strip-13-column-grid">
-                    <div id="Hf_f1" class="freq-grid-data-textbox">--</div><div id="Hf_f2" class="freq-grid-data-textbox">--</div>
-                    <div id="Hf_f3" class="freq-grid-data-textbox">--</div><div id="Hf_f4" class="freq-grid-data-textbox">--</div>
-                    <div id="Hf_f5" class="freq-grid-data-textbox">--</div><div id="Hf_f6" class="freq-grid-data-textbox">--</div>
-                    <div id="Hf_f7" class="freq-grid-data-textbox">--</div><div id="Hf_f8" class="freq-grid-data-textbox">--</div>
-                    <div id="Hf_f9" class="freq-grid-data-textbox">--</div><div id="Hf_f10" class="freq-grid-data-textbox">--</div>
+                    <div id="Hf_f1"  class="freq-grid-data-textbox">--</div><div id="Hf_f2"  class="freq-grid-data-textbox">--</div>
+                    <div id="Hf_f3"  class="freq-grid-data-textbox">--</div><div id="Hf_f4"  class="freq-grid-data-textbox">--</div>
+                    <div id="Hf_f5"  class="freq-grid-data-textbox">--</div><div id="Hf_f6"  class="freq-grid-data-textbox">--</div>
+                    <div id="Hf_f7"  class="freq-grid-data-textbox">--</div><div id="Hf_f8"  class="freq-grid-data-textbox">--</div>
+                    <div id="Hf_f9"  class="freq-grid-data-textbox">--</div><div id="Hf_f10" class="freq-grid-data-textbox">--</div>
                     <div id="Hf_f11" class="freq-grid-data-textbox">--</div><div id="Hf_f12" class="freq-grid-data-textbox">--</div>
                     <div id="Hf_f13" class="freq-grid-data-textbox">--</div>
                 </div>
@@ -381,44 +300,56 @@
             </div>
             <div class="group-box-frame" style="flex: 1; padding-bottom: 8px; margin-bottom: 0;">
                 <div class="sidebar-indicator-layout">
-                    <div class="checkbox-row-item"><div id="chk_fault" class="indicator-square-box"></div><span>Fault</span>
-                    <span id="txt_fault_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div>
-                    <div class="checkbox-row-item"><div id="chk_protect" class="indicator-square-box"></div><span>Protect</span>
-                    <span id="txt_protect_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div>
-                    <div class="checkbox-row-item"><div id="chk_limitfreq" class="indicator-square-box"></div><span>LimitFreq</span>
-                    <span id="txt_Limitfreq_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div>
-                    <div class="checkbox-row-item"><div id="chk_downfreq" class="indicator-square-box"></div><span>DownFreq</span>
-                    <span id="txt_downfreq_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div>
+                    <div class="checkbox-row-item">
+                        <div id="chk_fault" class="indicator-square-box"></div><span>Fault</span>
+                        <span id="txt_fault_type" style="color:#FF0000; font-weight:bold; font-family:'Tahoma',sans-serif;"></span>
+                    </div>
+                    <div class="checkbox-row-item">
+                        <div id="chk_fault2" class="indicator-square-box"></div><span>Fault2</span>
+                        <span id="txt_fault2_type" style="color:#FF0000; font-weight:bold; font-family:'Tahoma',sans-serif;"></span>
+                    </div>
+                    <div class="checkbox-row-item">
+                        <div id="chk_protect" class="indicator-square-box"></div><span>Protect</span>
+                        <span id="txt_protect_type" style="color:#FF0000; font-weight:bold; font-family:'Tahoma',sans-serif;"></span>
+                    </div>
+                    <div class="checkbox-row-item">
+                        <div id="chk_limitfreq" class="indicator-square-box"></div><span>LimitFreq</span>
+                        <span id="txt_Limitfreq_type" style="color:#FF0000; font-weight:bold; font-family:'Tahoma',sans-serif;"></span>
+                    </div>
+                    <div class="checkbox-row-item">
+                        <div id="chk_downfreq" class="indicator-square-box"></div><span>DownFreq</span>
+                        <span id="txt_downfreq_type" style="color:#FF0000; font-weight:bold; font-family:'Tahoma',sans-serif;"></span>
+                    </div>
                     <div style="border-top: 1px dashed #808080; margin: 4px 0;"></div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-                        <div class="checkbox-row-item"><div id="chk_comp" class="indicator-square-box"></div><span>Comp:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_defrost" class="indicator-square-box"></div><span>Defrost:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_4way" class="indicator-square-box"></div><span>4Way:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_retoil" class="indicator-square-box"></div><span>Ret Oil:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_outfan" class="indicator-square-box"></div><span>Out Fan:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_test" class="indicator-square-box"></div><span>Test:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_preheat" class="indicator-square-box"></div><span>Preheat:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_comp"     class="indicator-square-box"></div><span>Comp:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_defrost"  class="indicator-square-box"></div><span>Defrost:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_4way"     class="indicator-square-box"></div><span>4Way:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_retoil"   class="indicator-square-box"></div><span>Ret Oil:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_outfan"   class="indicator-square-box"></div><span>Out Fan:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_test"     class="indicator-square-box"></div><span>Test:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_preheat"  class="indicator-square-box"></div><span>Preheat:</span></div>
                         <div class="checkbox-row-item"><div id="chk_collectf" class="indicator-square-box"></div><span>Collect F:</span></div>
                     </div>
                     <div style="border-top: 1px dashed #808080; margin: 4px 0;"></div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-                        <div class="checkbox-row-item"><div id="chk_pfc" class="indicator-square-box"></div><span>PFC:</span></div>
-                        <div class="checkbox-row-item"><div id="chk_eco" class="indicator-square-box"></div><span>ECO:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_pfc"      class="indicator-square-box"></div><span>PFC:</span></div>
+                        <div class="checkbox-row-item"><div id="chk_eco"      class="indicator-square-box"></div><span>ECO:</span></div>
                     </div>
-                    <div class="checkbox-row-item"><div id="chk_everoff" class="indicator-square-box"></div><span>Ever Off:</span></div>
+                    <div class="checkbox-row-item"><div id="chk_everoff"  class="indicator-square-box"></div><span>Ever Off:</span></div>
                     <div class="checkbox-row-item"><div id="chk_idufault" class="indicator-square-box"></div><span>IDU Fault:</span></div>
                 </div>
                 <div style="margin-top: 8px; font-size: 11px; line-height: 1.4; color: #444444;">
-                    <div>System Type: <span id="lbl_systype" style="font-weight: bold; color: #000000;">--</span></div>
-                    <div>Comp Type: <span id="lbl_comptype" style="font-weight: bold; color: #000000;">--</span></div>
-                    <div>Fan Type: <span id="lbl_fantype" style="font-weight: bold; color: #000000;">--</span></div>
+                    <div>System Type: <span id="lbl_systype"  style="font-weight:bold; color:#000000;">--</span></div>
+                    <div>Comp Type:   <span id="lbl_comptype" style="font-weight:bold; color:#000000;">--</span></div>
+                    <div>Fan Type:    <span id="lbl_fantype"  style="font-weight:bold; color:#000000;">--</span></div>
                 </div>
                 <div class="brand-logo-panel">
-                    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 6px; margin-bottom: 4px;">
-                        <span style="font-size: 10px; font-weight: bold; color: #000000; font-family: 'Tahoma', sans-serif;">RX_DATA_PULSE:</span>
-                        <div id="rx_pulse_beacon" style="width: 14px; height: 14px; border: 2px solid #808080; background-color: #00FF00; box-shadow: inset 1px 1px 0px #FFFFFF; transition: background-color 0.05s ease;"></div>
+                    <div style="display:flex; justify-content:flex-end; align-items:center; gap:6px; margin-bottom:4px;">
+                        <span style="font-size:10px; font-weight:bold; color:#000000; font-family:'Tahoma',sans-serif;">RX_DATA_PULSE:</span>
+                        <div id="rx_pulse_beacon" style="width:14px; height:14px; border:2px solid #808080; background-color:#00FF00; box-shadow:inset 1px 1px 0px #FFFFFF; transition:background-color 0.05s ease;"></div>
                     </div>
-                    <div id="lbl_branding_date" class="brand-sub-date">03-06-2026 01:21:45 AM</div>
+                    <div id="lbl_branding_date" class="brand-sub-date">--</div>
                 </div>
             </div>
         </div>
@@ -438,26 +369,38 @@
 <script>
     const getStoredConfig = (key, fallback) => localStorage.getItem(key) || fallback;
 
-    let BROKER_HOST = getStoredConfig('MEGMEET_HOST', "e897bc6d6145492e99f4a7f09df8ffd9.s1.eu.hivemq.cloud");
+    let BROKER_HOST  = getStoredConfig('MEGMEET_HOST', "e897bc6d6145492e99f4a7f09df8ffd9.s1.eu.hivemq.cloud");
     let WEBSOCKET_PORT = 8884;
-    let MQTT_USER = getStoredConfig('MEGMEET_USER', "Amber_IOT");
-    let MQTT_PASS = getStoredConfig('MEGMEET_PASS', "Amber@123");
+    let MQTT_USER    = getStoredConfig('MEGMEET_USER', "Amber_IOT");
+    let MQTT_PASS    = getStoredConfig('MEGMEET_PASS', "Amber@123");
 
-    let activeStreamTopic = null;
-    let mainDashboardWs = null;
-    let mainDashboardPingTimer = null;
+    let activeStreamTopic       = null;
     let lastRecordedEventCodeValue = null;
     let backgroundDiscoverySockets = {};
-    let activeDevicesHeartbeats = {};
+    let activeDevicesHeartbeats    = {};
 
-    // ---- STATE TRACKERS FOR CHANGE DETECTION ----
-    // Tracks previous boolean state of each simple indicator (chk_*)
-    let lastIndicatorStates = {};
-    // Tracks previous text of each fault/protect label span
-    let lastLabelTexts = {};
-    // Tracks previous text of val_idufaultstr and val_drvfault display fields
-    let lastFieldTexts = {};
+    // =========================================================================
+    // STATE TRACKERS — one object per tracking concern, reset on topic change
+    // =========================================================================
+    // Tracks previous boolean state (ON/OFF) of each chk_* indicator square.
+    // A value of null means "first packet — skip logging".
+    let prevIndicatorState = {};
 
+    // Tracks previous text shown in each fault/protect label span AND
+    // the val_idufaultstr / val_drvfault display fields.
+    // A value of null means "first packet — skip logging".
+    let prevLabelText = {};
+
+    /** Reset all state trackers when switching topic so stale comparisons don't fire. */
+    function resetStateTrackers() {
+        prevIndicatorState = {};
+        prevLabelText      = {};
+        lastRecordedEventCodeValue = null;
+    }
+
+    // =========================================================================
+    // BROKER CONFIG
+    // =========================================================================
     function saveBrokerCredentialsToRegistry() {
         BROKER_HOST = document.getElementById('cfg_broker_host').value.trim();
         MQTT_USER   = document.getElementById('cfg_mqtt_user').value.trim();
@@ -466,143 +409,135 @@
         localStorage.setItem('MEGMEET_USER', MQTT_USER);
         localStorage.setItem('MEGMEET_PASS', MQTT_PASS);
         appendEventLog("Network connection profiles altered. Resetting parallel socket pools...");
-        Object.keys(backgroundDiscoverySockets).forEach(topicStr => {
-            try { backgroundDiscoverySockets[topicStr].close(); } catch(e){}
-            delete backgroundDiscoverySockets[topicStr];
+        Object.keys(backgroundDiscoverySockets).forEach(t => {
+            try { backgroundDiscoverySockets[t].close(); } catch(e) {}
+            delete backgroundDiscoverySockets[t];
         });
     }
 
     setInterval(() => {
         const now = new Date();
-        document.getElementById('live_clock').innerText = now.toLocaleTimeString();
+        document.getElementById('live_clock').innerText     = now.toLocaleTimeString();
         document.getElementById('lbl_branding_date').innerText = now.toLocaleString();
         evaluateAllDeviceHeartbeats();
     }, 1000);
 
-    function appendLine(text, cssClass) {
-        const consoleBox = document.getElementById('console_output');
-        if (!consoleBox) return;
+    // =========================================================================
+    // LOGGING
+    // =========================================================================
+    function appendLine(text) {
+        const box = document.getElementById('console_output');
+        if (!box) return;
         const div = document.createElement('div');
-        if (cssClass) div.className = cssClass;
         div.innerText = text;
-        consoleBox.appendChild(div);
-        consoleBox.scrollTop = consoleBox.scrollHeight;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
     }
 
     function appendEventLog(text) {
         const nowStr = new Date().toLocaleTimeString();
-        const line = `${nowStr} >> ${text}\n`;
+        const line   = `${nowStr} >> ${text}\n`;
+        const top    = document.getElementById('event_log_stream');
+        const bot    = document.getElementById('event_log_stream_terminal');
+        if (top) { top.innerText += line; top.scrollTop = top.scrollHeight; }
+        if (bot) { bot.innerText += line; bot.scrollTop = bot.scrollHeight; }
+    }
 
-        const eventBox = document.getElementById('event_log_stream');
-        if (eventBox) {
-            eventBox.innerText += line;
-            eventBox.scrollTop = eventBox.scrollHeight;
-        }
-        const termBox = document.getElementById('event_log_stream_terminal');
-        if (termBox) {
-            termBox.innerText += line;
-            termBox.scrollTop = termBox.scrollHeight;
-        }
+    /** Clear both event log panels. Called when switching to a new topic. */
+    function clearEventLogs() {
+        const top = document.getElementById('event_log_stream');
+        const bot = document.getElementById('event_log_stream_terminal');
+        const hex = document.getElementById('console_output');
+        if (top) top.innerText = '';
+        if (bot) bot.innerText = '';
+        if (hex) hex.innerText = '';
     }
 
     // =========================================================================
-    // INDICATOR CHANGE TRACKING HELPERS
+    // UNIFIED INDICATOR + LABEL UPDATER
     // =========================================================================
-
     /**
-     * toggleStatusIndicator - sets the indicator square colour AND logs to event
-     * log whenever the boolean state changes.
+     * Updates a chk_* indicator square AND its adjacent label span in ONE call.
+     * Logs to the event log only once per state change — no duplicate lines.
      *
-     * @param {string} elementId   - DOM id of the indicator square
-     * @param {*}      state       - truthy = active, falsy = off
-     * @param {string} cssClass    - active-green / active-orange / active-red
-     * @param {string} label       - human-readable name shown in the event log
-     * @param {string} [detail]    - optional extra detail (fault/protect name)
+     * @param {string} chkId       Element id of the indicator square (e.g. 'chk_limitfreq')
+     * @param {string} spanId      Element id of the label span  (e.g. 'txt_Limitfreq_type') — or null
+     * @param {*}      rawState    Truthy = active, falsy = off  (pass the raw byte/mask result)
+     * @param {string} cssClass    'active-green' | 'active-orange' | 'active-red'
+     * @param {string} groupName   Human-readable group used in log line
+     * @param {string} detailText  Comma-joined fault names to show in span and log ('' = none)
      */
-    function toggleStatusIndicator(elementId, state, cssClass, label, detail) {
-        const el = document.getElementById(elementId);
-        if (!el) return;
-        const isActive = !!state;
+    function setIndicator(chkId, spanId, rawState, cssClass, groupName, detailText) {
+        const chkEl  = document.getElementById(chkId);
+        const spanEl = spanId ? document.getElementById(spanId) : null;
+        const isNow  = !!rawState;
 
-        if (isActive) {
-            el.className = `indicator-square-box ${cssClass}`;
-        } else {
-            el.className = 'indicator-square-box';
+        // Update square colour
+        if (chkEl) {
+            chkEl.className = isNow ? `indicator-square-box ${cssClass}` : 'indicator-square-box';
         }
 
-        // Only log on actual state change; skip the very first packet (undefined)
-        if (lastIndicatorStates[elementId] !== undefined &&
-            lastIndicatorStates[elementId] !== isActive) {
-            if (isActive) {
-                const msg = detail ? `[${label}] ON >> ${detail}` : `[${label}] ON`;
+        // Update label span text
+        if (spanEl) spanEl.innerText = detailText;
+
+        // --- Log only on actual change, skip very first packet (null = unseen) ---
+        const prevState = prevIndicatorState[chkId];
+        const prevText  = prevLabelText[chkId];     // previous detailText
+
+        if (prevState === null || prevState === undefined) {
+            // First packet for this indicator — record baseline, no log
+        } else if (isNow !== prevState) {
+            // ON/OFF transition
+            if (isNow) {
+                // Turned ON
+                const msg = detailText ? `[${groupName}] ON >> ${detailText}` : `[${groupName}] ON`;
                 appendEventLog(msg);
             } else {
-                appendEventLog(`[${label}] OFF >> Cleared`);
+                // Turned OFF
+                appendEventLog(`[${groupName}] OFF >> Cleared`);
             }
+        } else if (isNow && detailText !== prevText) {
+            // Still ON but the fault set changed (e.g. one bit cleared and another set)
+            appendEventLog(`[${groupName}] CHANGED >> ${detailText}`);
         }
-        lastIndicatorStates[elementId] = isActive;
+        // State stayed OFF with no change — nothing to log
+
+        prevIndicatorState[chkId] = isNow;
+        prevLabelText[chkId]      = detailText;
     }
 
     /**
-     * updateFaultLabelSpan - updates a red text label span next to an indicator
-     * and logs to event log whenever the text changes.
-     *
-     * @param {string} elementId  - DOM id of the <span>
-     * @param {string} newText    - new text to display (empty string = cleared)
-     * @param {string} groupName  - human-readable group name for the log line
+     * Updates a param-value-input display div and logs when its text changes.
+     * Used for val_idufaultstr and val_drvfault.
      */
-    function updateFaultLabelSpan(elementId, newText, groupName) {
-        const el = document.getElementById(elementId);
+    function setDisplayField(elementId, newText, fieldName) {
+        const el   = document.getElementById(elementId);
         if (!el) return;
-        const prev = lastLabelTexts[elementId];
-        if (prev !== undefined && prev !== newText) {
-            if (newText) {
-                appendEventLog(`[${groupName}] >> ${newText}`);
-            } else {
-                appendEventLog(`[${groupName}] >> Cleared`);
-            }
-        }
-        lastLabelTexts[elementId] = newText;
-        el.innerText = newText;
-    }
-
-    /**
-     * updateDisplayField - updates a param-value-input div and logs when text
-     * changes (used for IDU fault and Drv Fault display fields).
-     *
-     * @param {string} elementId  - DOM id
-     * @param {string} newText    - new text value
-     * @param {string} fieldName  - human-readable name for the log line
-     */
-    function updateDisplayField(elementId, newText, fieldName) {
-        const el = document.getElementById(elementId);
-        if (!el) return;
-        const prev = lastFieldTexts[elementId];
-        if (prev !== undefined && prev !== newText) {
+        const prev = prevLabelText[elementId];
+        if (prev !== null && prev !== undefined && prev !== newText) {
             if (newText && newText !== '--') {
                 appendEventLog(`[${fieldName}] >> ${newText}`);
             } else {
                 appendEventLog(`[${fieldName}] >> Cleared`);
             }
         }
-        lastFieldTexts[elementId] = newText;
+        prevLabelText[elementId] = newText;
         el.innerText = newText;
     }
 
     // =========================================================================
-    // DATABASE & TABLE
+    // DATABASE & DEVICE TABLE
     // =========================================================================
-
     function fetchDevicesFromRegistry() {
         const stored = localStorage.getItem('MEGMEET_NODES_DB');
         if (stored) return JSON.parse(stored);
-        const defaultNodes = [
+        const def = [
             { name: "Megmeet_TTW_LAB1", topic: "TTW/LAB1" },
             { name: "Megmeet_TTW_LAB2", topic: "TTW/LAB2" },
             { name: "Megmeet_TTW_LAB3", topic: "TTW/LAB3" }
         ];
-        localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(defaultNodes));
-        return defaultNodes;
+        localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(def));
+        return def;
     }
 
     function commitDeviceToDatabase() {
@@ -614,8 +549,7 @@
         const devices = fetchDevicesFromRegistry();
         devices.push({ name, topic });
         localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(devices));
-        nameEl.value  = '';
-        topicEl.value = '';
+        nameEl.value = ''; topicEl.value = '';
         initializeBackgroundDeviceScanner(topic);
         renderDeviceInventoryTable();
     }
@@ -626,7 +560,7 @@
         devices.splice(index, 1);
         localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(devices));
         if (backgroundDiscoverySockets[topic]) {
-            try { backgroundDiscoverySockets[topic].close(); } catch(e){}
+            try { backgroundDiscoverySockets[topic].close(); } catch(e) {}
             delete backgroundDiscoverySockets[topic];
         }
         delete activeDevicesHeartbeats[topic];
@@ -641,20 +575,19 @@
         devices.forEach((dev, idx) => {
             const tr = document.createElement('tr');
             if (activeStreamTopic === dev.topic) tr.className = 'active-row';
-            let statusMarkupStr = `<span id="status_badge_${btoa(dev.topic)}" class="status-badge-node status-node-syncing">Syncing...</span>`;
             const lastSeen = activeDevicesHeartbeats[dev.topic];
+            let badge = `<span id="status_badge_${btoa(dev.topic)}" class="status-badge-node status-node-syncing">Syncing...</span>`;
             if (lastSeen) {
-                const elapsedSec = (Date.now() - lastSeen) / 1000;
-                statusMarkupStr = elapsedSec <= 5
+                const s = (Date.now() - lastSeen) / 1000;
+                badge = s <= 5
                     ? `<span id="status_badge_${btoa(dev.topic)}" class="status-badge-node status-node-online">Online</span>`
                     : `<span id="status_badge_${btoa(dev.topic)}" class="status-badge-node status-node-offline">Offline</span>`;
             }
             tr.innerHTML = `
-                <td style="font-weight:bold; color:#000080;">🖥️ ${dev.name}</td>
+                <td style="font-weight:bold;color:#000080;">🖥️ ${dev.name}</td>
                 <td style="font-family:monospace;">${dev.topic}</td>
-                <td>${statusMarkupStr}</td>
-                <td><button class="win-classic-btn" style="padding:1px 6px; color:#800000; font-size:10px;" onclick="purgeDeviceEntry(event, ${idx}, '${dev.topic}')">Delete</button></td>
-            `;
+                <td>${badge}</td>
+                <td><button class="win-classic-btn" style="padding:1px 6px;color:#800000;font-size:10px;" onclick="purgeDeviceEntry(event,${idx},'${dev.topic}')">Delete</button></td>`;
             tr.onclick = () => launchDiagnosticMonitorScreen(dev.topic);
             tbody.appendChild(tr);
         });
@@ -663,257 +596,218 @@
     // =========================================================================
     // NETWORK / MQTT
     // =========================================================================
-
     function initializeParallelDiscoveryNetwork() {
         document.getElementById('cfg_broker_host').value = BROKER_HOST;
         document.getElementById('cfg_mqtt_user').value   = MQTT_USER;
         document.getElementById('cfg_mqtt_pass').value   = MQTT_PASS;
-        appendEventLog("Asset register list loaded. Provisioning background scanner web sockets...");
-        const devices = fetchDevicesFromRegistry();
-        devices.forEach(dev => initializeBackgroundDeviceScanner(dev.topic));
+        appendEventLog("Asset register loaded. Provisioning background scanner sockets...");
+        fetchDevicesFromRegistry().forEach(dev => initializeBackgroundDeviceScanner(dev.topic));
         renderDeviceInventoryTable();
     }
 
     function initializeBackgroundDeviceScanner(topicStr) {
         if (backgroundDiscoverySockets[topicStr]) return;
-        const url    = `wss://${BROKER_HOST}:${WEBSOCKET_PORT}/mqtt`;
-        const tempWs = new WebSocket(url, ["mqtt"]);
-        tempWs.binaryType = "arraybuffer";
+        const ws = new WebSocket(`wss://${BROKER_HOST}:${WEBSOCKET_PORT}/mqtt`, ["mqtt"]);
+        ws.binaryType = "arraybuffer";
 
-        tempWs.onopen = () => { sendMqttConnectPacketRaw(tempWs); };
+        ws.onopen = () => sendMqttConnectPacketRaw(ws);
 
-        tempWs.onmessage = (event) => {
+        ws.onmessage = (event) => {
             const payload    = new Uint8Array(event.data);
-            if (payload.length === 0) return;
+            if (!payload.length) return;
             const packetType = payload[0] >> 4;
 
             if (packetType === 2) {
-                sendMqttSubscribePacketRaw(tempWs, topicStr);
-                if (tempWs.pingTimer) clearInterval(tempWs.pingTimer);
-                tempWs.pingTimer = setInterval(() => sendMqttPingreqPacketRaw(tempWs), 25000);
+                sendMqttSubscribePacketRaw(ws, topicStr);
+                if (ws.pingTimer) clearInterval(ws.pingTimer);
+                ws.pingTimer = setInterval(() => sendMqttPingreqPacketRaw(ws), 25000);
             }
 
             if (packetType === 3) {
                 activeDevicesHeartbeats[topicStr] = Date.now();
                 const badge = document.getElementById(`status_badge_${btoa(topicStr)}`);
                 if (badge && !badge.classList.contains('status-node-online')) {
-                    badge.className  = 'status-badge-node status-node-online';
-                    badge.innerText  = 'Online';
+                    badge.className = 'status-badge-node status-node-online';
+                    badge.innerText = 'Online';
                 }
                 if (activeStreamTopic === topicStr) {
-                    const panelStatusText = document.getElementById('status_text');
-                    const panelStatusDot  = document.getElementById('status_dot');
-                    if (panelStatusText && panelStatusDot) {
-                        panelStatusText.innerText  = `Selected Stream: Connected and tracking realtime target [${topicStr}]`;
-                        panelStatusDot.className   = 'status-beacon-dot connected';
-                    }
-                    let idx        = 1;
-                    let remLen     = 0;
-                    let multiplier = 1;
-                    do {
-                        remLen     += (payload[idx] & 127) * multiplier;
-                        multiplier *= 128;
-                    } while ((payload[idx++] & 128) !== 0);
-                    const topicLen    = (payload[idx++] << 8) + payload[idx++];
-                    idx              += topicLen;
-                    const rawDataBytes = payload.subarray(idx);
-                    if (rawDataBytes.length >= 70 && rawDataBytes[rawDataBytes.length - 1] === 0xAA) {
-                        parseMegmeetCorePacket(rawDataBytes);
+                    const st = document.getElementById('status_text');
+                    const sd = document.getElementById('status_dot');
+                    if (st) st.innerText  = `Selected Stream: Connected and tracking realtime target [${topicStr}]`;
+                    if (sd) sd.className  = 'status-beacon-dot connected';
+
+                    let idx = 1, remLen = 0, multiplier = 1;
+                    do { remLen += (payload[idx] & 127) * multiplier; multiplier *= 128; } while ((payload[idx++] & 128) !== 0);
+                    const topicLen = (payload[idx++] << 8) + payload[idx++];
+                    idx += topicLen;
+                    const raw = payload.subarray(idx);
+                    if (raw.length >= 70 && raw[raw.length - 1] === 0xAA) {
+                        parseMegmeetCorePacket(raw);
                     }
                 }
             }
         };
 
-        tempWs.onclose = () => {
-            if (tempWs.pingTimer) { clearInterval(tempWs.pingTimer); tempWs.pingTimer = null; }
+        ws.onclose = () => {
+            if (ws.pingTimer) { clearInterval(ws.pingTimer); ws.pingTimer = null; }
             delete backgroundDiscoverySockets[topicStr];
             setTimeout(() => initializeBackgroundDeviceScanner(topicStr), 5000);
         };
 
-        backgroundDiscoverySockets[topicStr] = tempWs;
+        backgroundDiscoverySockets[topicStr] = ws;
     }
 
     function evaluateAllDeviceHeartbeats() {
-        const devices = fetchDevicesFromRegistry();
-        devices.forEach(dev => {
+        fetchDevicesFromRegistry().forEach(dev => {
             const badge    = document.getElementById(`status_badge_${btoa(dev.topic)}`);
             const lastSeen = activeDevicesHeartbeats[dev.topic];
-            let currentDeviceStateOnline = false;
+            let online     = false;
+
             if (!lastSeen) {
                 if (badge && badge.innerText !== 'Syncing...') { badge.className = 'status-badge-node status-node-syncing'; badge.innerText = 'Syncing...'; }
             } else {
-                const elapsedSec = (Date.now() - lastSeen) / 1000;
-                if (elapsedSec > 5) {
-                    if (badge && badge.innerText !== 'Offline') { badge.className = 'status-badge-node status-node-offline'; badge.innerText = 'Offline'; }
+                online = (Date.now() - lastSeen) / 1000 <= 5;
+                if (online) {
+                    if (badge && badge.innerText !== 'Online')  { badge.className = 'status-badge-node status-node-online';  badge.innerText = 'Online'; }
                 } else {
-                    currentDeviceStateOnline = true;
-                    if (badge && badge.innerText !== 'Online') { badge.className = 'status-badge-node status-node-online'; badge.innerText = 'Online'; }
+                    if (badge && badge.innerText !== 'Offline') { badge.className = 'status-badge-node status-node-offline'; badge.innerText = 'Offline'; }
                 }
             }
+
             if (activeStreamTopic === dev.topic) {
-                const mText       = document.getElementById('status_text');
-                const mDot        = document.getElementById('status_dot');
-                const pulseBeacon = document.getElementById('rx_pulse_beacon');
+                const mText = document.getElementById('status_text');
+                const mDot  = document.getElementById('status_dot');
+                const pulse = document.getElementById('rx_pulse_beacon');
                 if (mText && mDot) {
                     if (!lastSeen) {
-                        mText.innerText       = `Selected Stream: Syncing target node context [${dev.topic}]...`;
-                        mDot.className        = 'status-beacon-dot';
-                        pulseBeacon.style.backgroundColor = '#FF0000';
-                    } else if (!currentDeviceStateOnline) {
-                        mText.innerText       = `Selected Stream Idle: Realtime connection lost / timeout window tripped [${dev.topic}]`;
-                        mDot.className        = 'status-beacon-dot';
-                        pulseBeacon.style.backgroundColor = '#FF0000';
+                        mText.innerText = `Selected Stream: Syncing target node context [${dev.topic}]...`;
+                        mDot.className  = 'status-beacon-dot';
+                        if (pulse) pulse.style.backgroundColor = '#FF0000';
+                    } else if (!online) {
+                        mText.innerText = `Selected Stream Idle: Connection lost / timeout [${dev.topic}]`;
+                        mDot.className  = 'status-beacon-dot';
+                        if (pulse) pulse.style.backgroundColor = '#FF0000';
                     } else {
-                        mText.innerText       = `Selected Stream: Connected and tracking realtime target [${dev.topic}]`;
-                        mDot.className        = 'status-beacon-dot connected';
+                        mText.innerText = `Selected Stream: Connected and tracking realtime target [${dev.topic}]`;
+                        mDot.className  = 'status-beacon-dot connected';
                     }
                 }
             }
         });
     }
 
-    function launchDiagnosticMonitorScreen(targetTopicStr) {
-        activeStreamTopic = targetTopicStr;
+    function launchDiagnosticMonitorScreen(targetTopic) {
+        activeStreamTopic = targetTopic;
+        // FIX 3a: clear logs and reset all state trackers on topic switch
+        clearEventLogs();
+        resetStateTrackers();
         document.getElementById('device_manager').style.display = 'none';
         const mText = document.getElementById('status_text');
-        if (mText) mText.innerText = `Selected Stream: Checking data link integrity for channel [${targetTopicStr}]...`;
-        appendEventLog(`Workspace updated. Interface stream focus shifted to channel [${targetTopicStr}].`);
+        if (mText) mText.innerText = `Selected Stream: Checking data link for channel [${targetTopic}]...`;
+        appendEventLog(`Stream focus switched to channel [${targetTopic}].`);
         renderDeviceInventoryTable();
     }
 
     function returnToInventoryDashboard() {
         activeStreamTopic = null;
         document.getElementById('device_manager').style.display = 'flex';
-        const statusDotEl  = document.getElementById('status_dot');
-        const statusTextEl = document.getElementById('status_text');
-        if (statusDotEl)  statusDotEl.className  = 'status-beacon-dot';
-        if (statusTextEl) statusTextEl.innerText = "Pipeline Idle: Please choose an active node path from your Asset Dashboard...";
+        const d = document.getElementById('status_dot');
+        const t = document.getElementById('status_text');
+        if (d) d.className  = 'status-beacon-dot';
+        if (t) t.innerText  = "Pipeline Idle: Please choose an active node path from your Asset Dashboard...";
         renderDeviceInventoryTable();
     }
 
-    function sendMqttConnectPacketRaw(targetSocketHandle) {
-        const cid   = "WebHub" + Math.floor(Math.random() * 1000);
-        const enc   = new TextEncoder();
-        const bUser = enc.encode(MQTT_USER);
-        const bPass = enc.encode(MQTT_PASS);
-        const bCid  = enc.encode(cid);
-        const remLen = 12 + (2 + bCid.length) + (2 + bUser.length) + (2 + bPass.length);
-        const pkt   = new Uint8Array(2 + remLen);
-        let idx = 0;
-        pkt[idx++] = 16; pkt[idx++] = remLen; pkt[idx++] = 0;  pkt[idx++] = 4;
-        pkt[idx++] = 77; pkt[idx++] = 81;     pkt[idx++] = 84; pkt[idx++] = 84;
-        pkt[idx++] = 4;  pkt[idx++] = 194;    pkt[idx++] = 0;  pkt[idx++] = 60;
-        pkt[idx++] = (bCid.length >> 8); pkt[idx++] = (bCid.length & 255);
-        pkt.set(bCid, idx); idx += bCid.length;
-        pkt[idx++] = (bUser.length >> 8); pkt[idx++] = (bUser.length & 255);
-        pkt.set(bUser, idx); idx += bUser.length;
-        pkt[idx++] = (bPass.length >> 8); pkt[idx++] = (bPass.length & 255);
-        pkt.set(bPass, idx); idx += bPass.length;
-        if (targetSocketHandle.readyState === 1) targetSocketHandle.send(pkt);
+    function sendMqttConnectPacketRaw(ws) {
+        const enc = new TextEncoder();
+        const cid = "WebHub" + Math.floor(Math.random() * 1000);
+        const bU  = enc.encode(MQTT_USER), bP = enc.encode(MQTT_PASS), bC = enc.encode(cid);
+        const rem = 12 + (2 + bC.length) + (2 + bU.length) + (2 + bP.length);
+        const pkt = new Uint8Array(2 + rem);
+        let i = 0;
+        pkt[i++]=16; pkt[i++]=rem; pkt[i++]=0; pkt[i++]=4;
+        pkt[i++]=77; pkt[i++]=81;  pkt[i++]=84; pkt[i++]=84;
+        pkt[i++]=4;  pkt[i++]=194; pkt[i++]=0;  pkt[i++]=60;
+        pkt[i++]=(bC.length>>8); pkt[i++]=(bC.length&255); pkt.set(bC,i); i+=bC.length;
+        pkt[i++]=(bU.length>>8); pkt[i++]=(bU.length&255); pkt.set(bU,i); i+=bU.length;
+        pkt[i++]=(bP.length>>8); pkt[i++]=(bP.length&255); pkt.set(bP,i);
+        if (ws.readyState === 1) ws.send(pkt);
     }
 
-    function sendMqttSubscribePacketRaw(targetSocketHandle, topicStr) {
-        const enc    = new TextEncoder();
-        const bTopic = enc.encode(topicStr);
-        const remLen = 2 + 2 + bTopic.length + 1;
-        const pkt    = new Uint8Array(2 + remLen);
-        let idx = 0;
-        pkt[idx++] = 130; pkt[idx++] = remLen; pkt[idx++] = 0; pkt[idx++] = 1;
-        pkt[idx++] = (bTopic.length >> 8); pkt[idx++] = (bTopic.length & 255);
-        for (var i = 0; i < bTopic.length; i++) { pkt[idx++] = bTopic[i]; }
-        pkt[idx++] = 0;
-        if (targetSocketHandle.readyState === 1) targetSocketHandle.send(pkt);
+    function sendMqttSubscribePacketRaw(ws, topic) {
+        const enc = new TextEncoder(), bT = enc.encode(topic);
+        const rem = 2 + 2 + bT.length + 1;
+        const pkt = new Uint8Array(2 + rem);
+        let i = 0;
+        pkt[i++]=130; pkt[i++]=rem; pkt[i++]=0; pkt[i++]=1;
+        pkt[i++]=(bT.length>>8); pkt[i++]=(bT.length&255);
+        bT.forEach(b => pkt[i++]=b);
+        pkt[i]=0;
+        if (ws.readyState === 1) ws.send(pkt);
     }
 
-    function sendMqttPingreqPacketRaw(targetSocketHandle) {
-        if (targetSocketHandle.readyState === 1) targetSocketHandle.send(new Uint8Array([0xC0, 0x00]));
+    function sendMqttPingreqPacketRaw(ws) {
+        if (ws.readyState === 1) ws.send(new Uint8Array([0xC0, 0x00]));
     }
 
     // =========================================================================
     // PACKET PARSER
     // =========================================================================
-
-    function parseMegmeetCorePacket(rawDataBytes) {
-        const pulseBeacon = document.getElementById('rx_pulse_beacon');
-        if (pulseBeacon) {
-            pulseBeacon.style.backgroundColor = '#FF0000';
-            setTimeout(() => { pulseBeacon.style.backgroundColor = '#00FF00'; }, 120);
+    function parseMegmeetCorePacket(d) {
+        // Pulse beacon flash
+        const pulse = document.getElementById('rx_pulse_beacon');
+        if (pulse) {
+            pulse.style.backgroundColor = '#FF0000';
+            setTimeout(() => { pulse.style.backgroundColor = '#00FF00'; }, 120);
         }
 
-        // --- Sensor values ---
-        const tr    = (rawDataBytes[9]  / 2) - 30;
-        const ts    = (rawDataBytes[8]  / 2) - 30;
-        const te    = (rawDataBytes[12] / 2) - 30;
-        const tsu   = (rawDataBytes[30] / 2) - 30;
-        const ta    = (rawDataBytes[10] / 2) - 30;
-        const tc    = (rawDataBytes[13] / 2) - 30;
-        const td    = rawDataBytes[11] - 30;
+        // Sensor decode
+        const tr      = (d[9]  / 2) - 30;
+        const ts      = (d[8]  / 2) - 30;
+        const te      = (d[12] / 2) - 30;
+        const tsu     = (d[30] / 2) - 30;
+        const ta      = (d[10] / 2) - 30;
+        const tc      = (d[13] / 2) - 30;
+        const td      = d[11] - 30;
+        const acVol   = d[14] * 2;
+        const acCur   = d[15] / 10;
+        const dcVol   = d[19] * 2;
+        const dcCur   = d[20] / 10;
+        const eev     = d[24] * 2;
+        const tipm    = d[25];
+        const fanIpm  = d[44];
+        const oduFan  = d[21] * 10;
+        const iduFan  = d[32] * 10;
+        const pcbType = d[0];
+        const area    = d[23];
+        const CompTime = (d[42] << 8) | d[43];
 
-        const acVol  = rawDataBytes[14] * 2;
-        const acCur  = rawDataBytes[15] / 10;
-        const dcVol  = rawDataBytes[19] * 2;
-        const dcCur  = rawDataBytes[20] / 10;
-        const eev    = rawDataBytes[24] * 2;
-        const tipm   = rawDataBytes[25];
-        const fanIpm = rawDataBytes[44];
-        const oduFan = rawDataBytes[21] * 10;
-        const iduFan = rawDataBytes[32] * 10;
-        const pcbType = rawDataBytes[0];
-        const area    = rawDataBytes[23];
-        const CompTime = (rawDataBytes[42] << 8) | rawDataBytes[43];
-
-        const f1  = rawDataBytes[47];  const f2  = rawDataBytes[48];
-        const f3  = rawDataBytes[49];  const f4  = rawDataBytes[50];
-        const f5  = rawDataBytes[51];  const f6  = rawDataBytes[52];
-        const f7  = rawDataBytes[53];  const f8  = rawDataBytes[54];
-        const f9  = rawDataBytes[55];  const f10 = rawDataBytes[56];
-        const f11 = rawDataBytes[57];  const f12 = rawDataBytes[58];
-        const f13 = rawDataBytes[59];
-
-        const Hf1  = rawDataBytes[60];  const Hf2  = rawDataBytes[61];
-        const Hf3  = rawDataBytes[62];  const Hf4  = rawDataBytes[63];
-        const Hf5  = rawDataBytes[64];  const Hf6  = rawDataBytes[65];
-        const Hf7  = rawDataBytes[66];  const Hf8  = rawDataBytes[67];
-        const Hf9  = rawDataBytes[68];  const Hf10 = rawDataBytes[69];
-        const Hf11 = rawDataBytes[70];  const Hf12 = rawDataBytes[71];
-        const Hf13 = rawDataBytes[72];
-
-        const fanLevelCode = rawDataBytes[18];
-        const modeCode     = rawDataBytes[1];
-        const eventCode    = rawDataBytes[31];
-        const targetFreqHz = rawDataBytes[3];
-        const setFreqHz    = rawDataBytes[4];
-        const realFreqHz   = rawDataBytes[2];
-
-        const fanLevelArray = ["Stop", "Weak", "Silence", "Low", "Medium", "High", "Force"];
-        const fanLevelStr   = fanLevelArray[fanLevelCode] || `Level ${fanLevelCode}`;
-        const modeArray     = ["Standby", "Cool", "Heat", "FAN", "Dry"];
-        const modeStr       = modeArray[modeCode] || `Mode ${modeCode}`;
+        const fanLevelStr = (["Stop","Weak","Silence","Low","Medium","High","Force"])[d[18]] || `Level ${d[18]}`;
+        const modeStr     = (["Standby","Cool","Heat","FAN","Dry"])[d[1]] || `Mode ${d[1]}`;
+        const eventCode   = d[31];
 
         const eventTextArray = [
             "System Idle",
             "Receive indoor instructions Standby",
             "Mode change, Compressor stop",
             "Indoor room temp reach to stop",
-            "Ac Curr protect, Compressor stop",
+            "AC Curr protect, Compressor stop",
             "Indoor FAN motor fault, Compressor stop",
             "Indoor Evaporator sensor fault",
             "Indoor Room Sensor Fault",
             "Stop reason8"
         ];
-        const eventDisplayStr = eventTextArray[eventCode] || `Event Logic Code ${eventCode}`;
         if (eventCode !== lastRecordedEventCodeValue && eventCode > 0 && eventCode < eventTextArray.length) {
-            appendEventLog(eventDisplayStr);
+            appendEventLog(eventTextArray[eventCode]);
             lastRecordedEventCodeValue = eventCode;
         }
 
-        // --- Static display fields ---
-        document.getElementById('val_softver').innerText   = `${rawDataBytes[28]}.${rawDataBytes[29]}.0`;
-        document.getElementById('val_softdata').innerText  = `20${rawDataBytes[33]}-${rawDataBytes[34]}-${rawDataBytes[35]}`;
+        // Static display updates
+        document.getElementById('val_softver').innerText   = `${d[28]}.${d[29]}.0`;
+        document.getElementById('val_softdata').innerText  = `20${d[33]}-${d[34]}-${d[35]}`;
         document.getElementById('val_driverlib').innerText = "- - - -";
         document.getElementById('val_idumcuee').innerText  = "- - - -";
         document.getElementById('val_odumcuee').innerText  = "- - - -";
-
         document.getElementById('val_mode').innerText      = `-${modeStr}`;
         document.getElementById('val_tr').innerText        = tr + "°C";
         document.getElementById('val_ts').innerText        = ts + "°C";
@@ -921,152 +815,153 @@
         document.getElementById('val_ratedmode').innerText = "- - - -";
         document.getElementById('val_fanlevel').innerText  = `-${fanLevelStr}`;
         document.getElementById('val_idufan').innerText    = iduFan + "RPM";
+        document.getElementById('val_tsu').innerText       = tsu + "°C";
+        document.getElementById('val_ta').innerText        = ta  + "°C";
+        document.getElementById('val_tc').innerText        = tc  + "°C";
+        document.getElementById('val_td').innerText        = td  + "°C";
+        document.getElementById('val_area').innerText      = area === 23 ? "F_area" : `Area ${area}`;
+        document.getElementById('val_pcbtype').innerText   = pcbType === 0 ? "Rx23Tx" : `Type ${pcbType}`;
+        document.getElementById('val_odufan').innerText    = oduFan + "RPM";
+        document.getElementById('val_dccur').innerText     = dcCur + "A";
+        document.getElementById('val_dcvol').innerText     = dcVol + "V";
+        document.getElementById('val_accur').innerText     = acCur + "A";
+        document.getElementById('val_acvol').innerText     = acVol + "V";
+        document.getElementById('val_eev').innerText       = eev   + "P";
+        document.getElementById('val_tipm').innerText      = tipm  + " °C";
+        document.getElementById('val_fanipm').innerText    = fanIpm + " °C";
+        document.getElementById('Comp_Time').innerText     = d[41] === 0 ? `Off[${CompTime}]Sec` : (d[41] === 1 ? `On[${CompTime}]Sec` : `--`);
+        document.getElementById('ui_target_freq').innerText = `F${d[3]}`;
+        document.getElementById('ui_set_freq').innerText    = `F${d[4]}`;
+        document.getElementById('ui_real_freq').innerText   = `${d[2]*60}rpm/(${d[2]}Hz)`;
 
-        // --- IDU fault field (change-tracked) ---
+        // Freq grids
+        const fc = [47,48,49,50,51,52,53,54,55,56,57,58,59];
+        const fh = [60,61,62,63,64,65,66,67,68,69,70,71,72];
+        for (let n=1; n<=13; n++) {
+            document.getElementById(`f_f${n}`).innerText   = d[fc[n-1]];
+            document.getElementById(`Hf_f${n}`).innerText  = d[fh[n-1]];
+        }
+
+        // =====================================================================
+        // IDU FAULT (byte 45) — display field, change-tracked
+        // =====================================================================
         let iduFaultText = '--';
-        if      (rawDataBytes[45] & 0x01) iduFaultText = "Fan fault";
-        else if (rawDataBytes[45] & 0x02) iduFaultText = "Te fault";
-        else if (rawDataBytes[45] & 0x04) iduFaultText = "Tr fault";
-        else if (rawDataBytes[45] & 0x08) iduFaultText = "NoFo fault";
-        else if (rawDataBytes[45] & 0x10) iduFaultText = "WiFi fault";
-        else if (rawDataBytes[45])         iduFaultText = "IDU fault";
-        updateDisplayField('val_idufaultstr', iduFaultText, 'IDU Fault');
+        if      (d[45] & 0x01) iduFaultText = "Fan fault";
+        else if (d[45] & 0x02) iduFaultText = "Te fault";
+        else if (d[45] & 0x04) iduFaultText = "Tr fault";
+        else if (d[45] & 0x08) iduFaultText = "NoFo fault";
+        else if (d[45] & 0x10) iduFaultText = "WiFi fault";
+        else if (d[45])         iduFaultText = "IDU fault";
+        setDisplayField('val_idufaultstr', iduFaultText, 'IDU Fault');
 
-        document.getElementById('val_tsu').innerText   = tsu + "°C";
-        document.getElementById('val_ta').innerText    = ta  + "°C";
-        document.getElementById('val_tc').innerText    = tc  + "°C";
-        document.getElementById('val_td').innerText    = td  + "°C";
-        document.getElementById('val_area').innerText  = area === 23 ? "F_area" : `Area ${area}`;
-        document.getElementById('val_pcbtype').innerText = pcbType === 0 ? "Rx23Tx" : `Type ${pcbType}`;
-        document.getElementById('val_odufan').innerText  = oduFan + "RPM";
-
-        // --- Drv Fault field (change-tracked) ---
+        // =====================================================================
+        // DRV FAULT (byte 16) — display field, change-tracked
+        // =====================================================================
         let drvFaultText = '--';
-        if      (rawDataBytes[16] & 0x02) drvFaultText = "Over Current";
-        else if (rawDataBytes[16] & 0x04) drvFaultText = "Over Voltage";
-        else if (rawDataBytes[16] & 0x08) drvFaultText = "Step Out";
-        else if (rawDataBytes[16] & 0x10) drvFaultText = "Reverse";
-        updateDisplayField('val_drvfault', drvFaultText, 'Drv Fault');
-
-        document.getElementById('val_dccur').innerText  = dcCur + "A";
-        document.getElementById('val_dcvol').innerText  = dcVol + "V";
-        document.getElementById('val_accur').innerText  = acCur + "A";
-        document.getElementById('val_acvol').innerText  = acVol + "V";
-        document.getElementById('val_eev').innerText    = eev   + "P";
-        document.getElementById('val_tipm').innerText   = tipm  + " °C";
-        document.getElementById('val_fanipm').innerText = fanIpm + " °C";
-
-        if (rawDataBytes[41] === 0)
-            document.getElementById('Comp_Time').innerText = `Off[${CompTime}]Sec`;
-        else if (rawDataBytes[41] === 1)
-            document.getElementById('Comp_Time').innerText = `On[${CompTime}]Sec`;
-
-        document.getElementById('ui_target_freq').innerText = `F${targetFreqHz}`;
-        document.getElementById('ui_set_freq').innerText    = `F${setFreqHz}`;
-        document.getElementById('ui_real_freq').innerText   = `${realFreqHz * 60}rpm/(${realFreqHz}Hz)`;
-
-        document.getElementById('f_f1').innerText   = f1;   document.getElementById('f_f2').innerText   = f2;
-        document.getElementById('f_f3').innerText   = f3;   document.getElementById('f_f4').innerText   = f4;
-        document.getElementById('f_f5').innerText   = f5;   document.getElementById('f_f6').innerText   = f6;
-        document.getElementById('f_f7').innerText   = f7;   document.getElementById('f_f8').innerText   = f8;
-        document.getElementById('f_f9').innerText   = f9;   document.getElementById('f_f10').innerText  = f10;
-        document.getElementById('f_f11').innerText  = f11;  document.getElementById('f_f12').innerText  = f12;
-        document.getElementById('f_f13').innerText  = f13;
-
-        document.getElementById('Hf_f1').innerText  = Hf1;  document.getElementById('Hf_f2').innerText  = Hf2;
-        document.getElementById('Hf_f3').innerText  = Hf3;  document.getElementById('Hf_f4').innerText  = Hf4;
-        document.getElementById('Hf_f5').innerText  = Hf5;  document.getElementById('Hf_f6').innerText  = Hf6;
-        document.getElementById('Hf_f7').innerText  = Hf7;  document.getElementById('Hf_f8').innerText  = Hf8;
-        document.getElementById('Hf_f9').innerText  = Hf9;  document.getElementById('Hf_f10').innerText = Hf10;
-        document.getElementById('Hf_f11').innerText = Hf11; document.getElementById('Hf_f12').innerText = Hf12;
-        document.getElementById('Hf_f13').innerText = Hf13;
+        if      (d[16] & 0x02) drvFaultText = "Over Current";
+        else if (d[16] & 0x04) drvFaultText = "Over Voltage";
+        else if (d[16] & 0x08) drvFaultText = "Step Out";
+        else if (d[16] & 0x10) drvFaultText = "Reverse";
+        setDisplayField('val_drvfault', drvFaultText, 'Drv Fault');
 
         // =====================================================================
-        // SIDE INDICATORS — all use toggleStatusIndicator with label + detail
+        // FAULT byte 39 — Communication to drive / TSU Sensor / NoFo
         // =====================================================================
-
-        // --- FAULT (byte 39) ---
         let faultDetail = '';
-        if      (rawDataBytes[39] & 0x02) faultDetail = "Communication to drive";
-        else if (rawDataBytes[39] & 0x04) faultDetail = "TSU Sensor";
-        else if (rawDataBytes[39] & 0x08) faultDetail = "NoFo";
-        toggleStatusIndicator('chk_fault', rawDataBytes[39], 'active-green', 'Fault', faultDetail || 'Fault active');
-        updateFaultLabelSpan('txt_fault_type', faultDetail, 'Fault');
+        if      (d[39] & 0x02) faultDetail = "Communication to drive";
+        else if (d[39] & 0x04) faultDetail = "TSU Sensor";
+        else if (d[39] & 0x08) faultDetail = "NoFo";
+        setIndicator('chk_fault', 'txt_fault_type', d[39], 'active-green', 'Fault', faultDetail);
 
-        // --- PROTECT (bytes 40 + 6) ---
-        const protectByte1 = rawDataBytes[40];
-        const protectByte2 = rawDataBytes[6];
-        const activeProtections = [];
-        if (protectByte1 & 0x01) activeProtections.push("DC Volt Stop");
-        if (protectByte1 & 0x02) activeProtections.push("DC Current Protection to Stop");
-        if (protectByte1 & 0x04) activeProtections.push("Tc freeze protect");
-        if (protectByte1 & 0x08) activeProtections.push("Te overload protect");
-        if (protectByte1 & 0x10) activeProtections.push("IPM over temp protect");
-        if (protectByte1 & 0x20) activeProtections.push("IPM protect permanent");
-        if (protectByte1 & 0x40) activeProtections.push("Start Fail Preheat");
-        if (protectByte2 & 0x01) activeProtections.push("Tr Protect");
-        if (protectByte2 & 0x02) activeProtections.push("Tc Protect");
-        if (protectByte2 & 0x04) activeProtections.push("Te protect");
-        if (protectByte2 & 0x08) activeProtections.push("Ta protect");
-        if (protectByte2 & 0x10) activeProtections.push("AC current");
-        if (protectByte2 & 0x20) activeProtections.push("AC voltage");
-        if (protectByte2 & 0x40) activeProtections.push("Compressor protect (permanent stop)");
-        if (protectByte2 & 0x80) activeProtections.push("Td Protect");
-        const isAnyProtectionActive = (protectByte1 > 0) || (protectByte2 > 0);
-        const protectDetailStr = activeProtections.join(", ");
-        toggleStatusIndicator('chk_protect', isAnyProtectionActive, 'active-green', 'Protect', protectDetailStr || 'Protection active');
-        updateFaultLabelSpan('txt_protect_type', protectDetailStr, 'Protect');
+        // =====================================================================
+        // FAULT 2 byte 5 — Ta/Tc/Td sensor, Communication, Out Fan,
+        //                  Compressor Fault, IPM fault
+        // =====================================================================
+        const fault2Names = [];
+        if (d[5] & 0x02) fault2Names.push("Ta sensor fault");
+        if (d[5] & 0x04) fault2Names.push("Tc sensor fault");
+        if (d[5] & 0x08) fault2Names.push("Td sensor fault");
+        if (d[5] & 0x10) fault2Names.push("Communication Fault");
+        if (d[5] & 0x20) fault2Names.push("Out Fan Fault");
+        if (d[5] & 0x40) fault2Names.push("Compressor Fault");
+        if (d[5] & 0x80) fault2Names.push("IPM fault");
+        setIndicator('chk_fault2', 'txt_fault2_type', d[5], 'active-green', 'Fault2', fault2Names.join(", "));
 
-        // --- LIMIT FREQ (byte 7) ---
-        const limitfreqByte = rawDataBytes[7];
-        const limitfreqNames = [];
-        if (limitfreqByte & 0x01) limitfreqNames.push("DC Current Limit");
-        if (limitfreqByte & 0x02) limitfreqNames.push("IPM Limit");
-        if (limitfreqByte & 0x04) limitfreqNames.push("Tc Limit");
-        if (limitfreqByte & 0x08) limitfreqNames.push("Te Limit");
-        if (limitfreqByte & 0x10) limitfreqNames.push("Ta Limit");
-        if (limitfreqByte & 0x20) limitfreqNames.push("AC Voltage Limit");
-        if (limitfreqByte & 0x40) limitfreqNames.push("AC Current Limit");
-        if (limitfreqByte & 0x80) limitfreqNames.push("Td Limit");
-        const limitfreqDetailStr = limitfreqNames.join(", ");
-        toggleStatusIndicator('chk_limitfreq', limitfreqByte, 'active-green', 'LimitFreq', limitfreqDetailStr || 'Limit active');
-        updateFaultLabelSpan('txt_Limitfreq_type', limitfreqDetailStr, 'LimitFreq');
+        // =====================================================================
+        // PROTECT bytes 40 + 6
+        // =====================================================================
+        const protectByte1 = d[40];
+        const protectByte2 = d[6];
+        const protectNames = [];
+        if (protectByte1 & 0x01) protectNames.push("DC Volt Stop");
+        if (protectByte1 & 0x02) protectNames.push("DC Current Protection to Stop");
+        if (protectByte1 & 0x04) protectNames.push("Tc freeze protect");
+        if (protectByte1 & 0x08) protectNames.push("Te overload protect");
+        if (protectByte1 & 0x10) protectNames.push("IPM over temp protect");
+        if (protectByte1 & 0x20) protectNames.push("IPM protect permanent");
+        if (protectByte1 & 0x40) protectNames.push("Start Fail Preheat");
+        if (protectByte2 & 0x01) protectNames.push("Tr Protect");
+        if (protectByte2 & 0x02) protectNames.push("Tc Protect");
+        if (protectByte2 & 0x04) protectNames.push("Te protect");
+        if (protectByte2 & 0x08) protectNames.push("Ta protect");
+        if (protectByte2 & 0x10) protectNames.push("AC current");
+        if (protectByte2 & 0x20) protectNames.push("AC voltage");
+        if (protectByte2 & 0x40) protectNames.push("Compressor protect (permanent stop)");
+        if (protectByte2 & 0x80) protectNames.push("Td Protect");
+        const anyProtect = (protectByte1 > 0) || (protectByte2 > 0);
+        setIndicator('chk_protect', 'txt_protect_type', anyProtect, 'active-green', 'Protect', protectNames.join(", "));
 
-        // --- DOWN FREQ (byte 27) ---
-        const downfreqByte = rawDataBytes[27];
-        const downfreqNames = [];
-        if (downfreqByte & 0x01) downfreqNames.push("Condenser temp");
-        if (downfreqByte & 0x02) downfreqNames.push("Evaporator temp");
-        if (downfreqByte & 0x04) downfreqNames.push("Comp discharge temp");
-        if (downfreqByte & 0x08) downfreqNames.push("AC current");
-        if (downfreqByte & 0x10) downfreqNames.push("Compressor phase current");
-        if (downfreqByte & 0x20) downfreqNames.push("IPM temperature");
-        const downfreqDetailStr = downfreqNames.join(", ");
-        toggleStatusIndicator('chk_downfreq', downfreqByte, 'active-green', 'DownFreq', downfreqDetailStr || 'DownFreq active');
-        updateFaultLabelSpan('txt_downfreq_type', downfreqDetailStr, 'DownFreq');
+        // =====================================================================
+        // LIMIT FREQ byte 7
+        // =====================================================================
+        const limitNames = [];
+        if (d[7] & 0x01) limitNames.push("DC Current Limit");
+        if (d[7] & 0x02) limitNames.push("IPM Limit");
+        if (d[7] & 0x04) limitNames.push("Tc Limit");
+        if (d[7] & 0x08) limitNames.push("Te Limit");
+        if (d[7] & 0x10) limitNames.push("Ta Limit");
+        if (d[7] & 0x20) limitNames.push("AC Voltage Limit");
+        if (d[7] & 0x40) limitNames.push("AC Current Limit");
+        if (d[7] & 0x80) limitNames.push("Td Limit");
+        setIndicator('chk_limitfreq', 'txt_Limitfreq_type', d[7], 'active-green', 'LimitFreq', limitNames.join(", "));
 
-        // --- BINARY CONTROL INDICATORS (byte 17) ---
-        toggleStatusIndicator('chk_comp',     (rawDataBytes[17] & 0x80), 'active-green',  'Comp');
-        toggleStatusIndicator('chk_defrost',  (rawDataBytes[17] & 0x04), 'active-green',  'Defrost');
-        toggleStatusIndicator('chk_4way',     (rawDataBytes[17] & 0x08), 'active-green',  '4Way');
-        toggleStatusIndicator('chk_retoil',   (rawDataBytes[17] & 0x40), 'active-green',  'Ret Oil');
-        toggleStatusIndicator('chk_outfan',   (rawDataBytes[17] & 0x20), 'active-green',  'Out Fan');
-        toggleStatusIndicator('chk_test',     (rawDataBytes[17] & 0x02), 'active-green',  'Test');
-        toggleStatusIndicator('chk_preheat',  (rawDataBytes[17] & 0x01), 'active-green',  'Preheat');
-        toggleStatusIndicator('chk_collectf', (rawDataBytes[17] & 0x10), 'active-green',  'Collect F');
+        // =====================================================================
+        // DOWN FREQ byte 27 — corrected names from table
+        // =====================================================================
+        const downNames = [];
+        if (d[27] & 0x01) downNames.push("Condenser temp down freq / Limit FX Run");
+        if (d[27] & 0x02) downNames.push("Evaporator temp down freq / Limit FX Run");
+        if (d[27] & 0x04) downNames.push("Comp discharge temp down freq / Limit FX Run");
+        if (d[27] & 0x08) downNames.push("AC current down freq / Limit FX Run");
+        if (d[27] & 0x10) downNames.push("Compressor phase current down freq / Limit FX Run");
+        if (d[27] & 0x20) downNames.push("IPM temperature down freq / Limit FX Run");
+        setIndicator('chk_downfreq', 'txt_downfreq_type', d[27], 'active-green', 'DownFreq', downNames.join(", "));
 
-        // --- SYSTEM FLAGS (byte 26) ---
-        toggleStatusIndicator('chk_pfc',      (rawDataBytes[26] & 0x10), 'active-orange', 'PFC');
-        toggleStatusIndicator('chk_eco',      (rawDataBytes[26] & 0x08), 'active-orange', 'ECO');
-        toggleStatusIndicator('chk_everoff',  (rawDataBytes[26] & 0x01), 'active-orange', 'Ever Off');
-        toggleStatusIndicator('chk_idufault', (rawDataBytes[26] & 0x02), 'active-red',    'IDU Fault (sys flag)');
+        // =====================================================================
+        // BINARY CONTROL FLAGS byte 17 — simple ON/OFF, no label span
+        // =====================================================================
+        setIndicator('chk_comp',     null, d[17] & 0x80, 'active-green',  'Comp',      '');
+        setIndicator('chk_defrost',  null, d[17] & 0x04, 'active-green',  'Defrost',   '');
+        setIndicator('chk_4way',     null, d[17] & 0x08, 'active-green',  '4Way',      '');
+        setIndicator('chk_retoil',   null, d[17] & 0x40, 'active-green',  'Ret Oil',   '');
+        setIndicator('chk_outfan',   null, d[17] & 0x20, 'active-green',  'Out Fan',   '');
+        setIndicator('chk_test',     null, d[17] & 0x02, 'active-green',  'Test',      '');
+        setIndicator('chk_preheat',  null, d[17] & 0x01, 'active-green',  'Preheat',   '');
+        setIndicator('chk_collectf', null, d[17] & 0x10, 'active-green',  'Collect F', '');
 
-        // --- HEX TERMINAL LOG ---
-        const timeStr     = new Date().toLocaleTimeString();
-        const hexColumn   = Array.from(rawDataBytes).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
-        const asciiColumn = Array.from(rawDataBytes).map(b => (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.').join('');
-        const completeRow = `[${timeStr}]\nComp: ${CompTime}\nHEX : ${hexColumn}\nASC : ${asciiColumn}\n---------------------------------------`;
-        appendLine(completeRow, "");
+        // =====================================================================
+        // SYSTEM FLAGS byte 26
+        // =====================================================================
+        setIndicator('chk_pfc',      null, d[26] & 0x10, 'active-orange', 'PFC',            '');
+        setIndicator('chk_eco',      null, d[26] & 0x08, 'active-orange', 'ECO',            '');
+        setIndicator('chk_everoff',  null, d[26] & 0x01, 'active-orange', 'Ever Off',       '');
+        setIndicator('chk_idufault', null, d[26] & 0x02, 'active-red',    'IDU Fault (sys)','');
+
+        // HEX terminal log
+        const ts2      = new Date().toLocaleTimeString();
+        const hexStr   = Array.from(d).map(b => b.toString(16).toUpperCase().padStart(2,'0')).join(' ');
+        const asciiStr = Array.from(d).map(b => (b>=32&&b<=126)?String.fromCharCode(b):'.').join('');
+        appendLine(`[${ts2}]\nComp: ${CompTime}\nHEX : ${hexStr}\nASC : ${asciiStr}\n---------------------------------------`);
     }
 
     initializeParallelDiscoveryNetwork();
