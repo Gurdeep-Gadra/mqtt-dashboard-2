@@ -858,8 +858,8 @@
         // DRV FAULT (byte 16) — display field, change-tracked
         // =====================================================================
         let drvFaultText = '--';
-        if      (d[16] & 0x02) drvFaultText = "Over Current " + acCur +"A.AC" ;
-        else if (d[16] & 0x04) drvFaultText = "Over Voltage " + acVol +"V.AC" ;
+        if      (d[16] & 0x02) drvFaultText = "Over Current";
+        else if (d[16] & 0x04) drvFaultText = "Over Voltage";
         else if (d[16] & 0x08) drvFaultText = "Step Out";
         else if (d[16] & 0x10) drvFaultText = "Reverse";
         setDisplayField('val_drvfault', drvFaultText, 'Drv Fault');
@@ -904,8 +904,8 @@
         if (protectByte2 & 0x02) protectNames.push("Tc Protect");
         if (protectByte2 & 0x04) protectNames.push("Te protect");
         if (protectByte2 & 0x08) protectNames.push("Ta protect");
-        if (protectByte2 & 0x10) protectNames.push("AC current " + acCur +"A.AC");
-        if (protectByte2 & 0x20) protectNames.push("AC voltage " + acVol +"V.AC");
+        if (protectByte2 & 0x10) protectNames.push("AC current " + acCur +"A");
+        if (protectByte2 & 0x20) protectNames.push("AC voltage " + acVol +"V");
         if (protectByte2 & 0x40) protectNames.push("Compressor protect (permanent stop)");
         if (protectByte2 & 0x80) protectNames.push("Td Protect");
         const anyProtect = (protectByte1 > 0) || (protectByte2 > 0);
@@ -915,26 +915,26 @@
         // LIMIT FREQ byte 7
         // =====================================================================
         const limitNames = [];
-        if (d[7] & 0x01) limitNames.push("DC Current Limit");
-        if (d[7] & 0x02) limitNames.push("IPM Limit");
-        if (d[7] & 0x04) limitNames.push("Tc Limit");
-        if (d[7] & 0x08) limitNames.push("Te Limit");
-        if (d[7] & 0x10) limitNames.push("Ta Limit");
-        if (d[7] & 0x20) limitNames.push("AC Voltage Limit");
-        if (d[7] & 0x40) limitNames.push("AC Current Limit");
-        if (d[7] & 0x80) limitNames.push("Td Limit");
+        if (d[7] & 0x01) limitNames.push("DC Current/Limit F"+d[4]+" Run");
+        if (d[7] & 0x02) limitNames.push("IPM/Limit F"+d[4]+" Run");
+        if (d[7] & 0x04) limitNames.push("Tc/Limit F"+d[4]+" Run");
+        if (d[7] & 0x08) limitNames.push("Te/Limit F"+d[4]+" Run");
+        if (d[7] & 0x10) limitNames.push("Ta/Limit F"+d[4]+" Run");
+        if (d[7] & 0x20) limitNames.push("AC Voltage/Limit F"+d[4]+" Run");
+        if (d[7] & 0x40) limitNames.push("AC Current/Limit F"+d[4]+" Run");
+        if (d[7] & 0x80) limitNames.push("Td/Limit F"+d[4]+" Run");
         setIndicator('chk_limitfreq', 'txt_Limitfreq_type', d[7], 'active-green', 'LimitFreq', limitNames.join(", "));
 
         // =====================================================================
         // DOWN FREQ byte 27 — corrected names from table
         // =====================================================================
         const downNames = [];
-        if (d[27] & 0x01) downNames.push("Condenser temp down freq / Limit FX Run");
-        if (d[27] & 0x02) downNames.push("Evaporator temp down freq / Limit FX Run");
-        if (d[27] & 0x04) downNames.push("Comp discharge temp down freq / Limit FX Run");
-        if (d[27] & 0x08) downNames.push("AC current down freq / Limit FX Run");
-        if (d[27] & 0x10) downNames.push("Compressor phase current down freq / Limit FX Run");
-        if (d[27] & 0x20) downNames.push("IPM temperature down freq / Limit FX Run");
+        if (d[27] & 0x01) downNames.push("Condenser temp/Down to F"+d[4]+" Run");
+        if (d[27] & 0x02) downNames.push("Evaporator temp/Down to F"+d[4]+" Run");
+        if (d[27] & 0x04) downNames.push("Comp discharge temp/Down to F"+d[4]+" Run");
+        if (d[27] & 0x08) downNames.push("AC current/Down to F"+d[4]+" Run");
+        if (d[27] & 0x10) downNames.push("Compressor phase current/Down to F"+d[4]+" Run");
+        if (d[27] & 0x20) downNames.push("IPM temperature/Down to F"+d[4]+" Run");
         setIndicator('chk_downfreq', 'txt_downfreq_type', d[27], 'active-green', 'DownFreq', downNames.join(", "));
 
         // =====================================================================
