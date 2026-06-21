@@ -904,8 +904,8 @@
         if (protectByte2 & 0x02) protectNames.push("Tc Protect");
         if (protectByte2 & 0x04) protectNames.push("Te protect");
         if (protectByte2 & 0x08) protectNames.push("Ta protect");
-        if (protectByte2 & 0x10) protectNames.push("AC current " + acCur +"A.AC" ;
-        if (protectByte2 & 0x20) protectNames.push("AC voltage " + acVol +"V.AC" ;
+        if (protectByte2 & 0x10) protectNames.push("AC current " + acCur +"A.AC");
+        if (protectByte2 & 0x20) protectNames.push("AC voltage " + acVol +"V.AC");
         if (protectByte2 & 0x40) protectNames.push("Compressor protect (permanent stop)");
         if (protectByte2 & 0x80) protectNames.push("Td Protect");
         const anyProtect = (protectByte1 > 0) || (protectByte2 > 0);
