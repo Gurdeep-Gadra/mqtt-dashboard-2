@@ -305,7 +305,7 @@
                         <span id="txt_fault_type" style="color:#FF0000; font-weight:bold; font-family:'Tahoma',sans-serif;"></span>
                     </div>
                     <div class="checkbox-row-item">
-                        <div id="chk_fault2" class="indicator-square-box"></div><span>Fault2</span>
+                        <div id="chk_fault2" class="indicator-square-box"></div><span>ODU Fault</span>
                         <span id="txt_fault2_type" style="color:#FF0000; font-weight:bold; font-family:'Tahoma',sans-serif;"></span>
                     </div>
                     <div class="checkbox-row-item">
@@ -858,8 +858,8 @@
         // DRV FAULT (byte 16) — display field, change-tracked
         // =====================================================================
         let drvFaultText = '--';
-        if      (d[16] & 0x02) drvFaultText = "Over Current";
-        else if (d[16] & 0x04) drvFaultText = "Over Voltage";
+        if      (d[16] & 0x02) drvFaultText = "Over Current " + acCur +"A.AC" ;
+        else if (d[16] & 0x04) drvFaultText = "Over Voltage " + acVol +"V.AC" ;
         else if (d[16] & 0x08) drvFaultText = "Step Out";
         else if (d[16] & 0x10) drvFaultText = "Reverse";
         setDisplayField('val_drvfault', drvFaultText, 'Drv Fault');
@@ -885,7 +885,7 @@
         if (d[5] & 0x20) fault2Names.push("Out Fan Fault");
         if (d[5] & 0x40) fault2Names.push("Compressor Fault");
         if (d[5] & 0x80) fault2Names.push("IPM fault");
-        setIndicator('chk_fault2', 'txt_fault2_type', d[5], 'active-green', 'Fault2', fault2Names.join(", "));
+        setIndicator('chk_fault2', 'txt_fault2_type', d[5], 'active-green', 'ODU Fault', fault2Names.join(", "));
 
         // =====================================================================
         // PROTECT bytes 40 + 6
