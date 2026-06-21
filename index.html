@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor Realtime Megmeet data fetching</title>
     <style>
-        /* Exact Windows Classic Forms Background Layout Theme */
         body { 
             background-color: #D4D0C8; 
             color: #000000; 
@@ -16,8 +15,6 @@
             font-size: 11px;
             user-select: none;
         }
-
-        /* --- DEVICE ASSET ENGINE PANEL STYLES --- */
         .device-mgr-wrapper {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -25,7 +22,6 @@
             display: flex; justify-content: center; align-items: center;
             z-index: 88888;
         }
-
         .device-mgr-frame {
             background-color: #D4D0C8;
             border: 2px solid #FFFFFF;
@@ -33,33 +29,26 @@
             width: 600px; padding: 12px;
             box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
         }
-
         .auth-header-strip {
             background-color: #000080; color: #FFFFFF;
             padding: 3px 6px; font-weight: bold; font-size: 11px;
             margin-bottom: 12px;
         }
-
         .device-data-table {
             width: 100%; border-collapse: collapse;
             background-color: #FFFFFF; border: 2px solid #808080;
             margin-bottom: 10px; font-size: 11px; text-align: left;
         }
-
         .device-data-table th {
             background-color: #D4D0C8; color: #000000;
             border: 1px solid #808080; padding: 4px; font-weight: bold;
         }
-
         .device-data-table td {
             border: 1px solid #D4D0C8; padding: 4px; cursor: pointer;
         }
-
         .device-data-table tr.active-row td {
             background-color: #000080; color: #FFFFFF;
         }
-
-        /* --- MULTICHANNEL REALTIME STATUS BADGES --- */
         .status-badge-node {
             font-size: 10px;
             font-weight: bold;
@@ -72,27 +61,22 @@
         .status-node-syncing { background-color: #FFFFE0; color: #B27A00; }
         .status-node-online  { background-color: #D4EDDA; color: #155724; border-color: #C3E6CB; }
         .status-node-offline { background-color: #F8D7DA; color: #721C24; border-color: #F5C6CB; }
-
         .form-txt-input {
             background-color: #FFFFFF; border: 1px solid #808080;
             border-right-color: #FFFFFF; border-bottom-color: #FFFFFF;
             padding: 2px 4px; font-family: 'Tahoma', sans-serif;
             font-size: 11px; height: 16px; width: 100%; box-sizing: border-box;
         }
-
         .win-classic-btn {
             background-color: #D4D0C8; border: 2px solid #FFFFFF;
             border-right-color: #808080; border-bottom-color: #808080;
             padding: 3px 14px; font-family: 'Tahoma', sans-serif;
             font-size: 11px; cursor: pointer; box-shadow: inset 1px 1px 0px #FFFFFF;
         }
-
         .win-classic-btn:active {
             border: 2px solid #808080; border-right-color: #FFFFFF; border-bottom-color: #FFFFFF;
             padding: 4px 13px 2px 15px; box-shadow: none;
         }
-
-        /* Group Box Shaded Panels with Inner Raised Contours */
         .group-box-frame {
             border: 2px solid #FFFFFF;
             border-top-color: #808080; border-left-color: #808080;
@@ -100,40 +84,33 @@
             background-color: #D4D0C8; padding: 12px 8px 8px 8px;
             margin-bottom: 8px; position: relative;
         }
-
         .group-box-title {
             position: absolute; top: -7px; left: 8px;
             background-color: #D4D0C8; padding: 0 4px;
             font-weight: normal; color: #000000; font-size: 11px;
         }
-
         .monitor-workspace-split { display: flex; gap: 8px; align-items: flex-start; }
         .left-telemetry-column { flex: 1; display: flex; flex-direction: column; }
         .right-sidebar-column { width: 250px; display: flex; flex-direction: column; }
         .telemetry-row-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 12px; }
-
         .param-field-box { display: flex; align-items: center; justify-content: space-between; gap: 4px; height: 20px; }
         .param-label { color: #000000; font-size: 11px; white-space: nowrap; min-width: 60px; text-align: right; padding-right: 2px; }
-        
         .param-value-input {
             background-color: #FFFFFF; border: 1px solid #808080;
             border-right-color: #FFFFFF; border-bottom-color: #FFFFFF;
             color: #0000FF; padding: 1px 4px; font-family: monospace;
             font-size: 11px; font-weight: bold; flex: 1; height: 14px; display: flex; align-items: center;
         }
-
         .param-value-input.fault-active { color: #FF0000 !important; font-weight: bold; }
         .broker-status-strip { background-color: #D4D0C8; border: 1px solid #808080; padding: 2px 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 11px; }
         .status-beacon-dot { width: 6px; height: 6px; background-color: #FF0000; border-radius: 50%; display: inline-block; margin-right: 4px; }
         .status-beacon-dot.connected { background-color: #00FF00; box-shadow: 0 0 4px #00FF00; }
-        /* Sidebar Checkbox & Indicator Layout Styles */
         .sidebar-indicator-layout {
             display: flex;
             flex-direction: column;
             gap: 3px;
             margin-top: 4px;
         }
-
         .checkbox-row-item {
             display: flex;
             align-items: center;
@@ -141,19 +118,15 @@
             font-size: 11px;
             height: 16px;
         }
-
         .indicator-square-box {
             width: 10px;
             height: 10px;
             border: 1px solid #808080;
             background-color: #FFFFFF;
         }
-
         .indicator-square-box.active-green { background-color: #00FF00 !important; }
         .indicator-square-box.active-orange { background-color: #FF9900 !important; }
         .indicator-square-box.active-red { background-color: #FF0000 !important; }
-
-        /* Strict Fixed 13-Column Frequency Alignment Matrix Styles */
         .freq-strip-container-row {
             display: flex;
             align-items: center;
@@ -161,27 +134,23 @@
             padding: 2px 4px;
             margin-top: 2px;
         }
-
         .freq-strip-heading-label {
             font-size: 11px;
             color: #000000;
             width: 70px;
             white-space: nowrap;
         }
-
         .freq-strip-13-column-grid {
             display: grid;
             grid-template-columns: repeat(13, minmax(28px, 1fr));
             gap: 4px;
             flex: 1;
         }
-
         .freq-grid-label-text {
             font-size: 11px;
             color: #000000;
             text-align: center;
         }
-
         .freq-grid-data-textbox {
             background-color: #FFFFFF;
             border: 1px solid #808080;
@@ -195,20 +164,16 @@
             align-items: center;
             justify-content: center;
         }
-
-        /* Dual Console Viewports Layout Profiles */
         .logger-panel-split {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
             margin-top: 8px;
         }
-
         .terminal-box-frame {
             border: 1px solid #808080;
             background-color: #FFFFFF;
         }
-
         .terminal-box-header {
             background-color: #000080;
             color: #FFFFFF;
@@ -216,7 +181,6 @@
             font-size: 11px;
             font-weight: bold;
         }
-
         pre {
             margin: 0;
             padding: 4px;
@@ -229,22 +193,11 @@
             line-height: 1.2;
             white-space: pre-wrap;
         }
-
         .brand-logo-panel {
             text-align: right;
             padding: 8px 4px 0 0;
             position: relative;
         }
-
-        .brand-logo-text {
-            font-family: 'Arial Black', Impact, sans-serif;
-            font-size: 44px;
-            font-weight: 900;
-            color: #00A86B;
-            letter-spacing: -2px;
-            line-height: 0.9;
-        }
-
         .brand-sub-date {
             font-family: 'Tahoma', Arial, sans-serif;
             font-size: 11px;
@@ -255,42 +208,38 @@
 </head>
 <body>
 
-           <!-- 1. MULTICHANNEL NETWORK INVENTORY MANAGEMENT OVERLAY -->
-        <div id="device_manager" class="device-mgr-wrapper">
-         <div class="device-mgr-frame">
-         <div class="auth-header-strip">Inventory Register</div>
-         
-         <!-- NEW: PERSISTENT BROKER CONTEXT SETTINGS CONTROL GROUP -->
-         <div class="group-box-frame" style="background-color: #D4D0C8; padding-top: 14px; margin-bottom: 10px;">
-         <div class="group-box-title">MQTT Cloud Broker Connection Properties</div>
-         <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 6px; margin-bottom: 6px;">
-         <div>
-         <span style="font-size:10px;">Broker Host (wss:// Address URI)</span>
-         <input type="text" id="cfg_broker_host" class="form-txt-input" onchange="saveBrokerCredentialsToRegistry()">
-         </div>
-         <div>
-         <span style="font-size:10px;">MQTT Auth User</span>
-         <input type="text" id="cfg_mqtt_user" class="form-txt-input" onchange="saveBrokerCredentialsToRegistry()">
-         </div>
-         <div>
-         <span style="font-size:10px;">MQTT Auth Password</span>
-         <input type="password" id="cfg_mqtt_pass" class="form-txt-input" onchange="saveBrokerCredentialsToRegistry()">
-         </div>
-         </div>
-         </div>
-        
-         <p style="margin: 0 0 6px 0; font-weight: bold;">Registered Nodes Database List:</p>
-         <table class="device-data-table">
-         <thead>
-         <tr>
-         <th style="width: 45%;">Hardware Node Identity Descriptor</th> <th style="width: 30%;">MQTT Topic Routing Link</th> <th style="width: 15%;">Status</th> <th style="width: 10%;">Action</th>
-         </tr>
-         </thead>
-         <tbody id="device_inventory_tbody">
-         <!-- Dynamic multi-channel status table rows injected here -->
-         </tbody>
-         </table>
-
+    <div id="device_manager" class="device-mgr-wrapper">
+        <div class="device-mgr-frame">
+            <div class="auth-header-strip">Inventory Register</div>
+            <div class="group-box-frame" style="background-color: #D4D0C8; padding-top: 14px; margin-bottom: 10px;">
+                <div class="group-box-title">MQTT Cloud Broker Connection Properties</div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 6px; margin-bottom: 6px;">
+                    <div>
+                        <span style="font-size:10px;">Broker Host (wss:// Address URI)</span>
+                        <input type="text" id="cfg_broker_host" class="form-txt-input" onchange="saveBrokerCredentialsToRegistry()">
+                    </div>
+                    <div>
+                        <span style="font-size:10px;">MQTT Auth User</span>
+                        <input type="text" id="cfg_mqtt_user" class="form-txt-input" onchange="saveBrokerCredentialsToRegistry()">
+                    </div>
+                    <div>
+                        <span style="font-size:10px;">MQTT Auth Password</span>
+                        <input type="password" id="cfg_mqtt_pass" class="form-txt-input" onchange="saveBrokerCredentialsToRegistry()">
+                    </div>
+                </div>
+            </div>
+            <p style="margin: 0 0 6px 0; font-weight: bold;">Registered Nodes Database List:</p>
+            <table class="device-data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 45%;">Hardware Node Identity Descriptor</th>
+                        <th style="width: 30%;">MQTT Topic Routing Link</th>
+                        <th style="width: 15%;">Status</th>
+                        <th style="width: 10%;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="device_inventory_tbody"></tbody>
+            </table>
             <div class="group-box-frame" style="background-color: #D4D0C8; padding-top: 14px; margin-bottom: 10px;">
                 <div class="group-box-title">Register New Diagnostic Node Asset</div>
                 <div style="display: flex; gap: 8px; margin-bottom: 6px;">
@@ -307,14 +256,12 @@
                     <button class="win-classic-btn" onclick="commitDeviceToDatabase()">Save Node to Registry</button>
                 </div>
             </div>
-
             <div style="display: flex; justify-content: flex-end; align-items: center; border-top: 1px dashed #808080; padding-top: 8px;">
                 <span style="font-size:11px; color:#333333; font-style:italic; font-weight:bold;">Click a row above to access its Live Telemetry screen.</span>
             </div>
         </div>
     </div>
 
-    <!-- MAIN SYSTEM WORKING BAR STRIP -->
     <div id="status_bar" class="broker-status-strip">
         <div>
             <div id="status_dot" class="status-beacon-dot"></div>
@@ -326,29 +273,23 @@
         </div>
     </div>
 
-    <!-- MAIN DASHBOARD SPLIT WORKSPACE WORKVIEW -->
     <div class="monitor-workspace-split">
         <div class="left-telemetry-column">
-
-            <!-- EVENT LIVE MONITORING SCROLL FEED -->
             <div class="group-box-frame" style="height: 115px; overflow: hidden; margin-bottom: 6px;">
                 <div class="group-box-title">Event</div>
                 <div id="event_log_stream" style="height: 105px; overflow-y: auto; font-family: 'Tahoma', Arial, sans-serif; font-size: 11px; white-space: pre-wrap; padding-left: 2px; color: #000000; line-height: 1.3;"></div>
             </div>
-            <!-- 3. FIRMWARE VERSION MESSAGE PANEL -->
             <div class="group-box-frame" style="margin-bottom: 6px; padding-bottom: 8px;">
                 <div class="group-box-title">Version Message</div>
                 <div class="telemetry-row-grid">
                     <div class="param-field-box"><span class="param-label">Soft Ver</span><div id="val_softver" class="param-value-input">--</div></div>
                     <div class="param-field-box"><span class="param-label">Soft Data</span><div id="val_softdata" class="param-value-input">--</div></div>
                     <div class="param-field-box"><span class="param-label">Driver Lib</span><div id="val_driverlib" class="param-value-input">--</div></div>
-                    <div></div> <!-- Spacing Balance Pad -->
+                    <div></div>
                     <div class="param-field-box"><span class="param-label">IDU MCU_EE</span><div id="val_idumcuee" class="param-value-input">--</div></div>
                     <div class="param-field-box"><span class="param-label">ODU MCU_EE</span><div id="val_odumcuee" class="param-value-input">--</div></div>
                 </div>
             </div>
-
-            <!-- 4. INDOOR OPERATIONAL MATRIX PANEL -->
             <div class="group-box-frame" style="margin-bottom: 6px; padding-bottom: 8px;">
                 <div class="group-box-title">Indoor</div>
                 <div class="telemetry-row-grid" style="margin-bottom: 6px;">
@@ -364,7 +305,6 @@
                     <div class="param-field-box"><span class="param-label" style="min-width:100px;">IDU fault</span><div id="val_idufaultstr" class="param-value-input fault-active">--</div></div>
                 </div>
             </div>
-            <!-- 5. OUTDOOR OPERATIONAL PARAMETERS PANEL -->
             <div class="group-box-frame" style="margin-bottom: 4px; padding-bottom: 8px;">
                 <div class="group-box-title">Outdoor</div>
                 <div class="telemetry-row-grid" style="margin-bottom: 6px;">
@@ -392,8 +332,6 @@
                     <div class="param-field-box"><span class="param-label">Comp Time</span><div id="Comp_Time" class="param-value-input">--</div></div>
                 </div>
             </div>
-
-            <!-- 6. FIXED-ALIGNMENT 13-COLUMN FREQUENCY GRID PANEL -->
             <div class="freq-strip-container-row">
                 <span class="freq-strip-heading-label">FreqLevel</span>
                 <div class="freq-strip-13-column-grid">
@@ -430,11 +368,9 @@
                     <div id="Hf_f13" class="freq-grid-data-textbox">--</div>
                 </div>
             </div>
-        </div> <!-- End of left-telemetry-column -->
-        <!-- 7. RIGHT SIDEBAR STATUS DISPLAY COLUMN -->
+        </div>
+
         <div class="right-sidebar-column">
-            
-            <!-- FREQ DISPLAY SUB-GROUP -->
             <div class="group-box-frame" style="margin-bottom: 6px; padding-bottom: 8px;">
                 <div class="group-box-title">Freq Display</div>
                 <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -443,8 +379,6 @@
                     <div class="param-field-box"><span class="param-label">Real Freq</span><div id="ui_real_freq" class="param-value-input">--</div></div>
                 </div>
             </div>
-
-            <!-- BITWISE INDICATOR CONTROL GROUP -->
             <div class="group-box-frame" style="flex: 1; padding-bottom: 8px; margin-bottom: 0;">
                 <div class="sidebar-indicator-layout">
                     <div class="checkbox-row-item"><div id="chk_fault" class="indicator-square-box"></div><span>Fault</span>
@@ -454,10 +388,8 @@
                     <div class="checkbox-row-item"><div id="chk_limitfreq" class="indicator-square-box"></div><span>LimitFreq</span>
                     <span id="txt_Limitfreq_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div>
                     <div class="checkbox-row-item"><div id="chk_downfreq" class="indicator-square-box"></div><span>DownFreq</span>
-                    <span id="txt_downfreq_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div> 
-                    
+                    <span id="txt_downfreq_type" style="color: #FF0000; font-weight: bold; font-family: 'Tahoma', sans-serif;"></span></div>
                     <div style="border-top: 1px dashed #808080; margin: 4px 0;"></div>
-                    
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
                         <div class="checkbox-row-item"><div id="chk_comp" class="indicator-square-box"></div><span>Comp:</span></div>
                         <div class="checkbox-row-item"><div id="chk_defrost" class="indicator-square-box"></div><span>Defrost:</span></div>
@@ -468,9 +400,7 @@
                         <div class="checkbox-row-item"><div id="chk_preheat" class="indicator-square-box"></div><span>Preheat:</span></div>
                         <div class="checkbox-row-item"><div id="chk_collectf" class="indicator-square-box"></div><span>Collect F:</span></div>
                     </div>
-                    
                     <div style="border-top: 1px dashed #808080; margin: 4px 0;"></div>
-                    
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
                         <div class="checkbox-row-item"><div id="chk_pfc" class="indicator-square-box"></div><span>PFC:</span></div>
                         <div class="checkbox-row-item"><div id="chk_eco" class="indicator-square-box"></div><span>ECO:</span></div>
@@ -478,26 +408,22 @@
                     <div class="checkbox-row-item"><div id="chk_everoff" class="indicator-square-box"></div><span>Ever Off:</span></div>
                     <div class="checkbox-row-item"><div id="chk_idufault" class="indicator-square-box"></div><span>IDU Fault:</span></div>
                 </div>
-
                 <div style="margin-top: 8px; font-size: 11px; line-height: 1.4; color: #444444;">
                     <div>System Type: <span id="lbl_systype" style="font-weight: bold; color: #000000;">--</span></div>
                     <div>Comp Type: <span id="lbl_comptype" style="font-weight: bold; color: #000000;">--</span></div>
                     <div>Fan Type: <span id="lbl_fantype" style="font-weight: bold; color: #000000;">--</span></div>
                 </div>
-
-                 <div class="brand-logo-panel">
-                 <!-- UPGRADE: Removed 'Meg' text logo and replaced with a low-level binary hardware signal flash pulse beacon -->
-                 <div style="display: flex; justify-content: flex-end; align-items: center; gap: 6px; margin-bottom: 4px;">
-                 <span style="font-size: 10px; font-weight: bold; color: #000000; font-family: 'Tahoma', sans-serif;">RX_DATA_PULSE:</span>
-                 <div id="rx_pulse_beacon" style="width: 14px; height: 14px; border: 2px solid #808080; background-color: #00FF00; box-shadow: inset 1px 1px 0px #FFFFFF; transition: background-color 0.05s ease;"></div>
-                 </div>
-                 <div id="lbl_branding_date" class="brand-sub-date">03-06-2026 01:21:45 AM</div>
-                 </div>
+                <div class="brand-logo-panel">
+                    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 6px; margin-bottom: 4px;">
+                        <span style="font-size: 10px; font-weight: bold; color: #000000; font-family: 'Tahoma', sans-serif;">RX_DATA_PULSE:</span>
+                        <div id="rx_pulse_beacon" style="width: 14px; height: 14px; border: 2px solid #808080; background-color: #00FF00; box-shadow: inset 1px 1px 0px #FFFFFF; transition: background-color 0.05s ease;"></div>
+                    </div>
+                    <div id="lbl_branding_date" class="brand-sub-date">03-06-2026 01:21:45 AM</div>
+                </div>
             </div>
         </div>
-    </div> <!-- End of monitor-workspace-split -->
+    </div>
 
-    <!-- DUAL LOG VIEWPORT PANELS -->
     <div class="logger-panel-split">
         <div class="terminal-box-frame">
             <div class="terminal-box-header">live_packet_stream.log (Parallel Stream Engine Decodes)</div>
@@ -509,50 +435,49 @@
         </div>
     </div>
 
-    <script>
-    // --- SERVERLESS NETWORK LAYER LAYOUT PROFILE ---
-// Dynamically retrieve user configurations or apply hardcoded fallbacks if empty
-const getStoredConfig = (key, fallback) => localStorage.getItem(key) || fallback;
+<script>
+    const getStoredConfig = (key, fallback) => localStorage.getItem(key) || fallback;
 
-let BROKER_HOST = getStoredConfig('MEGMEET_HOST', "e897bc6d6145492e99f4a7f09df8ffd9.s1.eu.hivemq.cloud");
-let WEBSOCKET_PORT = 8884;
-let MQTT_USER = getStoredConfig('MEGMEET_USER', "Amber_IOT");
-let MQTT_PASS = getStoredConfig('MEGMEET_PASS', "Amber@123");
+    let BROKER_HOST = getStoredConfig('MEGMEET_HOST', "e897bc6d6145492e99f4a7f09df8ffd9.s1.eu.hivemq.cloud");
+    let WEBSOCKET_PORT = 8884;
+    let MQTT_USER = getStoredConfig('MEGMEET_USER', "Amber_IOT");
+    let MQTT_PASS = getStoredConfig('MEGMEET_PASS', "Amber@123");
 
-let activeStreamTopic = null; // Topic dedicated to the main live dashboard layout view
-let mainDashboardWs = null; // WebSocket handle for the opened focus diagnostic window
-let mainDashboardPingTimer = null; // Discovery layer sockets register mapping key-value sets
-let lastRecordedEventCodeValue = null;
-let backgroundDiscoverySockets = {};
-let activeDevicesHeartbeats = {}; // Tracks timestamp of the last verified frame packet per topic array
+    let activeStreamTopic = null;
+    let mainDashboardWs = null;
+    let mainDashboardPingTimer = null;
+    let lastRecordedEventCodeValue = null;
+    let backgroundDiscoverySockets = {};
+    let activeDevicesHeartbeats = {};
 
-// NEW: Commits modified form configurations to local disk and triggers automatic reconnect sequences
-function saveBrokerCredentialsToRegistry() {
-    BROKER_HOST = document.getElementById('cfg_broker_host').value.trim();
-    MQTT_USER = document.getElementById('cfg_mqtt_user').value.trim();
-    MQTT_PASS = document.getElementById('cfg_mqtt_pass').value.trim();
-    
-    localStorage.setItem('MEGMEET_HOST', BROKER_HOST);
-    localStorage.setItem('MEGMEET_USER', MQTT_USER);
-    localStorage.setItem('MEGMEET_PASS', MQTT_PASS);
-    
-    appendEventLog("Network connection profiles altered. Resetting parallel socket pools...");
-    
-    // Purge existing loops to immediately execute hot-reconnect using new credentials
-    Object.keys(backgroundDiscoverySockets).forEach(topicStr => {
-        try { backgroundDiscoverySockets[topicStr].close(); } catch(e){}
-        delete backgroundDiscoverySockets[topicStr];
-    });
-}
+    // ---- STATE TRACKERS FOR CHANGE DETECTION ----
+    // Tracks previous boolean state of each simple indicator (chk_*)
+    let lastIndicatorStates = {};
+    // Tracks previous text of each fault/protect label span
+    let lastLabelTexts = {};
+    // Tracks previous text of val_idufaultstr and val_drvfault display fields
+    let lastFieldTexts = {};
 
-setInterval(() => {
- const now = new Date();
- document.getElementById('live_clock').innerText = now.toLocaleTimeString();
- document.getElementById('lbl_branding_date').innerText = now.toLocaleString();
- // Background watch module loops through registered devices to transition timestamps after 5000ms
- evaluateAllDeviceHeartbeats();
- }, 1000);
+    function saveBrokerCredentialsToRegistry() {
+        BROKER_HOST = document.getElementById('cfg_broker_host').value.trim();
+        MQTT_USER   = document.getElementById('cfg_mqtt_user').value.trim();
+        MQTT_PASS   = document.getElementById('cfg_mqtt_pass').value.trim();
+        localStorage.setItem('MEGMEET_HOST', BROKER_HOST);
+        localStorage.setItem('MEGMEET_USER', MQTT_USER);
+        localStorage.setItem('MEGMEET_PASS', MQTT_PASS);
+        appendEventLog("Network connection profiles altered. Resetting parallel socket pools...");
+        Object.keys(backgroundDiscoverySockets).forEach(topicStr => {
+            try { backgroundDiscoverySockets[topicStr].close(); } catch(e){}
+            delete backgroundDiscoverySockets[topicStr];
+        });
+    }
 
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('live_clock').innerText = now.toLocaleTimeString();
+        document.getElementById('lbl_branding_date').innerText = now.toLocaleString();
+        evaluateAllDeviceHeartbeats();
+    }, 1000);
 
     function appendLine(text, cssClass) {
         const consoleBox = document.getElementById('console_output');
@@ -565,21 +490,112 @@ setInterval(() => {
     }
 
     function appendEventLog(text) {
-        const eventBox = document.getElementById('event_log_stream');
-        if (!eventBox) return;
         const nowStr = new Date().toLocaleTimeString();
-        eventBox.innerText += `${nowStr} >> ${text}\n`;
-        eventBox.scrollTop = eventBox.scrollHeight;
-    }
-    // ============================================================================
-    // PART 5 - SECTION A: MULTI-CHANNEL PARALLEL SOCKETS & HEARTBEAT DETECTION ENGINE
-    // ============================================================================
+        const line = `${nowStr} >> ${text}\n`;
 
-    // --- 1. LOCAL PERSISTENT DATABASE ENGINE MANAGERS ---
+        const eventBox = document.getElementById('event_log_stream');
+        if (eventBox) {
+            eventBox.innerText += line;
+            eventBox.scrollTop = eventBox.scrollHeight;
+        }
+        const termBox = document.getElementById('event_log_stream_terminal');
+        if (termBox) {
+            termBox.innerText += line;
+            termBox.scrollTop = termBox.scrollHeight;
+        }
+    }
+
+    // =========================================================================
+    // INDICATOR CHANGE TRACKING HELPERS
+    // =========================================================================
+
+    /**
+     * toggleStatusIndicator - sets the indicator square colour AND logs to event
+     * log whenever the boolean state changes.
+     *
+     * @param {string} elementId   - DOM id of the indicator square
+     * @param {*}      state       - truthy = active, falsy = off
+     * @param {string} cssClass    - active-green / active-orange / active-red
+     * @param {string} label       - human-readable name shown in the event log
+     * @param {string} [detail]    - optional extra detail (fault/protect name)
+     */
+    function toggleStatusIndicator(elementId, state, cssClass, label, detail) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        const isActive = !!state;
+
+        if (isActive) {
+            el.className = `indicator-square-box ${cssClass}`;
+        } else {
+            el.className = 'indicator-square-box';
+        }
+
+        // Only log on actual state change; skip the very first packet (undefined)
+        if (lastIndicatorStates[elementId] !== undefined &&
+            lastIndicatorStates[elementId] !== isActive) {
+            if (isActive) {
+                const msg = detail ? `[${label}] ON >> ${detail}` : `[${label}] ON`;
+                appendEventLog(msg);
+            } else {
+                appendEventLog(`[${label}] OFF >> Cleared`);
+            }
+        }
+        lastIndicatorStates[elementId] = isActive;
+    }
+
+    /**
+     * updateFaultLabelSpan - updates a red text label span next to an indicator
+     * and logs to event log whenever the text changes.
+     *
+     * @param {string} elementId  - DOM id of the <span>
+     * @param {string} newText    - new text to display (empty string = cleared)
+     * @param {string} groupName  - human-readable group name for the log line
+     */
+    function updateFaultLabelSpan(elementId, newText, groupName) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        const prev = lastLabelTexts[elementId];
+        if (prev !== undefined && prev !== newText) {
+            if (newText) {
+                appendEventLog(`[${groupName}] >> ${newText}`);
+            } else {
+                appendEventLog(`[${groupName}] >> Cleared`);
+            }
+        }
+        lastLabelTexts[elementId] = newText;
+        el.innerText = newText;
+    }
+
+    /**
+     * updateDisplayField - updates a param-value-input div and logs when text
+     * changes (used for IDU fault and Drv Fault display fields).
+     *
+     * @param {string} elementId  - DOM id
+     * @param {string} newText    - new text value
+     * @param {string} fieldName  - human-readable name for the log line
+     */
+    function updateDisplayField(elementId, newText, fieldName) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        const prev = lastFieldTexts[elementId];
+        if (prev !== undefined && prev !== newText) {
+            if (newText && newText !== '--') {
+                appendEventLog(`[${fieldName}] >> ${newText}`);
+            } else {
+                appendEventLog(`[${fieldName}] >> Cleared`);
+            }
+        }
+        lastFieldTexts[elementId] = newText;
+        el.innerText = newText;
+    }
+
+    // =========================================================================
+    // DATABASE & TABLE
+    // =========================================================================
+
     function fetchDevicesFromRegistry() {
         const stored = localStorage.getItem('MEGMEET_NODES_DB');
         if (stored) return JSON.parse(stored);
-        
         const defaultNodes = [
             { name: "Megmeet_TTW_LAB1", topic: "TTW/LAB1" },
             { name: "Megmeet_TTW_LAB2", topic: "TTW/LAB2" },
@@ -590,365 +606,262 @@ setInterval(() => {
     }
 
     function commitDeviceToDatabase() {
-        const nameEl = document.getElementById('add_dev_name');
+        const nameEl  = document.getElementById('add_dev_name');
         const topicEl = document.getElementById('add_dev_topic');
-        const name = nameEl.value.trim();
-        const topic = topicEl.value.trim();
-
-        if (!name || !topic) {
-            alert("Validation Error: Configuration fields cannot be left empty.");
-            return;
-        }
-
+        const name    = nameEl.value.trim();
+        const topic   = topicEl.value.trim();
+        if (!name || !topic) { alert("Validation Error: Configuration fields cannot be left empty."); return; }
         const devices = fetchDevicesFromRegistry();
-        devices.push({ name: name, topic: topic });
+        devices.push({ name, topic });
         localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(devices));
-        
-        nameEl.value = '';
+        nameEl.value  = '';
         topicEl.value = '';
-        
-        // Boot up an isolated background listener loop for the new device asset entry
         initializeBackgroundDeviceScanner(topic);
         renderDeviceInventoryTable();
     }
 
     function purgeDeviceEntry(event, index, topic) {
-        event.stopPropagation(); // Stops deletion from launching focus monitor grid screen
+        event.stopPropagation();
         const devices = fetchDevicesFromRegistry();
         devices.splice(index, 1);
         localStorage.setItem('MEGMEET_NODES_DB', JSON.stringify(devices));
-        
-        // Safely detach the background listening socket handle for the deleted topic asset path
         if (backgroundDiscoverySockets[topic]) {
             try { backgroundDiscoverySockets[topic].close(); } catch(e){}
             delete backgroundDiscoverySockets[topic];
         }
         delete activeDevicesHeartbeats[topic];
-        
         renderDeviceInventoryTable();
     }
 
-    // --- 2. MULTI-CHANNEL REFRESH ENGINE BINDINGS ---
     function renderDeviceInventoryTable() {
         const tbody = document.getElementById('device_inventory_tbody');
         if (!tbody) return;
         tbody.innerHTML = '';
-
         const devices = fetchDevicesFromRegistry();
         devices.forEach((dev, idx) => {
             const tr = document.createElement('tr');
-            
-            // Highlight row background if currently focused in the live telemetry layout view
-            if (activeStreamTopic === dev.topic) {
-                tr.className = 'active-row';
-            }
-
-            // Extract status value markers or default to yellow 'syncing' message layout indicators
+            if (activeStreamTopic === dev.topic) tr.className = 'active-row';
             let statusMarkupStr = `<span id="status_badge_${btoa(dev.topic)}" class="status-badge-node status-node-syncing">Syncing...</span>`;
             const lastSeen = activeDevicesHeartbeats[dev.topic];
-            
             if (lastSeen) {
                 const elapsedSec = (Date.now() - lastSeen) / 1000;
-                if (elapsedSec <= 5) {
-                    statusMarkupStr = `<span id="status_badge_${btoa(dev.topic)}" class="status-badge-node status-node-online">Online</span>`;
-                } else {
-                    statusMarkupStr = `<span id="status_badge_${btoa(dev.topic)}" class="status-badge-node status-node-offline">Offline</span>`;
-                }
+                statusMarkupStr = elapsedSec <= 5
+                    ? `<span id="status_badge_${btoa(dev.topic)}" class="status-badge-node status-node-online">Online</span>`
+                    : `<span id="status_badge_${btoa(dev.topic)}" class="status-badge-node status-node-offline">Offline</span>`;
             }
-
             tr.innerHTML = `
                 <td style="font-weight:bold; color:#000080;">🖥️ ${dev.name}</td>
                 <td style="font-family:monospace;">${dev.topic}</td>
                 <td>${statusMarkupStr}</td>
                 <td><button class="win-classic-btn" style="padding:1px 6px; color:#800000; font-size:10px;" onclick="purgeDeviceEntry(event, ${idx}, '${dev.topic}')">Delete</button></td>
             `;
-            
-            // UPGRADE: Changed from tr.ondblclick to tr.onclick for immediate single-click launch response
             tr.onclick = () => launchDiagnosticMonitorScreen(dev.topic);
-
             tbody.appendChild(tr);
         });
     }
 
-   // --- 3. BACKGROUND SIGNAL PULSE DETECTORS ---
-function initializeParallelDiscoveryNetwork() {
-    // Populate form entries with existing local configurations on startup
-    document.getElementById('cfg_broker_host').value = BROKER_HOST;
-    document.getElementById('cfg_mqtt_user').value = MQTT_USER;
-    document.getElementById('cfg_mqtt_pass').value = MQTT_PASS;
+    // =========================================================================
+    // NETWORK / MQTT
+    // =========================================================================
 
-    appendEventLog("Asset register list loaded straight from storage. Provisioning background scanner web sockets...");
-    const devices = fetchDevicesFromRegistry();
-    devices.forEach(dev => {
-        initializeBackgroundDeviceScanner(dev.topic);
-    });
-    renderDeviceInventoryTable();
-}
-
+    function initializeParallelDiscoveryNetwork() {
+        document.getElementById('cfg_broker_host').value = BROKER_HOST;
+        document.getElementById('cfg_mqtt_user').value   = MQTT_USER;
+        document.getElementById('cfg_mqtt_pass').value   = MQTT_PASS;
+        appendEventLog("Asset register list loaded. Provisioning background scanner web sockets...");
+        const devices = fetchDevicesFromRegistry();
+        devices.forEach(dev => initializeBackgroundDeviceScanner(dev.topic));
+        renderDeviceInventoryTable();
+    }
 
     function initializeBackgroundDeviceScanner(topicStr) {
-        if (backgroundDiscoverySockets[topicStr]) return; // Stop redundant connection assignments
-
-        const url = `wss://${BROKER_HOST}:${WEBSOCKET_PORT}/mqtt`;
+        if (backgroundDiscoverySockets[topicStr]) return;
+        const url    = `wss://${BROKER_HOST}:${WEBSOCKET_PORT}/mqtt`;
         const tempWs = new WebSocket(url, ["mqtt"]);
         tempWs.binaryType = "arraybuffer";
 
-        tempWs.onopen = () => {
-            sendMqttConnectPacketRaw(tempWs);
-        };
+        tempWs.onopen = () => { sendMqttConnectPacketRaw(tempWs); };
 
         tempWs.onmessage = (event) => {
-            const payload = new Uint8Array(event.data);
+            const payload    = new Uint8Array(event.data);
             if (payload.length === 0) return;
             const packetType = payload[0] >> 4;
 
-            if (packetType === 2) { // CONNACK HANDSHAKE OK
+            if (packetType === 2) {
                 sendMqttSubscribePacketRaw(tempWs, topicStr);
-                // BUGFIX: the CONNECT packet declares a 60s Keep Alive, but nothing
-                // was ever sent to honor it. The broker was silently dropping the
-                // connection once that window lapsed -> this is the ~54-57s disconnect.
-                // Sending a PINGREQ well inside that window keeps the session alive.
                 if (tempWs.pingTimer) clearInterval(tempWs.pingTimer);
                 tempWs.pingTimer = setInterval(() => sendMqttPingreqPacketRaw(tempWs), 25000);
             }
 
-            if (packetType === 13) { // PINGRESP - broker acknowledged our keep-alive ping
-                // No action needed; receiving this just confirms the link is healthy.
+            if (packetType === 3) {
+                activeDevicesHeartbeats[topicStr] = Date.now();
+                const badge = document.getElementById(`status_badge_${btoa(topicStr)}`);
+                if (badge && !badge.classList.contains('status-node-online')) {
+                    badge.className  = 'status-badge-node status-node-online';
+                    badge.innerText  = 'Online';
+                }
+                if (activeStreamTopic === topicStr) {
+                    const panelStatusText = document.getElementById('status_text');
+                    const panelStatusDot  = document.getElementById('status_dot');
+                    if (panelStatusText && panelStatusDot) {
+                        panelStatusText.innerText  = `Selected Stream: Connected and tracking realtime target [${topicStr}]`;
+                        panelStatusDot.className   = 'status-beacon-dot connected';
+                    }
+                    let idx        = 1;
+                    let remLen     = 0;
+                    let multiplier = 1;
+                    do {
+                        remLen     += (payload[idx] & 127) * multiplier;
+                        multiplier *= 128;
+                    } while ((payload[idx++] & 128) !== 0);
+                    const topicLen    = (payload[idx++] << 8) + payload[idx++];
+                    idx              += topicLen;
+                    const rawDataBytes = payload.subarray(idx);
+                    if (rawDataBytes.length >= 70 && rawDataBytes[rawDataBytes.length - 1] === 0xAA) {
+                        parseMegmeetCorePacket(rawDataBytes);
+                    }
+                }
             }
-
-        if (packetType === 3) { // TELEMETRY FRAME RECEIVED OVER WIRE 
-        //if(payload[payload.length-1]==0xAA){
-        // Tick heartbeat timestamp marker row instantly 
-        activeDevicesHeartbeats[topicStr] = Date.now(); 
-        
-        // Live visual grid text update shunts 
-        const badge = document.getElementById(`status_badge_${btoa(topicStr)}`); 
-        if (badge && !badge.classList.contains('status-node-online')) { 
-            badge.className = 'status-badge-node status-node-online'; 
-            badge.innerText = 'Online'; 
-        } 
-        
-        // If this backdrop topic matches our focus viewer window, demux binary array straight down to form fields 
-        if (activeStreamTopic === topicStr) { 
-            // CORRECTED: Dynamically update status elements only if they aren't currently marked connected
-            const panelStatusText = document.getElementById('status_text');
-            const panelStatusDot = document.getElementById('status_dot');
-            if (panelStatusText && panelStatusDot) {
-                panelStatusText.innerText = `Selected Stream: Connected and tracking realtime target [${topicStr}]`;
-                panelStatusDot.className = 'status-beacon-dot connected';
-            }
-
-            let idx = 1; 
-            let remLen = 0; 
-            let multiplier = 1; 
-            do { 
-                remLen += (payload[idx] & 127) * multiplier; 
-                multiplier *= 128; 
-            } while ((payload[idx++] & 128) !== 0); 
-            
-            const topicLen = (payload[idx++] << 8) + payload[idx++]; 
-            idx += topicLen; 
-            const rawDataBytes = payload.subarray(idx); 
-            if (rawDataBytes.length >= 70 && rawDataBytes[rawDataBytes.length-1]==0xAA) { 
-                parseMegmeetCorePacket(rawDataBytes); 
-            } 
-        } 
-    }
-
-
         };
 
         tempWs.onclose = () => {
-            // BUGFIX: stop the keep-alive ping interval tied to this dead socket
-            if (tempWs.pingTimer) {
-                clearInterval(tempWs.pingTimer);
-                tempWs.pingTimer = null;
-            }
+            if (tempWs.pingTimer) { clearInterval(tempWs.pingTimer); tempWs.pingTimer = null; }
             delete backgroundDiscoverySockets[topicStr];
-            // Schedule an isolated backdrop reconnect pinger after 5000ms
             setTimeout(() => initializeBackgroundDeviceScanner(topicStr), 5000);
         };
 
         backgroundDiscoverySockets[topicStr] = tempWs;
     }
 
-   function evaluateAllDeviceHeartbeats() {
-    const devices = fetchDevicesFromRegistry();
-    devices.forEach(dev => {
-        const badge = document.getElementById(`status_badge_${btoa(dev.topic)}`);
-        const lastSeen = activeDevicesHeartbeats[dev.topic];
-        let currentDeviceStateOnline = false;
-
-        if (!lastSeen) {
-            if (badge && badge.innerText !== 'Syncing...') {
-                badge.className = 'status-badge-node status-node-syncing';
-                badge.innerText = 'Syncing...';
-            }
-        } else {
-            const elapsedSec = (Date.now() - lastSeen) / 1000;
-            if (elapsedSec > 5) {
-                if (badge && badge.innerText !== 'Offline') {
-                    badge.className = 'status-badge-node status-node-offline';
-                    badge.innerText = 'Offline';
-                }
+    function evaluateAllDeviceHeartbeats() {
+        const devices = fetchDevicesFromRegistry();
+        devices.forEach(dev => {
+            const badge    = document.getElementById(`status_badge_${btoa(dev.topic)}`);
+            const lastSeen = activeDevicesHeartbeats[dev.topic];
+            let currentDeviceStateOnline = false;
+            if (!lastSeen) {
+                if (badge && badge.innerText !== 'Syncing...') { badge.className = 'status-badge-node status-node-syncing'; badge.innerText = 'Syncing...'; }
             } else {
-                currentDeviceStateOnline = true;
-                if (badge && badge.innerText !== 'Online') {
-                    badge.className = 'status-badge-node status-node-online';
-                    badge.innerText = 'Online';
-                }
-            }
-        }
-        //let currentDeviceStateOnline = true;///////////////////////////////
-        // CORRECTED: If this device is the focused dashboard screen, bind its live network state to the master status bar
-        if (activeStreamTopic === dev.topic) {
-            const mText = document.getElementById('status_text');
-            const mDot = document.getElementById('status_dot');
-            const pulseBeacon = document.getElementById('rx_pulse_beacon');
-            if (mText && mDot) {
-                if (!lastSeen) {
-                    mText.innerText = `Selected Stream: Syncing target node context [${dev.topic}]...`;
-                    mDot.className = 'status-beacon-dot'; // Neutral state
-                    pulseBeacon.style.backgroundColor = '#FF0000'; // Turn instantly to RED 
-                } else if (!currentDeviceStateOnline) {
-                    mText.innerText = `Selected Stream Idle: Realtime connection lost / timeout window tripped [${dev.topic}]`;
-                    mDot.className = 'status-beacon-dot'; // Turns off green glowing active state indicator class
-                    pulseBeacon.style.backgroundColor = '#FF0000'; // Turn instantly to RED 
+                const elapsedSec = (Date.now() - lastSeen) / 1000;
+                if (elapsedSec > 5) {
+                    if (badge && badge.innerText !== 'Offline') { badge.className = 'status-badge-node status-node-offline'; badge.innerText = 'Offline'; }
                 } else {
-                    mText.innerText = `Selected Stream: Connected and tracking realtime target [${dev.topic}]`;
-                    mDot.className = 'status-beacon-dot connected'; // Retains green active beacon status
+                    currentDeviceStateOnline = true;
+                    if (badge && badge.innerText !== 'Online') { badge.className = 'status-badge-node status-node-online'; badge.innerText = 'Online'; }
                 }
             }
-        }
-    });
-}
-
-    // =========================================================================
-    // PART 5 - SECTION B: INTERFACE FOCUS ROUTER & PROTOCOL TRANSMITTERS
-    // =========================================================================
-
-    // --- 1. SYSTEM MONITOR MULTIPLEX ROUTING HOOKS ---
-  function launchDiagnosticMonitorScreen(targetTopicStr) { 
-    activeStreamTopic = targetTopicStr; 
-    
-    // Hide the inventory management backdrop panel curtain sheet view 
-    document.getElementById('device_manager').style.display = 'none'; 
-    
-    // CORRECTED: Let evaluateAllDeviceHeartbeats assign the accurate color status on the next execution loop
-    const mText = document.getElementById('status_text');
-    if (mText) {
-        mText.innerText = `Selected Stream: Checking data link integrity for channel [${targetTopicStr}]...`;
+            if (activeStreamTopic === dev.topic) {
+                const mText       = document.getElementById('status_text');
+                const mDot        = document.getElementById('status_dot');
+                const pulseBeacon = document.getElementById('rx_pulse_beacon');
+                if (mText && mDot) {
+                    if (!lastSeen) {
+                        mText.innerText       = `Selected Stream: Syncing target node context [${dev.topic}]...`;
+                        mDot.className        = 'status-beacon-dot';
+                        pulseBeacon.style.backgroundColor = '#FF0000';
+                    } else if (!currentDeviceStateOnline) {
+                        mText.innerText       = `Selected Stream Idle: Realtime connection lost / timeout window tripped [${dev.topic}]`;
+                        mDot.className        = 'status-beacon-dot';
+                        pulseBeacon.style.backgroundColor = '#FF0000';
+                    } else {
+                        mText.innerText       = `Selected Stream: Connected and tracking realtime target [${dev.topic}]`;
+                        mDot.className        = 'status-beacon-dot connected';
+                    }
+                }
+            }
+        });
     }
-    
-    appendEventLog(`Workspace updated. Interface stream focus shifted to channel [${targetTopicStr}].`); 
-    renderDeviceInventoryTable(); 
-}
 
-
-
-    function returnToInventoryDashboard() {
-        activeStreamTopic = null;
-        
-        // Restore overlay block grid dashboard sheet view
-        document.getElementById('device_manager').style.display = 'flex';
-        
-        // BUGFIX: statusBar/statusDot/statusText were referenced as bare globals
-        // that never existed, throwing a ReferenceError and aborting this function
-        // before renderDeviceInventoryTable() ran.
-        const statusDotEl = document.getElementById('status_dot');
-        const statusTextEl = document.getElementById('status_text');
-        if (statusDotEl) statusDotEl.className = 'status-beacon-dot';
-        if (statusTextEl) statusTextEl.innerText = "Pipeline Idle: Please choose an active node path from your Asset Dashboard...";
-        
+    function launchDiagnosticMonitorScreen(targetTopicStr) {
+        activeStreamTopic = targetTopicStr;
+        document.getElementById('device_manager').style.display = 'none';
+        const mText = document.getElementById('status_text');
+        if (mText) mText.innerText = `Selected Stream: Checking data link integrity for channel [${targetTopicStr}]...`;
+        appendEventLog(`Workspace updated. Interface stream focus shifted to channel [${targetTopicStr}].`);
         renderDeviceInventoryTable();
     }
 
-    // --- 2. BACKDROP NETWORK PROTOCOL UTILITIES ---
+    function returnToInventoryDashboard() {
+        activeStreamTopic = null;
+        document.getElementById('device_manager').style.display = 'flex';
+        const statusDotEl  = document.getElementById('status_dot');
+        const statusTextEl = document.getElementById('status_text');
+        if (statusDotEl)  statusDotEl.className  = 'status-beacon-dot';
+        if (statusTextEl) statusTextEl.innerText = "Pipeline Idle: Please choose an active node path from your Asset Dashboard...";
+        renderDeviceInventoryTable();
+    }
+
     function sendMqttConnectPacketRaw(targetSocketHandle) {
-        const cid = "WebHub" + Math.floor(Math.random() * 1000);
-        const enc = new TextEncoder();
+        const cid   = "WebHub" + Math.floor(Math.random() * 1000);
+        const enc   = new TextEncoder();
         const bUser = enc.encode(MQTT_USER);
         const bPass = enc.encode(MQTT_PASS);
-        const bCid = enc.encode(cid);
-        
+        const bCid  = enc.encode(cid);
         const remLen = 12 + (2 + bCid.length) + (2 + bUser.length) + (2 + bPass.length);
-        const pkt = new Uint8Array(2 + remLen);
+        const pkt   = new Uint8Array(2 + remLen);
         let idx = 0;
-        
-        pkt[idx++] = 16; pkt[idx++] = remLen; pkt[idx++] = 0; pkt[idx++] = 4;
-        pkt[idx++] = 77; pkt[idx++] = 81; pkt[idx++] = 84; pkt[idx++] = 84; // MQTT
-        pkt[idx++] = 4;  pkt[idx++] = 194; pkt[idx++] = 0;  pkt[idx++] = 60;
+        pkt[idx++] = 16; pkt[idx++] = remLen; pkt[idx++] = 0;  pkt[idx++] = 4;
+        pkt[idx++] = 77; pkt[idx++] = 81;     pkt[idx++] = 84; pkt[idx++] = 84;
+        pkt[idx++] = 4;  pkt[idx++] = 194;    pkt[idx++] = 0;  pkt[idx++] = 60;
         pkt[idx++] = (bCid.length >> 8); pkt[idx++] = (bCid.length & 255);
         pkt.set(bCid, idx); idx += bCid.length;
         pkt[idx++] = (bUser.length >> 8); pkt[idx++] = (bUser.length & 255);
         pkt.set(bUser, idx); idx += bUser.length;
         pkt[idx++] = (bPass.length >> 8); pkt[idx++] = (bPass.length & 255);
         pkt.set(bPass, idx); idx += bPass.length;
-        
         if (targetSocketHandle.readyState === 1) targetSocketHandle.send(pkt);
     }
 
     function sendMqttSubscribePacketRaw(targetSocketHandle, topicStr) {
-        const enc = new TextEncoder();
+        const enc    = new TextEncoder();
         const bTopic = enc.encode(topicStr);
         const remLen = 2 + 2 + bTopic.length + 1;
-        const pkt = new Uint8Array(2 + remLen);
+        const pkt    = new Uint8Array(2 + remLen);
         let idx = 0;
-        
         pkt[idx++] = 130; pkt[idx++] = remLen; pkt[idx++] = 0; pkt[idx++] = 1;
         pkt[idx++] = (bTopic.length >> 8); pkt[idx++] = (bTopic.length & 255);
         for (var i = 0; i < bTopic.length; i++) { pkt[idx++] = bTopic[i]; }
         pkt[idx++] = 0;
-        
         if (targetSocketHandle.readyState === 1) targetSocketHandle.send(pkt);
     }
 
-    // BUGFIX: MQTT PINGREQ transmitter. Fixed 2-byte control packet (type 12,
-    // remaining length 0). Sending this on an interval shorter than the 60s
-    // Keep Alive declared in CONNECT is what keeps HiveMQ Cloud from dropping
-    // the WebSocket every ~55-60 seconds.
     function sendMqttPingreqPacketRaw(targetSocketHandle) {
-        if (targetSocketHandle.readyState === 1) {
-            targetSocketHandle.send(new Uint8Array([0xC0, 0x00]));
-        }
+        if (targetSocketHandle.readyState === 1) targetSocketHandle.send(new Uint8Array([0xC0, 0x00]));
     }
+
     // =========================================================================
-    // PART 5 - SECTION C: RECESSED 0-offset DATA MATRIX PARSER & DOM CLOSING
+    // PACKET PARSER
     // =========================================================================
 
     function parseMegmeetCorePacket(rawDataBytes) {
         const pulseBeacon = document.getElementById('rx_pulse_beacon');
         if (pulseBeacon) {
-            pulseBeacon.style.backgroundColor = '#FF0000'; // Turn instantly to RED on byte arrival
-            setTimeout(() => {
-                pulseBeacon.style.backgroundColor = '#00FF00'; // Flash back to GREEN resting state after 120ms
-            }, 120);
+            pulseBeacon.style.backgroundColor = '#FF0000';
+            setTimeout(() => { pulseBeacon.style.backgroundColor = '#00FF00'; }, 120);
         }
-        // --- Core Parameter Extraction (Matches 0-Based Payload Specs) ---
-        const tr   = (rawDataBytes[9]/2)-30;  // Byte No. 9 
-        const ts   = (rawDataBytes[8]/2)-30;  // Byte No. 8
-        const te   = (rawDataBytes[12]/2)-30; // Byte No. 12
-        const tsu  = (rawDataBytes[30]/2)-30; // Byte No. 30
-        const ta   = (rawDataBytes[10]/2)-30; // Byte No. 10 (Raw Readout index)
-        const tc   = (rawDataBytes[13]/2)-30; // Byte No. 13
-        const td   = rawDataBytes[11]-30; // Byte No. 11
 
-        const acVol    = rawDataBytes[14]*2; // Byte No. 14
-        const acCur    = rawDataBytes[15]/10; // Byte No. 15
-        const dcVol    = rawDataBytes[19]*2; // Byte No. 19
-        const dcCur    = rawDataBytes[20]/10; // Byte No. 20
-        const eev      = rawDataBytes[24]*2; // Byte No. 24
-        const tipm     = rawDataBytes[25]; // Byte No. 25
-        const fanIpm   = rawDataBytes[44]; // Byte No. 44
-        const oduFan   = rawDataBytes[21]*10; // Byte No. 21
-        const iduFan   = rawDataBytes[32]*10; // Byte No. 32
-        const pcbType  = rawDataBytes[0];  // Byte No. 0
-        const area     = rawDataBytes[23]; // Byte No. 23
+        // --- Sensor values ---
+        const tr    = (rawDataBytes[9]  / 2) - 30;
+        const ts    = (rawDataBytes[8]  / 2) - 30;
+        const te    = (rawDataBytes[12] / 2) - 30;
+        const tsu   = (rawDataBytes[30] / 2) - 30;
+        const ta    = (rawDataBytes[10] / 2) - 30;
+        const tc    = (rawDataBytes[13] / 2) - 30;
+        const td    = rawDataBytes[11] - 30;
 
-        // Big-Endian Uptime Clock calculation (Bytes 42 & 43)
+        const acVol  = rawDataBytes[14] * 2;
+        const acCur  = rawDataBytes[15] / 10;
+        const dcVol  = rawDataBytes[19] * 2;
+        const dcCur  = rawDataBytes[20] / 10;
+        const eev    = rawDataBytes[24] * 2;
+        const tipm   = rawDataBytes[25];
+        const fanIpm = rawDataBytes[44];
+        const oduFan = rawDataBytes[21] * 10;
+        const iduFan = rawDataBytes[32] * 10;
+        const pcbType = rawDataBytes[0];
+        const area    = rawDataBytes[23];
         const CompTime = (rawDataBytes[42] << 8) | rawDataBytes[43];
 
-        // Bottom horizontal array slots indices mapping (Bytes 48-60)
         const f1  = rawDataBytes[47];  const f2  = rawDataBytes[48];
         const f3  = rawDataBytes[49];  const f4  = rawDataBytes[50];
         const f5  = rawDataBytes[51];  const f6  = rawDataBytes[52];
@@ -964,125 +877,125 @@ function initializeParallelDiscoveryNetwork() {
         const Hf9  = rawDataBytes[68];  const Hf10 = rawDataBytes[69];
         const Hf11 = rawDataBytes[70];  const Hf12 = rawDataBytes[71];
         const Hf13 = rawDataBytes[72];
-    
-        // Configuration Lookup Bytes
-        const fanLevelCode  = rawDataBytes[18];
-        const modeCode      = rawDataBytes[1];
-        const eventCode     = rawDataBytes[31];
-        const targetFreqHz  = rawDataBytes[3];
-        const setFreqHz     = rawDataBytes[4];
-        const realFreqHz    = rawDataBytes[2];
+
+        const fanLevelCode = rawDataBytes[18];
+        const modeCode     = rawDataBytes[1];
+        const eventCode    = rawDataBytes[31];
+        const targetFreqHz = rawDataBytes[3];
+        const setFreqHz    = rawDataBytes[4];
+        const realFreqHz   = rawDataBytes[2];
 
         const fanLevelArray = ["Stop", "Weak", "Silence", "Low", "Medium", "High", "Force"];
         const fanLevelStr   = fanLevelArray[fanLevelCode] || `Level ${fanLevelCode}`;
-
         const modeArray     = ["Standby", "Cool", "Heat", "FAN", "Dry"];
         const modeStr       = modeArray[modeCode] || `Mode ${modeCode}`;
+
         const eventTextArray = [
-            "System Idle ",
+            "System Idle",
             "Receive indoor instructions Standby",
-            "Mode change,Compressor stop",
+            "Mode change, Compressor stop",
             "Indoor room temp reach to stop",
-            "Ac Curr protect,Compressor stop",
-            "Indoor FAN motor fault,Compressor stop",
+            "Ac Curr protect, Compressor stop",
+            "Indoor FAN motor fault, Compressor stop",
             "Indoor Evaporator sensor fault",
             "Indoor Room Sensor Fault",
             "Stop reason8"
         ];
         const eventDisplayStr = eventTextArray[eventCode] || `Event Logic Code ${eventCode}`;
-
-        // Print string message down into the local log layout if state changes
-        if (eventCode!==lastRecordedEventCodeValue && eventCode > 0 && eventCode < eventTextArray.length) {
+        if (eventCode !== lastRecordedEventCodeValue && eventCode > 0 && eventCode < eventTextArray.length) {
             appendEventLog(eventDisplayStr);
-            lastRecordedEventCodeValue=eventCode;
+            lastRecordedEventCodeValue = eventCode;
         }
 
-        // --- 4. DATA RENDER PIPELINE TO DASHBOARD FORMS ---
+        // --- Static display fields ---
         document.getElementById('val_softver').innerText   = `${rawDataBytes[28]}.${rawDataBytes[29]}.0`;
         document.getElementById('val_softdata').innerText  = `20${rawDataBytes[33]}-${rawDataBytes[34]}-${rawDataBytes[35]}`;
-        document.getElementById('val_driverlib').innerText = "- - - -"//"Lib RX_V4";
-        document.getElementById('val_idumcuee').innerText  = "- - - -"//"EE_OK";
-        document.getElementById('val_odumcuee').innerText  = "- - - -"//"EE_OK";
+        document.getElementById('val_driverlib').innerText = "- - - -";
+        document.getElementById('val_idumcuee').innerText  = "- - - -";
+        document.getElementById('val_odumcuee').innerText  = "- - - -";
 
-        document.getElementById('val_mode').innerText        = `-${modeStr}`;
-        document.getElementById('val_tr').innerText          = tr + "°C";//(tr * 0.5) + " °C";
-        document.getElementById('val_ts').innerText          = ts + "°C";
-        document.getElementById('val_te').innerText          = te + "°C";
-        document.getElementById('val_ratedmode').innerText   = "- - - -";//modeCode === 0 ? "None" : modeStr;
-        document.getElementById('val_fanlevel').innerText    = `-${fanLevelStr}`;
-        document.getElementById('val_idufan').innerText      = iduFan + "RPM";
-        if(rawDataBytes[45] & 0x01) //IDU fault
-            document.getElementById('val_idufaultstr').innerText = "Fan fault";
-        else if(rawDataBytes[45] & 0x02)
-            document.getElementById('val_idufaultstr').innerText = "Te fault";
-        else if(rawDataBytes[45] & 0x04)
-            document.getElementById('val_idufaultstr').innerText = "Tr fault";
-        else if(rawDataBytes[45] & 0x08)
-            document.getElementById('val_idufaultstr').innerText = "NoFo fault";
-        else if(rawDataBytes[45] & 0x10)
-            document.getElementById('val_idufaultstr').innerText = "WiFi fault";
-        else if(rawDataBytes[45])
-            document.getElementById('val_idufaultstr').innerText = "IDU fault";
-        document.getElementById('val_tsu').innerText     = tsu + "°C";
-        document.getElementById('val_ta').innerText      = ta  + "°C";
-        document.getElementById('val_tc').innerText      = tc + "°C";
-        document.getElementById('val_td').innerText      = td + "°C";
-        document.getElementById('val_area').innerText    = area === 23 ? "F_area" : `Area ${area}`;
+        document.getElementById('val_mode').innerText      = `-${modeStr}`;
+        document.getElementById('val_tr').innerText        = tr + "°C";
+        document.getElementById('val_ts').innerText        = ts + "°C";
+        document.getElementById('val_te').innerText        = te + "°C";
+        document.getElementById('val_ratedmode').innerText = "- - - -";
+        document.getElementById('val_fanlevel').innerText  = `-${fanLevelStr}`;
+        document.getElementById('val_idufan').innerText    = iduFan + "RPM";
+
+        // --- IDU fault field (change-tracked) ---
+        let iduFaultText = '--';
+        if      (rawDataBytes[45] & 0x01) iduFaultText = "Fan fault";
+        else if (rawDataBytes[45] & 0x02) iduFaultText = "Te fault";
+        else if (rawDataBytes[45] & 0x04) iduFaultText = "Tr fault";
+        else if (rawDataBytes[45] & 0x08) iduFaultText = "NoFo fault";
+        else if (rawDataBytes[45] & 0x10) iduFaultText = "WiFi fault";
+        else if (rawDataBytes[45])         iduFaultText = "IDU fault";
+        updateDisplayField('val_idufaultstr', iduFaultText, 'IDU Fault');
+
+        document.getElementById('val_tsu').innerText   = tsu + "°C";
+        document.getElementById('val_ta').innerText    = ta  + "°C";
+        document.getElementById('val_tc').innerText    = tc  + "°C";
+        document.getElementById('val_td').innerText    = td  + "°C";
+        document.getElementById('val_area').innerText  = area === 23 ? "F_area" : `Area ${area}`;
         document.getElementById('val_pcbtype').innerText = pcbType === 0 ? "Rx23Tx" : `Type ${pcbType}`;
         document.getElementById('val_odufan').innerText  = oduFan + "RPM";
-        if(rawDataBytes[16] & 0x02)     //Drv Fault
-            document.getElementById('val_drvfault').innerText = "Over Current";
-        else if(rawDataBytes[16] & 0x04)     //Drv Fault
-            document.getElementById('val_drvfault').innerText = "Over Voltage";
-        else if(rawDataBytes[16] & 0x08)     //Drv Fault
-            document.getElementById('val_drvfault').innerText = "Step Out";
-        else if(rawDataBytes[16] & 0x10)     //Drv Fault
-            document.getElementById('val_drvfault').innerText = "Reverse";
-        document.getElementById('val_dccur').innerText   = dcCur + "A";
-        document.getElementById('val_dcvol').innerText   = dcVol + "V";
-        document.getElementById('val_accur').innerText   = acCur + "A";
-        document.getElementById('val_acvol').innerText   = acVol  + "V";
 
-        document.getElementById('val_eev').innerText     = eev+ "P";
-        document.getElementById('val_tipm').innerText    = tipm + " °C";
-        document.getElementById('val_fanipm').innerText  = fanIpm+ " °C";
-        if(rawDataBytes[41]==0) //Compressor ON or OFF
-            document.getElementById('Comp_Time').innerText   = `Off[${CompTime}]Sec`;
-        else if(rawDataBytes[41]==1)
-            document.getElementById('Comp_Time').innerText   = `On[${CompTime}]Sec`;
-        // Sidebar Mini Indicators
+        // --- Drv Fault field (change-tracked) ---
+        let drvFaultText = '--';
+        if      (rawDataBytes[16] & 0x02) drvFaultText = "Over Current";
+        else if (rawDataBytes[16] & 0x04) drvFaultText = "Over Voltage";
+        else if (rawDataBytes[16] & 0x08) drvFaultText = "Step Out";
+        else if (rawDataBytes[16] & 0x10) drvFaultText = "Reverse";
+        updateDisplayField('val_drvfault', drvFaultText, 'Drv Fault');
+
+        document.getElementById('val_dccur').innerText  = dcCur + "A";
+        document.getElementById('val_dcvol').innerText  = dcVol + "V";
+        document.getElementById('val_accur').innerText  = acCur + "A";
+        document.getElementById('val_acvol').innerText  = acVol + "V";
+        document.getElementById('val_eev').innerText    = eev   + "P";
+        document.getElementById('val_tipm').innerText   = tipm  + " °C";
+        document.getElementById('val_fanipm').innerText = fanIpm + " °C";
+
+        if (rawDataBytes[41] === 0)
+            document.getElementById('Comp_Time').innerText = `Off[${CompTime}]Sec`;
+        else if (rawDataBytes[41] === 1)
+            document.getElementById('Comp_Time').innerText = `On[${CompTime}]Sec`;
+
         document.getElementById('ui_target_freq').innerText = `F${targetFreqHz}`;
         document.getElementById('ui_set_freq').innerText    = `F${setFreqHz}`;
-        document.getElementById('ui_real_freq').innerText   = `${realFreqHz*60}rpm/(${realFreqHz}Hz)`;
+        document.getElementById('ui_real_freq').innerText   = `${realFreqHz * 60}rpm/(${realFreqHz}Hz)`;
 
-        // Update 13-Column Alignment Cells
-        document.getElementById('f_f1').innerText  = f1; document.getElementById('f_f2').innerText  = f2;
-        document.getElementById('f_f3').innerText  = f3; document.getElementById('f_f4').innerText  = f4;
-        document.getElementById('f_f5').innerText  = f5; document.getElementById('f_f6').innerText  = f6;
-        document.getElementById('f_f7').innerText  = f7; document.getElementById('f_f8').innerText  = f8;
-        document.getElementById('f_f9').innerText  = f9; document.getElementById('f_f10').innerText = f10;
-        document.getElementById('f_f11').innerText = f11; document.getElementById('f_f12').innerText = f12;
-        document.getElementById('f_f13').innerText = f13;
+        document.getElementById('f_f1').innerText   = f1;   document.getElementById('f_f2').innerText   = f2;
+        document.getElementById('f_f3').innerText   = f3;   document.getElementById('f_f4').innerText   = f4;
+        document.getElementById('f_f5').innerText   = f5;   document.getElementById('f_f6').innerText   = f6;
+        document.getElementById('f_f7').innerText   = f7;   document.getElementById('f_f8').innerText   = f8;
+        document.getElementById('f_f9').innerText   = f9;   document.getElementById('f_f10').innerText  = f10;
+        document.getElementById('f_f11').innerText  = f11;  document.getElementById('f_f12').innerText  = f12;
+        document.getElementById('f_f13').innerText  = f13;
 
-        document.getElementById('Hf_f1').innerText  = Hf1; document.getElementById('Hf_f2').innerText  = Hf2;
-        document.getElementById('Hf_f3').innerText  = Hf3; document.getElementById('Hf_f4').innerText  = Hf4;
-        document.getElementById('Hf_f5').innerText  = Hf5; document.getElementById('Hf_f6').innerText  = Hf6;
-        document.getElementById('Hf_f7').innerText  = Hf7; document.getElementById('Hf_f8').innerText  = Hf8;
-        document.getElementById('Hf_f9').innerText  = Hf9; document.getElementById('Hf_f10').innerText = Hf10;
+        document.getElementById('Hf_f1').innerText  = Hf1;  document.getElementById('Hf_f2').innerText  = Hf2;
+        document.getElementById('Hf_f3').innerText  = Hf3;  document.getElementById('Hf_f4').innerText  = Hf4;
+        document.getElementById('Hf_f5').innerText  = Hf5;  document.getElementById('Hf_f6').innerText  = Hf6;
+        document.getElementById('Hf_f7').innerText  = Hf7;  document.getElementById('Hf_f8').innerText  = Hf8;
+        document.getElementById('Hf_f9').innerText  = Hf9;  document.getElementById('Hf_f10').innerText = Hf10;
         document.getElementById('Hf_f11').innerText = Hf11; document.getElementById('Hf_f12').innerText = Hf12;
         document.getElementById('Hf_f13').innerText = Hf13;
 
-        // --- 5. PROCESS SIDE INDICATOR CHECKBOX MASKS ---
-        toggleStatusIndicator('chk_fault',      rawDataBytes[39], 'active-green');   //txt_fault_type  
-         if(rawDataBytes[39] & 0x02)     //Drv Fault
-            document.getElementById('txt_fault_type').innerText  = "Communication to drive";
-        else if(rawDataBytes[39] & 0x04)     //Drv Fault
-            document.getElementById('txt_fault_type').innerText  = "TSU Sensor";
-        else if(rawDataBytes[39] & 0x08)     //Drv Fault
-            document.getElementById('txt_fault_type').innerText  = "NoFo";
-        
-        const protectByte1 = rawDataBytes[40]; // Protection 1                      //protection
-        const protectByte2 = rawDataBytes[6]; // Protection 2 to stop protection
+        // =====================================================================
+        // SIDE INDICATORS — all use toggleStatusIndicator with label + detail
+        // =====================================================================
+
+        // --- FAULT (byte 39) ---
+        let faultDetail = '';
+        if      (rawDataBytes[39] & 0x02) faultDetail = "Communication to drive";
+        else if (rawDataBytes[39] & 0x04) faultDetail = "TSU Sensor";
+        else if (rawDataBytes[39] & 0x08) faultDetail = "NoFo";
+        toggleStatusIndicator('chk_fault', rawDataBytes[39], 'active-green', 'Fault', faultDetail || 'Fault active');
+        updateFaultLabelSpan('txt_fault_type', faultDetail, 'Fault');
+
+        // --- PROTECT (bytes 40 + 6) ---
+        const protectByte1 = rawDataBytes[40];
+        const protectByte2 = rawDataBytes[6];
         const activeProtections = [];
         if (protectByte1 & 0x01) activeProtections.push("DC Volt Stop");
         if (protectByte1 & 0x02) activeProtections.push("DC Current Protection to Stop");
@@ -1090,82 +1003,72 @@ function initializeParallelDiscoveryNetwork() {
         if (protectByte1 & 0x08) activeProtections.push("Te overload protect");
         if (protectByte1 & 0x10) activeProtections.push("IPM over temp protect");
         if (protectByte1 & 0x20) activeProtections.push("IPM protect permanent");
-        if (protectByte1 & 0x40) activeProtections.push("Start Fail Preheat");        
+        if (protectByte1 & 0x40) activeProtections.push("Start Fail Preheat");
         if (protectByte2 & 0x01) activeProtections.push("Tr Protect");
         if (protectByte2 & 0x02) activeProtections.push("Tc Protect");
         if (protectByte2 & 0x04) activeProtections.push("Te protect");
         if (protectByte2 & 0x08) activeProtections.push("Ta protect");
         if (protectByte2 & 0x10) activeProtections.push("AC current");
         if (protectByte2 & 0x20) activeProtections.push("AC voltage");
-        if (protectByte2 & 0x40) activeProtections.push("Compressor protect(permanent stop)");
-        if (protectByte2 & 0x80) activeProtections.push("Td Protect");        
+        if (protectByte2 & 0x40) activeProtections.push("Compressor protect (permanent stop)");
+        if (protectByte2 & 0x80) activeProtections.push("Td Protect");
         const isAnyProtectionActive = (protectByte1 > 0) || (protectByte2 > 0);
-        toggleStatusIndicator('chk_protect', isAnyProtectionActive, 'active-green');        
-        const protectLabelTextElement = document.getElementById('txt_protect_type');
-        if (protectLabelTextElement) {
-            protectLabelTextElement.innerText = activeProtections.length > 0 ? activeProtections.join(", ") : ""; // Clear completely if no protection bits are tripped
-        }
-        //txt_Limitfreq_type
-        const Limitfreq_protectByte = rawDataBytes[7]; // LimitFreq
-        const Limitfreq_activeProtections = [];      
-        if (Limitfreq_protectByte & 0x01) activeProtections.push("DC Current Limit");
-        if (Limitfreq_protectByte & 0x02) activeProtections.push("IPM Limit");
-        if (Limitfreq_protectByte & 0x04) activeProtections.push("Tc Limit");
-        if (Limitfreq_protectByte & 0x08) activeProtections.push("Te Limit");
-        if (Limitfreq_protectByte & 0x10) activeProtections.push("Ta Limit");
-        if (Limitfreq_protectByte & 0x20) activeProtections.push("AC Voltage Limit");
-        if (Limitfreq_protectByte & 0x40) activeProtections.push("AC Current Limit");
-        if (Limitfreq_protectByte & 0x80) activeProtections.push("Td Limit");        
-        toggleStatusIndicator('chk_limitfreq', Limitfreq_protectByte, 'active-green');        
-        document.getElementById('txt_Limitfreq_type').innerText = Limitfreq_activeProtections.length > 0 ? Limitfreq_activeProtections.join(", ") : ""; // Clear completely if no protection bits are tripped
+        const protectDetailStr = activeProtections.join(", ");
+        toggleStatusIndicator('chk_protect', isAnyProtectionActive, 'active-green', 'Protect', protectDetailStr || 'Protection active');
+        updateFaultLabelSpan('txt_protect_type', protectDetailStr, 'Protect');
 
-         //txt_downfreq_type
-        const Downfreq_protectByte = rawDataBytes[27]; // Down Freq
-        const Downfreq_activeProtections = [];      
-        if (Downfreq_protectByte & 0x01) activeProtections.push("Condenser temp"); //Condenser temp down freq/ Limit FX Run
-        if (Downfreq_protectByte & 0x02) activeProtections.push("Evaporator temp");
-        if (Downfreq_protectByte & 0x04) activeProtections.push("Comp dischrg temp");// Compressor discharge temp down freq
-        if (Downfreq_protectByte & 0x08) activeProtections.push("AC current");
-        if (Downfreq_protectByte & 0x10) activeProtections.push("Compressor phase current");
-        if (Downfreq_protectByte & 0x20) activeProtections.push("IPM temperature");    
-        toggleStatusIndicator('chk_downfreq', Downfreq_protectByte, 'active-green');        
-        document.getElementById('txt_downfreq_type').innerText = Downfreq_activeProtections.length > 0 ? Downfreq_activeProtections.join(", ") : ""; // Clear completely if no protection bits are tripped
-        
-        toggleStatusIndicator('chk_comp',       (rawDataBytes[17] & 0x80), 'active-green');
-        toggleStatusIndicator('chk_defrost',    (rawDataBytes[17] & 0x04), 'active-green');
-        toggleStatusIndicator('chk_4way',       (rawDataBytes[17] & 0x08), 'active-green');
-        toggleStatusIndicator('chk_retoil',     (rawDataBytes[17] & 0x40), 'active-green');
-        toggleStatusIndicator('chk_outfan',     (rawDataBytes[17] & 0x20), 'active-green');
-        toggleStatusIndicator('chk_test',       (rawDataBytes[17] & 0x02), 'active-green');
-        toggleStatusIndicator('chk_preheat',    (rawDataBytes[17] & 0x01), 'active-green');
-        toggleStatusIndicator('chk_collectf',   (rawDataBytes[17] & 0x10), 'active-green');
-        
-        toggleStatusIndicator('chk_pfc',        (rawDataBytes[26] & 0x10), 'active-orange'); 
-        toggleStatusIndicator('chk_eco',        (rawDataBytes[26] & 0x08), 'active-orange');
-        toggleStatusIndicator('chk_everoff',    (rawDataBytes[26] & 0x01), 'active-orange');
-        toggleStatusIndicator('chk_idufault',   (rawDataBytes[26] & 0x02) , 'active-red'); 
-        //toggleStatusIndicator('',   (rawDataBytes[26] & 0x04) , 'active-red'); //Enter mildew,evaporator temperature：10℃(Display only)
+        // --- LIMIT FREQ (byte 7) ---
+        const limitfreqByte = rawDataBytes[7];
+        const limitfreqNames = [];
+        if (limitfreqByte & 0x01) limitfreqNames.push("DC Current Limit");
+        if (limitfreqByte & 0x02) limitfreqNames.push("IPM Limit");
+        if (limitfreqByte & 0x04) limitfreqNames.push("Tc Limit");
+        if (limitfreqByte & 0x08) limitfreqNames.push("Te Limit");
+        if (limitfreqByte & 0x10) limitfreqNames.push("Ta Limit");
+        if (limitfreqByte & 0x20) limitfreqNames.push("AC Voltage Limit");
+        if (limitfreqByte & 0x40) limitfreqNames.push("AC Current Limit");
+        if (limitfreqByte & 0x80) limitfreqNames.push("Td Limit");
+        const limitfreqDetailStr = limitfreqNames.join(", ");
+        toggleStatusIndicator('chk_limitfreq', limitfreqByte, 'active-green', 'LimitFreq', limitfreqDetailStr || 'Limit active');
+        updateFaultLabelSpan('txt_Limitfreq_type', limitfreqDetailStr, 'LimitFreq');
 
-        // --- 6. TERMINAL VIEWPORT HEX WRITERS ---
-        const timeStr = new Date().toLocaleTimeString();
-        const hexColumn = Array.from(rawDataBytes).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+        // --- DOWN FREQ (byte 27) ---
+        const downfreqByte = rawDataBytes[27];
+        const downfreqNames = [];
+        if (downfreqByte & 0x01) downfreqNames.push("Condenser temp");
+        if (downfreqByte & 0x02) downfreqNames.push("Evaporator temp");
+        if (downfreqByte & 0x04) downfreqNames.push("Comp discharge temp");
+        if (downfreqByte & 0x08) downfreqNames.push("AC current");
+        if (downfreqByte & 0x10) downfreqNames.push("Compressor phase current");
+        if (downfreqByte & 0x20) downfreqNames.push("IPM temperature");
+        const downfreqDetailStr = downfreqNames.join(", ");
+        toggleStatusIndicator('chk_downfreq', downfreqByte, 'active-green', 'DownFreq', downfreqDetailStr || 'DownFreq active');
+        updateFaultLabelSpan('txt_downfreq_type', downfreqDetailStr, 'DownFreq');
+
+        // --- BINARY CONTROL INDICATORS (byte 17) ---
+        toggleStatusIndicator('chk_comp',     (rawDataBytes[17] & 0x80), 'active-green',  'Comp');
+        toggleStatusIndicator('chk_defrost',  (rawDataBytes[17] & 0x04), 'active-green',  'Defrost');
+        toggleStatusIndicator('chk_4way',     (rawDataBytes[17] & 0x08), 'active-green',  '4Way');
+        toggleStatusIndicator('chk_retoil',   (rawDataBytes[17] & 0x40), 'active-green',  'Ret Oil');
+        toggleStatusIndicator('chk_outfan',   (rawDataBytes[17] & 0x20), 'active-green',  'Out Fan');
+        toggleStatusIndicator('chk_test',     (rawDataBytes[17] & 0x02), 'active-green',  'Test');
+        toggleStatusIndicator('chk_preheat',  (rawDataBytes[17] & 0x01), 'active-green',  'Preheat');
+        toggleStatusIndicator('chk_collectf', (rawDataBytes[17] & 0x10), 'active-green',  'Collect F');
+
+        // --- SYSTEM FLAGS (byte 26) ---
+        toggleStatusIndicator('chk_pfc',      (rawDataBytes[26] & 0x10), 'active-orange', 'PFC');
+        toggleStatusIndicator('chk_eco',      (rawDataBytes[26] & 0x08), 'active-orange', 'ECO');
+        toggleStatusIndicator('chk_everoff',  (rawDataBytes[26] & 0x01), 'active-orange', 'Ever Off');
+        toggleStatusIndicator('chk_idufault', (rawDataBytes[26] & 0x02), 'active-red',    'IDU Fault (sys flag)');
+
+        // --- HEX TERMINAL LOG ---
+        const timeStr     = new Date().toLocaleTimeString();
+        const hexColumn   = Array.from(rawDataBytes).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
         const asciiColumn = Array.from(rawDataBytes).map(b => (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.').join('');
-        
         const completeRow = `[${timeStr}]\nComp: ${CompTime}\nHEX : ${hexColumn}\nASC : ${asciiColumn}\n---------------------------------------`;
         appendLine(completeRow, "");
     }
 
-    function toggleStatusIndicator(elementId, state, cssClass) {
-        const el = document.getElementById(elementId);
-        if (!el) return;
-        if (state) {
-            el.className = `indicator-square-box ${cssClass}`;
-        } else {
-            el.className = 'indicator-square-box';
-        }
-    }
-
-    // --- AUTOMATED BACKGROUND MONITOR SELECTION NET INITIALIZE ---
     initializeParallelDiscoveryNetwork();
 </script>
 </body>
