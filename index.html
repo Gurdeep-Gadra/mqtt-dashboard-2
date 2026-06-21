@@ -915,23 +915,23 @@
         // LIMIT FREQ byte 7
         // =====================================================================
         const limitNames = [];
-        if (d[7] & 0x01) limitNames.push("DC Current/Limit F"+d[4]+" Run");
+        if (d[7] & 0x01) limitNames.push("DC Current "+dcCur+"A/Limit F"+d[4]+" Run"); 
         if (d[7] & 0x02) limitNames.push("IPM/Limit F"+d[4]+" Run");
-        if (d[7] & 0x04) limitNames.push("Tc/Limit F"+d[4]+" Run");
-        if (d[7] & 0x08) limitNames.push("Te/Limit F"+d[4]+" Run");
-        if (d[7] & 0x10) limitNames.push("Ta/Limit F"+d[4]+" Run");
-        if (d[7] & 0x20) limitNames.push("AC Voltage/Limit F"+d[4]+" Run");
-        if (d[7] & 0x40) limitNames.push("AC Current/Limit F"+d[4]+" Run");
-        if (d[7] & 0x80) limitNames.push("Td/Limit F"+d[4]+" Run");
+        if (d[7] & 0x04) limitNames.push("Tc "+tc+"C/Limit F"+d[4]+" Run");
+        if (d[7] & 0x08) limitNames.push("Te "+te+"C/Limit F"+d[4]+" Run");
+        if (d[7] & 0x10) limitNames.push("Ta "+ta+"C/Limit F"+d[4]+" Run");
+        if (d[7] & 0x20) limitNames.push("AC Voltage "+acVol+"V/Limit F"+d[4]+" Run");
+        if (d[7] & 0x40) limitNames.push("AC Current "+acCur+"A/Limit F"+d[4]+" Run");
+        if (d[7] & 0x80) limitNames.push("Td "+td+"C/Limit F"+d[4]+" Run");
         setIndicator('chk_limitfreq', 'txt_Limitfreq_type', d[7], 'active-green', 'LimitFreq', limitNames.join(", "));
 
         // =====================================================================
         // DOWN FREQ byte 27 — corrected names from table
         // =====================================================================
         const downNames = [];
-        if (d[27] & 0x01) downNames.push("Condenser temp/Down to F"+d[4]+" Run");
-        if (d[27] & 0x02) downNames.push("Evaporator temp/Down to F"+d[4]+" Run");
-        if (d[27] & 0x04) downNames.push("Comp discharge temp/Down to F"+d[4]+" Run");
+        if (d[27] & 0x01) downNames.push("Tc "+tc+"C/Down to F"+d[4]+" Run");
+        if (d[27] & 0x02) downNames.push("Te "+te+"C/Down to F"+d[4]+" Run");
+        if (d[27] & 0x04) downNames.push("Td "+td+"C/Down to F"+d[4]+" Run");
         if (d[27] & 0x08) downNames.push("AC current/Down to F"+d[4]+" Run");
         if (d[27] & 0x10) downNames.push("Compressor phase current/Down to F"+d[4]+" Run");
         if (d[27] & 0x20) downNames.push("IPM temperature/Down to F"+d[4]+" Run");
