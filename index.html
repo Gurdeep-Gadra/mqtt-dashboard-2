@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor Realtime Megmeet data fetching</title>
+    <title>AMBER — Realtime Diagnostic Monitor</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -169,12 +169,54 @@
         }
 
         .device-grid {
-            width: 100%; max-width: 1100px;
+            width: 100%;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 8px;
         }
+
+        /* Compact inactive node row (right sidebar) */
+        .inactive-node-row {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 7px;
+            padding: 8px 12px;
+            display: flex; align-items: center; gap: 8px;
+            cursor: pointer;
+            transition: background 0.15s;
+            position: relative;
+            overflow: hidden;
+        }
+        .inactive-node-row::before {
+            content: '';
+            position: absolute; top: 0; left: 0;
+            width: 3px; height: 100%;
+            border-radius: 7px 0 0 7px;
+        }
+        .inactive-node-row.row-syncing::before { background: #f39c12; }
+        .inactive-node-row.row-offline::before  { background: #c0392b; }
+        .inactive-node-row:hover { background: rgba(255,255,255,0.08); }
+        .inactive-node-info { flex: 1; min-width: 0; }
+        .inactive-node-name {
+            font-size: 11px; font-weight: bold; color: #c0d8ec;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .inactive-node-topic {
+            font-size: 9px; color: #5a7a8a; font-family: monospace;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .inactive-node-badge {
+            font-size: 9px; font-weight: bold;
+            padding: 1px 6px; border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+        }
+        .inactive-del-btn {
+            background: transparent; border: none;
+            color: #5a3a3a; font-size: 11px; cursor: pointer;
+            padding: 0 2px; flex-shrink: 0;
+            transition: color 0.15s;
+        }
+        .inactive-del-btn:hover { color: #e74c3c; }
 
         /* Device card */
         .device-card {
@@ -369,9 +411,9 @@
     <!-- Top bar -->
     <div class="login-topbar">
         <div class="login-brand">
-            <div class="login-brand-icon">M</div>
+            <div class="login-brand-icon">A</div>
             <div>
-                <div class="login-brand-text">MEGMEET</div>
+                <div class="login-brand-text">AMBER</div>
                 <div class="login-brand-sub">Realtime Diagnostic Monitor</div>
             </div>
         </div>
@@ -416,12 +458,27 @@
         </div>
     </div>
 
-    <!-- Device grid label -->
-    <div class="device-grid-title">Registered Nodes — Click to Open Live Monitor</div>
+    <!-- Split: online cards left, offline/syncing list right -->
+    <div style="width:100%; max-width:1100px; display:flex; gap:14px; align-items:flex-start;">
 
-    <!-- Device cards grid -->
-    <div class="device-grid" id="device_grid_container">
-        <!-- injected by renderDeviceInventoryTable() -->
+        <!-- LEFT: Online cards -->
+        <div style="flex:1; min-width:0;">
+            <div class="device-grid-title">Online Nodes — Click to Open Live Monitor</div>
+            <div class="device-grid" id="device_grid_online">
+                <!-- online cards injected here -->
+            </div>
+            <div id="device_grid_empty" style="display:none; color:#3a6070; font-size:12px; text-align:center; padding:30px 0; font-style:italic;">No online nodes detected yet…</div>
+        </div>
+
+        <!-- RIGHT: Offline + Syncing list -->
+        <div style="width:240px; flex-shrink:0;">
+            <div class="device-grid-title" style="max-width:none;">Other Nodes</div>
+            <div id="device_list_inactive" style="display:flex; flex-direction:column; gap:6px;">
+                <!-- compact list rows injected here -->
+            </div>
+            <div id="device_list_empty" style="display:none; color:#3a6070; font-size:11px; font-style:italic; padding:10px 4px;">All nodes are online</div>
+        </div>
+
     </div>
 
 </div>
@@ -775,143 +832,170 @@ function clearEventLogs() {
 }
 
 // =============================================================================
-// DEVICE CARD RENDERER (modern login screen)
+// DEVICE RENDERER — split: online cards left, inactive list right
 // =============================================================================
+function buildOnlineCard(dev, idx, d) {
+    const modeStr  = (["Standby","Cool","Heat","FAN","Dry"])[d[1]] || `M${d[1]}`;
+    const realFreq = d[2];
+    const tr       = ((d[9]/2)-30).toFixed(1);
+    const ts_v     = ((d[8]/2)-30).toFixed(1);
+    const tc       = ((d[13]/2)-30).toFixed(1);
+    const acVol    = d[14]*2;
+    const acCur    = (d[15]/10).toFixed(1);
+    const iduFan   = d[32]*10;
+    let iduFaultTxt='';
+    if      (d[45]&0x01) iduFaultTxt='Fan fault';
+    else if (d[45]&0x02) iduFaultTxt='Te fault';
+    else if (d[45]&0x04) iduFaultTxt='Tr fault';
+    else if (d[45]&0x08) iduFaultTxt='NoFo fault';
+    else if (d[45]&0x10) iduFaultTxt='WiFi fault';
+    else if (d[45])      iduFaultTxt='IDU fault';
+
+    const teleHTML = `
+        <div class="device-card-tele">
+            <div class="tele-cell"><div class="tele-cell-label">Mode</div><div class="tele-cell-value" data-cid="mode">${modeStr}</div></div>
+            <div class="tele-cell"><div class="tele-cell-label">Real Freq</div><div class="tele-cell-value" data-cid="freq">${realFreq}Hz</div></div>
+            <div class="tele-cell"><div class="tele-cell-label">Tr</div><div class="tele-cell-value" data-cid="tr">${tr}°C</div></div>
+            <div class="tele-cell"><div class="tele-cell-label">Ts</div><div class="tele-cell-value" data-cid="ts">${ts_v}°C</div></div>
+            <div class="tele-cell"><div class="tele-cell-label">Tc</div><div class="tele-cell-value" data-cid="tc">${tc}°C</div></div>
+            <div class="tele-cell"><div class="tele-cell-label">AC V</div><div class="tele-cell-value" data-cid="acvol">${acVol}V</div></div>
+            <div class="tele-cell"><div class="tele-cell-label">AC A</div><div class="tele-cell-value" data-cid="accur">${acCur}A</div></div>
+            <div class="tele-cell"><div class="tele-cell-label">IDU Fan</div><div class="tele-cell-value" data-cid="idufan">${iduFan}r</div></div>
+        </div>
+        <div style="font-size:10px; color:#ff6b6b; margin-bottom:6px; min-height:14px;" data-fault-row>${iduFaultTxt ? '⚠ '+iduFaultTxt : ''}</div>`;
+
+    const inds = [
+        {key:'comp',    label:'Comp',    on:!!(d[17]&0x80), cls:'on-green' },
+        {key:'defrost', label:'Defrost', on:!!(d[17]&0x04), cls:'on-green' },
+        {key:'fw4',     label:'4Way',    on:!!(d[17]&0x08), cls:'on-green' },
+        {key:'outfan',  label:'Out Fan', on:!!(d[17]&0x20), cls:'on-green' },
+        {key:'preheat', label:'Preheat', on:!!(d[17]&0x01), cls:'on-green' },
+        {key:'retoil',  label:'Ret Oil', on:!!(d[17]&0x40), cls:'on-green' },
+        {key:'test',    label:'Test',    on:!!(d[17]&0x02), cls:'on-green' },
+        {key:'collectf',label:'Coll.F',  on:!!(d[17]&0x10), cls:'on-green' },
+        {key:'fault',   label:'Fault',   on:!!(d[39]),       cls:'on-red'   },
+        {key:'oduflt',  label:'ODU Flt', on:!!(d[5]),        cls:'on-red'   },
+        {key:'protect', label:'Protect', on:!!(d[40]||d[6]), cls:'on-red'   },
+        {key:'limfreq', label:'LimFreq', on:!!(d[7]),        cls:'on-orange'},
+        {key:'dwnfreq', label:'DwnFreq', on:!!(d[27]),       cls:'on-orange'},
+        {key:'pfc',     label:'PFC',     on:!!(d[26]&0x10),  cls:'on-orange'},
+        {key:'eco',     label:'ECO',     on:!!(d[26]&0x08),  cls:'on-orange'},
+        {key:'iduflt',  label:'IDU Flt', on:!!(d[26]&0x02),  cls:'on-red'  },
+    ];
+    const indHTML = `<div class="device-card-indicators">` +
+        inds.map(i=>`<div class="mini-ind"><div class="mini-ind-dot${i.on?' '+i.cls:''}" data-dot="${i.key}"></div>${i.label}</div>`).join('') +
+    `</div>`;
+
+    const card = document.createElement('div');
+    card.className = 'device-card card-online';
+    card.id        = `card_${btoa(dev.topic)}`;
+    card.innerHTML = `
+        <div class="device-card-header">
+            <div>
+                <div class="device-card-name">🖥 ${dev.name}</div>
+                <div class="device-card-topic">${dev.topic}</div>
+            </div>
+            <span class="device-status-pill pill-online">Online</span>
+        </div>
+        ${teleHTML}
+        ${indHTML}
+        <div class="device-card-footer">
+            <span class="card-launch-hint">▶ CLICK TO OPEN MONITOR</span>
+            <button class="card-delete-btn" onclick="purgeDeviceEntry(event,${idx},'${dev.topic}')">✕ Remove</button>
+        </div>`;
+    card.onclick = () => launchDiagnosticMonitorScreen(dev.topic);
+    return card;
+}
+
 function renderDeviceInventoryTable() {
-    const grid = document.getElementById('device_grid_container');
-    if (!grid) return;
-    grid.innerHTML = '';
+    const onlineGrid   = document.getElementById('device_grid_online');
+    const inactiveList = document.getElementById('device_list_inactive');
+    const emptyOnline  = document.getElementById('device_grid_empty');
+    const emptyInact   = document.getElementById('device_list_empty');
+    if (!onlineGrid || !inactiveList) return;
+
+    onlineGrid.innerHTML   = '';
+    inactiveList.innerHTML = '';
 
     const devices = fetchDevicesFromRegistry();
     if (devices.length === 0) {
-        grid.innerHTML = '<div style="color:#3a6070; font-size:12px; grid-column:1/-1; text-align:center; padding:20px;">No nodes registered for this broker. Add one above.</div>';
+        if (emptyOnline) { emptyOnline.style.display='block'; emptyOnline.innerText='No nodes registered for this broker. Add one above.'; }
+        if (emptyInact)  emptyInact.style.display = 'none';
         return;
     }
+
+    let onlineCount = 0, inactiveCount = 0;
 
     devices.forEach((dev, idx) => {
         const hb       = activeDevicesHeartbeats[dev.topic];
         const lastSeen = hb ? hb.ts : null;
         const lastData = hb ? hb.data : null;
-        let statusClass = 'card-syncing', pillClass = 'pill-syncing', pillText = 'Syncing…';
+
+        let isOnline = false, statusClass = 'row-syncing', pillClass = 'pill-syncing', pillText = 'Syncing…';
         if (lastSeen) {
             const s = (Date.now() - lastSeen) / 1000;
-            if (s <= 5)  { statusClass = 'card-online';  pillClass = 'pill-online';  pillText = 'Online'; }
-            else          { statusClass = 'card-offline'; pillClass = 'pill-offline'; pillText = 'Offline'; }
+            if (s <= 5) { isOnline = true; }
+            else         { statusClass = 'row-offline'; pillClass = 'pill-offline'; pillText = 'Offline'; }
         }
 
-        // Build telemetry cells if we have live data
-        let teleHTML   = '';
-        let indHTML    = '';
-        if (lastData) {
-            const d         = lastData;
-            const modeStr   = (["Standby","Cool","Heat","FAN","Dry"])[d[1]] || `M${d[1]}`;
-            const realFreq  = d[2];
-            const tr        = ((d[9]/2)-30).toFixed(1);
-            const ts        = ((d[8]/2)-30).toFixed(1);
-            const tc        = ((d[13]/2)-30).toFixed(1);
-            const acVol     = d[14]*2;
-            const acCur     = (d[15]/10).toFixed(1);
-            const compOn    = d[41]===1;
-            const iduFan    = d[32]*10;
-
-            // IDU fault text
-            let iduFaultTxt = '';
-            if      (d[45]&0x01) iduFaultTxt='Fan fault';
-            else if (d[45]&0x02) iduFaultTxt='Te fault';
-            else if (d[45]&0x04) iduFaultTxt='Tr fault';
-            else if (d[45]&0x08) iduFaultTxt='NoFo fault';
-            else if (d[45]&0x10) iduFaultTxt='WiFi fault';
-            else if (d[45])      iduFaultTxt='IDU fault';
-
-            teleHTML = `
-            <div class="device-card-tele">
-                <div class="tele-cell"><div class="tele-cell-label">Mode</div><div class="tele-cell-value">${modeStr}</div></div>
-                <div class="tele-cell"><div class="tele-cell-label">Real Freq</div><div class="tele-cell-value">${realFreq}Hz</div></div>
-                <div class="tele-cell"><div class="tele-cell-label">Tr</div><div class="tele-cell-value">${tr}°C</div></div>
-                <div class="tele-cell"><div class="tele-cell-label">Ts</div><div class="tele-cell-value">${ts}°C</div></div>
-                <div class="tele-cell"><div class="tele-cell-label">Tc</div><div class="tele-cell-value">${tc}°C</div></div>
-                <div class="tele-cell"><div class="tele-cell-label">AC V</div><div class="tele-cell-value">${acVol}V</div></div>
-                <div class="tele-cell"><div class="tele-cell-label">AC A</div><div class="tele-cell-value">${acCur}A</div></div>
-                <div class="tele-cell"><div class="tele-cell-label">IDU Fan</div><div class="tele-cell-value">${iduFan}r</div></div>
-            </div>
-            ${iduFaultTxt ? `<div style="font-size:10px; color:#ff6b6b; margin-bottom:6px;">⚠ ${iduFaultTxt}</div>` : ''}`;
-
-            // Mini indicators
-            const inds = [
-                { label:'Comp',      on: !!(d[17]&0x80), cls:'on-green'  },
-                { label:'Defrost',   on: !!(d[17]&0x04), cls:'on-green'  },
-                { label:'4Way',      on: !!(d[17]&0x08), cls:'on-green'  },
-                { label:'Out Fan',   on: !!(d[17]&0x20), cls:'on-green'  },
-                { label:'Preheat',   on: !!(d[17]&0x01), cls:'on-green'  },
-                { label:'Ret Oil',   on: !!(d[17]&0x40), cls:'on-green'  },
-                { label:'Test',      on: !!(d[17]&0x02), cls:'on-green'  },
-                { label:'Coll.F',    on: !!(d[17]&0x10), cls:'on-green'  },
-                { label:'Fault',     on: !!(d[39]),       cls:'on-red'    },
-                { label:'ODU Flt',   on: !!(d[5]),        cls:'on-red'    },
-                { label:'Protect',   on: !!(d[40]||d[6]), cls:'on-red'    },
-                { label:'LimFreq',   on: !!(d[7]),        cls:'on-orange' },
-                { label:'DwnFreq',   on: !!(d[27]),       cls:'on-orange' },
-                { label:'PFC',       on: !!(d[26]&0x10),  cls:'on-orange' },
-                { label:'ECO',       on: !!(d[26]&0x08),  cls:'on-orange' },
-                { label:'IDU Flt',   on: !!(d[26]&0x02),  cls:'on-red'   },
-            ];
-            indHTML = `<div class="device-card-indicators">` +
-                inds.map(i => `<div class="mini-ind"><div class="mini-ind-dot${i.on?' '+i.cls:''}"></div>${i.label}</div>`).join('') +
-            `</div>`;
+        if (isOnline && lastData) {
+            // Build full card and put in left grid
+            const card = buildOnlineCard(dev, idx, lastData);
+            onlineGrid.appendChild(card);
+            onlineCount++;
         } else {
-            teleHTML = `<div class="card-no-data">Waiting for first data packet…</div>`;
-        }
-
-        const card = document.createElement('div');
-        card.className = `device-card ${statusClass}`;
-        card.id        = `card_${btoa(dev.topic)}`;
-        card.innerHTML = `
-            <div class="device-card-header">
-                <div>
-                    <div class="device-card-name">🖥 ${dev.name}</div>
-                    <div class="device-card-topic">${dev.topic}</div>
+            // Build compact row and put in right list
+            const row = document.createElement('div');
+            row.className = `inactive-node-row ${statusClass}`;
+            row.id        = `card_${btoa(dev.topic)}`;
+            row.innerHTML = `
+                <div class="inactive-node-info">
+                    <div class="inactive-node-name">🖥 ${dev.name}</div>
+                    <div class="inactive-node-topic">${dev.topic}</div>
                 </div>
-                <span class="device-status-pill ${pillClass}" id="pill_${btoa(dev.topic)}">${pillText}</span>
-            </div>
-            ${teleHTML}
-            ${indHTML}
-            <div class="device-card-footer">
-                <span class="card-launch-hint">▶ CLICK TO OPEN MONITOR</span>
-                <button class="card-delete-btn" onclick="purgeDeviceEntry(event,${idx},'${dev.topic}')">✕ Remove</button>
-            </div>`;
-        card.onclick = () => launchDiagnosticMonitorScreen(dev.topic);
-        grid.appendChild(card);
+                <span class="inactive-node-badge ${pillClass}" id="pill_${btoa(dev.topic)}">${pillText}</span>
+                <button class="inactive-del-btn" onclick="purgeDeviceEntry(event,${idx},'${dev.topic}')" title="Remove">✕</button>`;
+            row.onclick = () => launchDiagnosticMonitorScreen(dev.topic);
+            inactiveList.appendChild(row);
+            inactiveCount++;
+        }
     });
+
+    if (emptyOnline)  emptyOnline.style.display  = onlineCount   === 0 ? 'block' : 'none';
+    if (emptyInact)   emptyInact.style.display    = inactiveCount === 0 ? 'block' : 'none';
 }
 
 // =============================================================================
 // HEARTBEAT EVALUATOR
 // =============================================================================
 function evaluateAllDeviceHeartbeats() {
+    const loginVisible = document.getElementById('device_manager').style.display !== 'none';
     fetchDevicesFromRegistry().forEach(dev => {
         const hb       = activeDevicesHeartbeats[dev.topic];
         const lastSeen = hb ? hb.ts : null;
-        // Update card if login screen is visible
-        if (document.getElementById('device_manager').style.display !== 'none') {
-            const card = document.getElementById(`card_${btoa(dev.topic)}`);
+
+        if (loginVisible) {
             const pill = document.getElementById(`pill_${btoa(dev.topic)}`);
-            if (card && pill) {
-                if (!lastSeen) {
-                    card.className = `device-card card-syncing`;
-                    pill.className = 'device-status-pill pill-syncing'; pill.innerText = 'Syncing…';
+            const card = document.getElementById(`card_${btoa(dev.topic)}`);
+            if (!lastSeen) {
+                // Still syncing — row should already be in inactive list; just refresh pill
+                if (pill) { pill.className='inactive-node-badge pill-syncing'; pill.innerText='Syncing…'; }
+                if (card)   card.className = `inactive-node-row row-syncing`;
+            } else {
+                const s = (Date.now() - lastSeen) / 1000;
+                if (s > 5) {
+                    // Just went offline — if card is still in online grid, trigger full re-render
+                    if (card && card.classList.contains('device-card')) { renderDeviceInventoryTable(); return; }
+                    if (pill) { pill.className='inactive-node-badge pill-offline'; pill.innerText='Offline'; }
+                    if (card)   card.className = `inactive-node-row row-offline`;
                 } else {
-                    const s = (Date.now() - lastSeen) / 1000;
-                    if (s <= 5) {
-                        card.className = `device-card card-online`;
-                        pill.className = 'device-status-pill pill-online'; pill.innerText = 'Online';
-                    } else {
-                        card.className = `device-card card-offline`;
-                        pill.className = 'device-status-pill pill-offline'; pill.innerText = 'Offline';
-                    }
+                    // Online — if card is in inactive list, trigger full re-render to move to online grid
+                    if (card && card.classList.contains('inactive-node-row')) { renderDeviceInventoryTable(); return; }
                 }
             }
         }
-        // Dashboard status bar when monitoring
+
+        // Dashboard status bar
         if (activeStreamTopic === dev.topic) {
             const mText = document.getElementById('status_text');
             const mDot  = document.getElementById('status_dot');
@@ -1042,7 +1126,10 @@ function initializeBackgroundDeviceScanner(topicStr) {
 // Refresh a single card's telemetry/indicator content in-place without rebuilding whole grid
 function refreshSingleCard(topicStr, d) {
     const card = document.getElementById(`card_${btoa(topicStr)}`);
-    if (!card) { renderDeviceInventoryTable(); return; }
+    // No card at all, or card is an inactive-node-row (just came online) → full re-render
+    if (!card || card.classList.contains('inactive-node-row')) { renderDeviceInventoryTable(); return; }
+    // data-cid cells not present yet → rebuild
+    if (!card.querySelector('[data-cid="mode"]')) { renderDeviceInventoryTable(); return; }
 
     const modeStr  = (["Standby","Cool","Heat","FAN","Dry"])[d[1]] || `M${d[1]}`;
     const realFreq = d[2];
@@ -1052,7 +1139,6 @@ function refreshSingleCard(topicStr, d) {
     const acVol    = d[14]*2;
     const acCur    = (d[15]/10).toFixed(1);
     const iduFan   = d[32]*10;
-
     let iduFaultTxt='';
     if      (d[45]&0x01) iduFaultTxt='Fan fault';
     else if (d[45]&0x02) iduFaultTxt='Te fault';
@@ -1061,51 +1147,39 @@ function refreshSingleCard(topicStr, d) {
     else if (d[45]&0x10) iduFaultTxt='WiFi fault';
     else if (d[45])      iduFaultTxt='IDU fault';
 
-    // Update tele cells by id if they exist, otherwise rebuild card
     function setCell(id, val) {
-        const el=card.querySelector(`[data-cid="${id}"]`);
-        if (el) el.innerText=val;
+        const el = card.querySelector(`[data-cid="${id}"]`);
+        if (el) el.innerText = val;
     }
+    setCell('mode',   modeStr);
+    setCell('freq',   realFreq+'Hz');
+    setCell('tr',     tr+'°C');
+    setCell('ts',     ts_v+'°C');
+    setCell('tc',     tc+'°C');
+    setCell('acvol',  acVol+'V');
+    setCell('accur',  acCur+'A');
+    setCell('idufan', iduFan+'r');
 
-    // If tele cells don't have data-cid yet (first live packet), rebuild card
-    if (!card.querySelector('[data-cid="mode"]')) {
-        renderDeviceInventoryTable();
-        return;
-    }
-    setCell('mode',    modeStr);
-    setCell('freq',    realFreq+'Hz');
-    setCell('tr',      tr+'°C');
-    setCell('ts',      ts_v+'°C');
-    setCell('tc',      tc+'°C');
-    setCell('acvol',   acVol+'V');
-    setCell('accur',   acCur+'A');
-    setCell('idufan',  iduFan+'r');
-
-    // Fault row
     const faultRow = card.querySelector('[data-fault-row]');
     if (faultRow) faultRow.innerHTML = iduFaultTxt ? `⚠ ${iduFaultTxt}` : '';
 
-    // Mini dots
     const inds=[
-        {key:'comp',   on:!!(d[17]&0x80)}, {key:'defrost',on:!!(d[17]&0x04)},
-        {key:'fw4',    on:!!(d[17]&0x08)}, {key:'outfan', on:!!(d[17]&0x20)},
-        {key:'preheat',on:!!(d[17]&0x01)}, {key:'retoil', on:!!(d[17]&0x40)},
-        {key:'test',   on:!!(d[17]&0x02)}, {key:'collectf',on:!!(d[17]&0x10)},
-        {key:'fault',  on:!!(d[39]),       cls:'on-red'},
-        {key:'oduflt', on:!!(d[5]),        cls:'on-red'},
-        {key:'protect',on:!!(d[40]||d[6]), cls:'on-red'},
-        {key:'limfreq',on:!!(d[7]),        cls:'on-orange'},
-        {key:'dwnfreq',on:!!(d[27]),       cls:'on-orange'},
-        {key:'pfc',    on:!!(d[26]&0x10),  cls:'on-orange'},
-        {key:'eco',    on:!!(d[26]&0x08),  cls:'on-orange'},
-        {key:'iduflt', on:!!(d[26]&0x02),  cls:'on-red'},
+        {key:'comp',    on:!!(d[17]&0x80)}, {key:'defrost', on:!!(d[17]&0x04)},
+        {key:'fw4',     on:!!(d[17]&0x08)}, {key:'outfan',  on:!!(d[17]&0x20)},
+        {key:'preheat', on:!!(d[17]&0x01)}, {key:'retoil',  on:!!(d[17]&0x40)},
+        {key:'test',    on:!!(d[17]&0x02)}, {key:'collectf',on:!!(d[17]&0x10)},
+        {key:'fault',   on:!!(d[39]),       cls:'on-red'},
+        {key:'oduflt',  on:!!(d[5]),        cls:'on-red'},
+        {key:'protect', on:!!(d[40]||d[6]), cls:'on-red'},
+        {key:'limfreq', on:!!(d[7]),        cls:'on-orange'},
+        {key:'dwnfreq', on:!!(d[27]),       cls:'on-orange'},
+        {key:'pfc',     on:!!(d[26]&0x10),  cls:'on-orange'},
+        {key:'eco',     on:!!(d[26]&0x08),  cls:'on-orange'},
+        {key:'iduflt',  on:!!(d[26]&0x02),  cls:'on-red'},
     ];
     inds.forEach(ind => {
         const dot = card.querySelector(`[data-dot="${ind.key}"]`);
-        if (dot) {
-            const activeClass = ind.cls || 'on-green';
-            dot.className = 'mini-ind-dot' + (ind.on ? ' '+activeClass : '');
-        }
+        if (dot) dot.className = 'mini-ind-dot' + (ind.on ? ' '+(ind.cls||'on-green') : '');
     });
 }
 
