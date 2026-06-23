@@ -378,7 +378,10 @@
         .status-beacon-dot { width: 6px; height: 6px; background-color: #FF0000; border-radius: 50%; display: inline-block; margin-right: 4px; }
         .status-beacon-dot.connected { background-color: #00FF00; box-shadow: 0 0 4px #00FF00; }
         .sidebar-indicator-layout { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
-        .checkbox-row-item { display: flex; align-items: center; gap: 6px; font-size: 11px; height: 16px; }
+        .checkbox-row-item { display: flex; align-items: flex-start; gap: 6px; font-size: 11px; min-height: 16px; flex-wrap: wrap; }
+        .checkbox-row-item > .indicator-square-box { margin-top: 2px; flex-shrink: 0; }
+        .checkbox-row-item > span:not([id]) { flex-shrink: 0; white-space: nowrap; }
+        .checkbox-row-item > span[id] { color: #FF0000; font-weight: bold; font-size: 10px; white-space: normal; word-break: break-word; line-height: 1.3; flex: 1 1 100%; padding-left: 16px; margin-top: 1px; }
         .indicator-square-box { width: 10px; height: 10px; border: 1px solid #808080; background-color: #FFFFFF; flex-shrink: 0; }
         .indicator-square-box.active-green  { background-color: #00FF00 !important; }
         .indicator-square-box.active-orange { background-color: #FF9900 !important; }
@@ -411,21 +414,7 @@
             overflow-wrap: break-word !important;
         }
 
-        /* Sidebar fault text spans: wrap instead of overflow */
-        .checkbox-row-item {
-            height: auto !important;
-            min-height: 16px;
-            flex-wrap: wrap;
-            align-items: flex-start;
-        }
-        .checkbox-row-item > span[id^="txt_"] {
-            white-space: normal !important;
-            word-break: break-word !important;
-            font-size: 10px;
-            line-height: 1.3;
-            flex: 1 1 100%;   /* force fault text onto its own line */
-            padding-left: 16px; /* indent under the square */
-        }
+
 
         /* ====================================================================
            RESPONSIVE — TABLET ≤ 768px
@@ -661,9 +650,9 @@
 
 <div class="monitor-workspace-split">
     <div class="left-telemetry-column">
-        <div class="group-box-frame" style="height:115px; overflow:hidden; margin-bottom:6px;">
+        <div class="group-box-frame" style="margin-bottom:6px; padding-bottom:4px;">
             <div class="group-box-title">Event</div>
-            <div id="event_log_stream" style="height:105px; overflow-y:auto; font-family:'Tahoma',Arial,sans-serif; font-size:11px; white-space:pre-wrap; padding-left:2px; color:#000000; line-height:1.3;"></div>
+            <div id="event_log_stream" style="height:110px; overflow-y:auto; font-family:'Tahoma',Arial,sans-serif; font-size:11px; white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; padding-left:2px; color:#000000; line-height:1.4;"></div>
         </div>
         <div class="group-box-frame" style="margin-bottom:6px; padding-bottom:8px;">
             <div class="group-box-title">Version Message</div>
