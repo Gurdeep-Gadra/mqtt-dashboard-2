@@ -17,7 +17,7 @@
         }
 
         /* ====================================================================
-            LOGIN OVERLAY
+           MODERN LOGIN OVERLAY
         ==================================================================== */
         .login-overlay {
             position: fixed;
@@ -401,10 +401,35 @@
         .brand-sub-date { font-family: 'Tahoma', Arial, sans-serif; font-size: 11px; color: #000000; margin-top: 2px; }
 
         /* ====================================================================
-           RESPONSIVE — MOBILE & TABLET
+           DESKTOP FIX — event log & sidebar text overflow (all screen sizes)
         ==================================================================== */
 
-        /* Tablet: ≤ 768px */
+        /* Event log: allow text to wrap, never clip mid-word */
+        #event_log_stream {
+            white-space: pre-wrap !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+        }
+
+        /* Sidebar fault text spans: wrap instead of overflow */
+        .checkbox-row-item {
+            height: auto !important;
+            min-height: 16px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+        .checkbox-row-item > span[id^="txt_"] {
+            white-space: normal !important;
+            word-break: break-word !important;
+            font-size: 10px;
+            line-height: 1.3;
+            flex: 1 1 100%;   /* force fault text onto its own line */
+            padding-left: 16px; /* indent under the square */
+        }
+
+        /* ====================================================================
+           RESPONSIVE — TABLET ≤ 768px
+        ==================================================================== */
         @media (max-width: 768px) {
 
             body { padding: 4px; }
@@ -424,15 +449,13 @@
             .broker-config-row {
                 grid-template-columns: 1fr 1fr;
             }
-            .broker-config-row > :nth-child(1) { grid-column: 1 / -1; } /* host full width */
+            .broker-config-row > :nth-child(1) { grid-column: 1 / -1; }
             .broker-apply-btn { grid-column: 1 / -1; width: 100%; }
 
-            .add-device-row {
-                grid-template-columns: 1fr;
-            }
+            .add-device-row { grid-template-columns: 1fr; }
             .add-device-btn { width: 100%; }
 
-            /* Login split: stack online cards above, inactive list below */
+            /* Stack online cards above inactive list */
             .login-overlay > div[style*="display:flex"][style*="gap:14px"] {
                 flex-direction: column !important;
             }
@@ -440,42 +463,41 @@
                 width: 100% !important;
             }
 
-            .device-grid {
-                grid-template-columns: 1fr;
-            }
+            .device-grid { grid-template-columns: 1fr; }
 
-            /* --- DASHBOARD --- 
-            .monitor-workspace-split {
-                flex-direction: column;
-            }
-            .right-sidebar-column {
-                width: 100% !important;
-            }*/
+            /* --- DASHBOARD --- */
+            .monitor-workspace-split { flex-direction: column; }
+            .right-sidebar-column { width: 100% !important; }
 
-            /* 4-col telemetry → 2-col 
-            .telemetry-row-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }*/
-
-            /* Freq grid: 13 cols → 7 cols (still readable) 
-            .freq-strip-13-column-grid {
-                grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
-            }*/
-
-            /* Log panels: side-by-side → stacked 
-            .logger-panel-split {
-                grid-template-columns: 1fr !important;
-            }*/
-
-            /* Sidebar indicator layout: single column 
+            /* Sidebar indicator grid: 3 cols when full width */
             .sidebar-indicator-layout > div[style*="grid-template-columns: 1fr 1fr"] {
                 grid-template-columns: repeat(3, 1fr) !important;
-            }*/
+            }
+
+            /* 4-col telemetry → 2-col */
+            .telemetry-row-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            /* Freq: 13 strict cols — prevent wrapping by using overflow scroll */
+            .freq-strip-container-row {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .freq-strip-13-column-grid {
+                grid-template-columns: repeat(13, minmax(26px, 1fr)) !important;
+                min-width: 340px; /* ensures all 13 cols are reachable via scroll */
+            }
+
+            /* Log panels → stacked */
+            .logger-panel-split { grid-template-columns: 1fr !important; }
 
             pre { height: 80px; }
         }
 
-        /* Phone: ≤ 480px */
+        /* ====================================================================
+           RESPONSIVE — PHONE ≤ 480px
+        ==================================================================== */
         @media (max-width: 480px) {
 
             .login-overlay { padding: 8px 6px; }
@@ -483,10 +505,8 @@
             .login-brand-text { font-size: 13px; }
             .login-brand-sub  { font-size: 9px; }
 
-            .broker-config-row {
-                grid-template-columns: 1fr;
-            }
-            /* all broker fields full width on small phone */
+            /* All broker fields single column */
+            .broker-config-row { grid-template-columns: 1fr; }
             .broker-config-row > * { grid-column: 1 / -1; }
 
             /* Device card telemetry: 2-col */
@@ -494,38 +514,52 @@
                 grid-template-columns: repeat(2, 1fr) !important;
             }
 
-            /* Freq grid → 7 tight columns 
+            /* Freq rows: scrollable, 13 cols kept intact */
+            .freq-strip-container-row {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
             .freq-strip-13-column-grid {
-                grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+                grid-template-columns: repeat(13, minmax(22px, 1fr)) !important;
+                min-width: 300px;
                 gap: 2px !important;
             }
             .freq-grid-data-textbox,
             .freq-grid-label-text { font-size: 9px !important; }
+            .freq-strip-heading-label { width: 40px; font-size: 9px; flex-shrink: 0; }
 
-            .freq-strip-heading-label { width: 44px; font-size: 9px; }*/
+            /* Telemetry fields */
+            .param-label { min-width: 44px !important; font-size: 10px; }
+            .param-value-input { font-size: 10px; }
 
-            /* Telemetry labels smaller 
-            .param-label { min-width: 48px !important; font-size: 10px; }
-            .param-value-input { font-size: 10px; }*/
+            /* Sidebar indicators: ALWAYS show label text (overrides old hide rule) */
+            .checkbox-row-item span { display: inline !important; }
+            .checkbox-row-item > span[id^="txt_"] {
+                font-size: 9px;
+                padding-left: 14px;
+            }
 
-            /* Sidebar indicators: 3-per-row 
-            .checkbox-row-item span:last-child { display: none; }//  hide long fault text on tiny screens 
+            /* Checkbox 2-col grids → single col on tiny phones */
+            .sidebar-indicator-layout > div[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
 
             pre { height: 60px; font-size: 9px; }
 
             .broker-config-card,
-            .add-device-card { padding: 10px 10px; }
+            .add-device-card { padding: 10px; }
 
-            .broker-field-input { font-size: 12px; padding: 8px 10px; }  //bigger tap target 
+            /* Bigger tap targets on inputs/buttons */
+            .broker-field-input { font-size: 12px; padding: 8px 10px; }
             .add-device-btn,
-            .broker-apply-btn  { padding: 10px 16px; font-size: 12px; }*/
+            .broker-apply-btn  { padding: 10px 16px; font-size: 12px; }
 
             /* Status bar wraps */
-            .broker-status-strip {
-                flex-wrap: wrap;
-                gap: 4px;
-            }
+            .broker-status-strip { flex-wrap: wrap; gap: 4px; }
             #live_clock { font-size: 10px; }
+
+            /* Event log: slightly taller on phone so content is readable */
+            #event_log_stream { height: 90px !important; }
         }
     </style>
 </head>
