@@ -169,6 +169,10 @@
             </div>
         </div>
         <div class="login-topbar-right">
+            <span id="login_rec_count" style="display:none; font-size:11px; color:#FF4444; font-weight:bold; font-family:monospace;"></span>
+            <button id="login_btn_record"
+                style="background:#004d00; border:1px solid #006600; border-radius:5px; color:#fff; font-size:11px; font-weight:bold; padding:5px 16px; cursor:pointer; letter-spacing:1px;"
+                onclick="toggleRecording()">⏺ Start Recording</button>
             <span id="login_clock" style="font-size:13px; color:#a0c4e0; font-family:monospace; letter-spacing:1px;">--:--:-- --</span>
         </div>
     </div>
@@ -193,30 +197,30 @@
     </div>
 
     <div class="add-device-card">
-        <div class="broker-config-card-title">Register New Node</div>
+        <div class="broker-config-card-title">Register New AC</div>
         <div class="add-device-row">
             <div class="broker-field-group">
-                <div class="broker-field-label">Node Label</div>
+                <div class="broker-field-label">AC Label</div>
                 <input type="text" id="add_dev_name" class="broker-field-input" placeholder="e.g. LAB_1_COMP">
             </div>
             <div class="broker-field-group">
                 <div class="broker-field-label">MQTT Topic</div>
                 <input type="text" id="add_dev_topic" class="broker-field-input" placeholder="e.g. TTW/LAB1">
             </div>
-            <button class="add-device-btn" onclick="commitDeviceToDatabase()">+ Add Node</button>
+            <button class="add-device-btn" onclick="commitDeviceToDatabase()">+ Add AC</button>
         </div>
     </div>
 
     <div style="width:100%; max-width:1100px; display:flex; gap:14px; align-items:flex-start;">
         <div style="flex:1; min-width:0;">
-            <div class="device-grid-title">Online Nodes — Click to Open Live Monitor</div>
+            <div class="device-grid-title">Online ACs — Click to Open Live Monitor</div>
             <div class="device-grid" id="device_grid_online"></div>
-            <div id="device_grid_empty" style="display:none; color:#3a6070; font-size:12px; text-align:center; padding:30px 0; font-style:italic;">No online nodes detected yet…</div>
+            <div id="device_grid_empty" style="display:none; color:#3a6070; font-size:12px; text-align:center; padding:30px 0; font-style:italic;">No online ACs detected yet…</div>
         </div>
         <div style="width:240px; flex-shrink:0;">
-            <div class="device-grid-title" style="max-width:none;">Other Nodes</div>
+            <div class="device-grid-title" style="max-width:none;">Other ACs</div>
             <div id="device_list_inactive" style="display:flex; flex-direction:column; gap:6px;"></div>
-            <div id="device_list_empty" style="display:none; color:#3a6070; font-size:11px; font-style:italic; padding:10px 4px;">All nodes are online</div>
+            <div id="device_list_empty" style="display:none; color:#3a6070; font-size:11px; font-style:italic; padding:10px 4px;">All ACs are online</div>
         </div>
     </div>
 </div>
@@ -225,7 +229,7 @@
 <div id="status_bar" class="broker-status-strip">
     <div>
         <div id="status_dot" class="status-beacon-dot"></div>
-        <span id="status_text">Pipeline Idle: Please choose an active node path from your Asset Dashboard...</span>
+        <span id="status_text">Pipeline Idle: Please choose an active AC from your Asset Dashboard...</span>
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
         <!-- ── RECORDING CONTROLS ── -->
@@ -421,6 +425,8 @@ let backgroundDiscoverySockets = {};
 let activeDevicesHeartbeats    = {};
 let prevIndicatorState         = {};
 let prevLabelText              = {};
+let topicStates    = {};   // per-topic previous state for event detection
+let topicEventLogs = {};   // per-topic accumulated event lines
 
 function resetStateTrackers() {
     prevIndicatorState = {};
@@ -441,7 +447,7 @@ function saveBrokerCredentialsToRegistry() {
     localStorage.setItem('MEGMEET_USER', cfg.user);
     localStorage.setItem('MEGMEET_PASS', cfg.pass);
     if (changed) {
-        appendEventLog("Broker config changed. Closing all sockets and reloading node list...");
+        appendEventLog("Broker config changed. Closing all sockets and reloading AC list...");
         Object.keys(backgroundDiscoverySockets).forEach(t => { try { backgroundDiscoverySockets[t].close(); } catch(e) {} });
         backgroundDiscoverySockets = {};
         activeDevicesHeartbeats    = {};
@@ -473,9 +479,9 @@ function commitDeviceToDatabase() {
     const nameEl  = document.getElementById('add_dev_name');
     const topicEl = document.getElementById('add_dev_topic');
     const name = nameEl.value.trim(), topic = topicEl.value.trim();
-    if (!name || !topic) { alert("Both Node Label and MQTT Topic are required."); return; }
+    if (!name || !topic) { alert("Both AC Label and MQTT Topic are required."); return; }
     const devices = fetchDevicesFromRegistry();
-    if (devices.find(d => d.topic === topic)) { alert("A node with that topic already exists."); return; }
+    if (devices.find(d => d.topic === topic)) { alert("An AC with that topic already exists."); return; }
     devices.push({ name, topic });
     saveDevicesToRegistry(devices);
     nameEl.value = ''; topicEl.value = '';
@@ -501,6 +507,15 @@ setInterval(() => {
     if (el1) el1.innerText=ts; if (el2) el2.innerText=ts;
     if (el3) el3.innerText=now.toLocaleString();
     evaluateAllDeviceHeartbeats();
+    // Update recording counters every second from clock
+    if (_recActive) {
+        const n = Math.max(0, _recRows.length - 1);
+        const txt = `⏺ ${n} rows`;
+        const c1 = document.getElementById('rec_count');
+        const c2 = document.getElementById('login_rec_count');
+        if (c1) c1.textContent = txt;
+        if (c2) c2.textContent = txt;
+    }
 }, 1000);
 
 // =============================================================================
@@ -571,7 +586,7 @@ function renderDeviceInventoryTable() {
     if(!og||!il) return;
     og.innerHTML=''; il.innerHTML='';
     const devices=fetchDevicesFromRegistry();
-    if(devices.length===0){if(eo){eo.style.display='block';eo.innerText='No nodes registered. Add one above.';}if(ei)ei.style.display='none';return;}
+    if(devices.length===0){if(eo){eo.style.display='block';eo.innerText='No ACs registered. Add one above.';}if(ei)ei.style.display='none';return;}
     let onlineCount=0,inactiveCount=0;
     devices.forEach((dev,idx)=>{
         const hb=activeDevicesHeartbeats[dev.topic],lastSeen=hb?hb.ts:null,lastData=hb?hb.data:null;
@@ -617,21 +632,31 @@ function launchDiagnosticMonitorScreen(topic) {
     document.getElementById('device_manager').style.display='none';
     const mText=document.getElementById('status_text');
     if(mText)mText.innerText=`Selected Stream: Checking link for [${topic}]…`;
-    appendEventLog(`Stream focus switched to [${topic}].`);
-    // Show recording button
+    // Load this topic's accumulated background event log
+    if (topicEventLogs[topic] && topicEventLogs[topic].length > 0) {
+        ['event_log_stream','event_log_stream_terminal'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.innerText = topicEventLogs[topic].join('\n') + '\n'; el.scrollTop = el.scrollHeight; }
+        });
+    } else {
+        appendEventLog(`Stream focus switched to [${topic}].`);
+    }
+    // Show recording button in dashboard and sync to current recording state
     document.getElementById('btn_record').style.display='inline-block';
+    _syncRecUI();
     renderDeviceInventoryTable();
 }
 function returnToInventoryDashboard() {
-    // Auto-stop and save if recording when leaving dashboard
-    if(_recActive) toggleRecording();
-    document.getElementById('btn_record').style.display='none';
-    document.getElementById('rec_count').style.display='none';
+    // Web: auto-download the current topic's event log as .txt when leaving dashboard
+    if (!window.electronAPI && activeStreamTopic && topicEventLogs[activeStreamTopic]?.length > 0) {
+        downloadTopicEventLog(activeStreamTopic);
+    }
+    // Recording keeps running in background when returning to login screen
     activeStreamTopic=null;
     document.getElementById('device_manager').style.display='flex';
     const d=document.getElementById('status_dot'),t=document.getElementById('status_text');
     if(d)d.className='status-beacon-dot';
-    if(t)t.innerText="Pipeline Idle: Please choose an active node from Asset Dashboard…";
+    if(t)t.innerText="Pipeline Idle: Please choose an active AC from Asset Dashboard…";
     renderDeviceInventoryTable();
 }
 
@@ -679,6 +704,10 @@ function initializeBackgroundDeviceScanner(topicStr){
             const raw=payload.subarray(idx);
             if(raw.length>=70&&raw[raw.length-1]===0xAA){
                 activeDevicesHeartbeats[topicStr]={ts:Date.now(),data:raw.slice()};
+                // ── Record ALL topics from background — single CSV, all nodes ──
+                _recWriteRow(raw, topicStr);
+                // ── Generate per-topic event logs in background ──
+                processTopicEvents(topicStr, raw);
                 if(document.getElementById('device_manager').style.display!=='none')refreshSingleCard(topicStr,raw);
                 if(activeStreamTopic===topicStr){
                     const st=document.getElementById('status_text'),sd=document.getElementById('status_dot');
@@ -726,17 +755,10 @@ function setIndicator(chkId,spanId,rawState,cssClass,groupName,detailText){
     const isNow=!!rawState;
     if(chkEl)chkEl.className=isNow?`indicator-square-box ${cssClass}`:'indicator-square-box';
     if(spanEl)spanEl.innerText=detailText;
-    const prevState=prevIndicatorState[chkId],prevText=prevLabelText[chkId];
-    if(prevState!==null&&prevState!==undefined){
-        if(isNow!==prevState)appendEventLog(isNow?(detailText?`[${groupName}] ON >> ${detailText}`:`[${groupName}] ON`):`[${groupName}] OFF >> Cleared`);
-        else if(isNow&&detailText!==prevText)appendEventLog(`[${groupName}] CHANGED >> ${detailText}`);
-    }
     prevIndicatorState[chkId]=isNow; prevLabelText[chkId]=detailText;
 }
 function setDisplayField(elementId,newText,fieldName){
     const el=document.getElementById(elementId);if(!el)return;
-    const prev=prevLabelText[elementId];
-    if(prev!==null&&prev!==undefined&&prev!==newText)appendEventLog(newText&&newText!=='--'?`[${fieldName}] >> ${newText}`:`[${fieldName}] >> Cleared`);
     prevLabelText[elementId]=newText; el.innerText=newText;
 }
 
@@ -754,9 +776,7 @@ function parseMegmeetCorePacket(d){
     const CompTime=(d[42]<<8)|d[43];
     const fanLevelStr=(['Stop','Weak','Silence','Low','Medium','High','Force'])[d[18]]||`Level ${d[18]}`;
     const modeStr=(['Standby','Cool','Heat','FAN','Dry'])[d[1]]||`Mode ${d[1]}`;
-    const eventCode=d[31];
-    const eventTexts=["System Idle","Receive indoor instructions Standby","Mode change, Compressor stop","Indoor room temp reach to stop","AC Curr protect, Compressor stop","Indoor FAN motor fault, Compressor stop","Indoor Evaporator sensor fault","Indoor Room Sensor Fault","Stop reason8"];
-    if(eventCode!==lastRecordedEventCodeValue&&eventCode>0&&eventCode<eventTexts.length){appendEventLog(eventTexts[eventCode]);lastRecordedEventCodeValue=eventCode;}
+    // Event code and state-change events now generated by processTopicEvents() in background scanner
 
     const $=id=>document.getElementById(id);
     $('val_softver').innerText=`${d[28]}.${d[29]}.0`; $('val_softdata').innerText=`20${d[33]}-${d[34]}-${d[35]}`;
@@ -824,13 +844,132 @@ function parseMegmeetCorePacket(d){
     const hexStr=Array.from(d).map(b=>b.toString(16).toUpperCase().padStart(2,'0')).join(' ');
     const asciiStr=Array.from(d).map(b=>(b>=32&&b<=126)?String.fromCharCode(b):'.').join('');
     appendLine(`[${new Date().toLocaleTimeString()}]\nComp: ${CompTime}\nHEX : ${hexStr}\nASC : ${asciiStr}\n---------------------------------------`);
-
-    // ── AMBER CSV RECORDING ──────────────────────────────────────────────────
-    _recWriteRow(d, activeStreamTopic);
 }
 
+
 // =============================================================================
-// AMBER CSV RECORDING ENGINE
+// PER-TOPIC BACKGROUND EVENT ENGINE
+// Runs for every topic in the background scanner — no need to open dashboard.
+// =============================================================================
+const _EVENT_TEXTS = [
+    "System Idle","Receive indoor instructions Standby","Mode change, Compressor stop",
+    "Indoor room temp reach to stop","AC Curr protect, Compressor stop",
+    "Indoor FAN motor fault, Compressor stop","Indoor Evaporator sensor fault",
+    "Indoor Room Sensor Fault","Stop reason8"
+];
+
+function _extractState(d) {
+    let iduFault='';
+    if(d[45]&0x01)iduFault='Fan fault'; else if(d[45]&0x02)iduFault='Te fault';
+    else if(d[45]&0x04)iduFault='Tr fault'; else if(d[45]&0x08)iduFault='NoFo fault';
+    else if(d[45]&0x10)iduFault='WiFi fault'; else if(d[45])iduFault='IDU fault';
+    let drvFault='';
+    if(d[16]&0x02)drvFault='Over Current'; else if(d[16]&0x04)drvFault='Over Voltage';
+    else if(d[16]&0x08)drvFault='Step Out'; else if(d[16]&0x10)drvFault='Reverse';
+    const modes=['Standby','Cool','Heat','FAN','Dry'];
+    return {
+        eventCode: d[31],
+        comp:!!(d[17]&0x80), defrost:!!(d[17]&0x04), way4:!!(d[17]&0x08),
+        retOil:!!(d[17]&0x40), outFan:!!(d[17]&0x20), test:!!(d[17]&0x02),
+        preheat:!!(d[17]&0x01), collectF:!!(d[17]&0x10),
+        pfc:!!(d[26]&0x10), eco:!!(d[26]&0x08), everOff:!!(d[26]&0x01),
+        iduFaultFlag:!!(d[26]&0x02), faultByte:d[39],
+        iduFault, drvFault,
+        oduFault: _bits(d[5],[[0x02,'Ta sensor'],[0x04,'Tc sensor'],[0x08,'Td sensor'],
+            [0x10,'Communication'],[0x20,'Out Fan'],[0x40,'Compressor'],[0x80,'IPM']]),
+        protect: [
+            _bits(d[40],[[0x01,'DC Volt Stop'],[0x02,'DC Current Stop'],[0x04,'Tc freeze'],
+                [0x08,'Te overload'],[0x10,'IPM overtemp'],[0x20,'IPM permanent'],[0x40,'Start Fail Preheat']]),
+            _bits(d[6],[[0x01,'Tr Protect'],[0x02,'Tc Protect'],[0x04,'Te Protect'],[0x08,'Ta Protect'],
+                [0x10,'AC Current'],[0x20,'AC Voltage'],[0x40,'Comp perm stop'],[0x80,'Td Protect']])
+        ].filter(Boolean).join(', '),
+        limitFreq: _bits(d[7],[[0x01,'DC Current Limit'],[0x02,'IPM Limit'],[0x04,'Tc Limit'],
+            [0x08,'Te Limit'],[0x10,'Ta Limit'],[0x20,'AC Voltage Limit'],[0x40,'AC Current Limit'],[0x80,'Td Limit']]),
+        downFreq: _bits(d[27],[[0x01,'Condenser temp'],[0x02,'Evaporator temp'],
+            [0x04,'Comp discharge temp'],[0x08,'AC current'],[0x10,'Comp phase current'],[0x20,'IPM temperature']]),
+        compState: d[41]===1?'On':'Off',
+        mode: modes[d[1]]||`Mode${d[1]}`,
+        ta: ((d[10]/2)-30).toFixed(0), targetFreq: d[4],
+    };
+}
+
+function processTopicEvents(topic, d) {
+    const cur = _extractState(d);
+    if (!topicEventLogs[topic]) topicEventLogs[topic] = [];
+
+    // First packet for this topic — seed state, no events yet
+    if (!topicStates[topic]) { topicStates[topic] = cur; return; }
+
+    const prev = topicStates[topic];
+    const ts   = new Date().toLocaleTimeString();
+    const evts = [];
+
+    // Event code (byte 31)
+    if (cur.eventCode !== prev.eventCode && cur.eventCode > 0 && cur.eventCode < _EVENT_TEXTS.length)
+        evts.push(`${ts} >> ${_EVENT_TEXTS[cur.eventCode]}`);
+
+    // Boolean flags
+    for (const [key,name] of [['comp','Comp'],['defrost','Defrost'],['way4','4Way'],
+        ['retOil','Ret Oil'],['outFan','Out Fan'],['test','Test'],['preheat','Preheat'],
+        ['collectF','Collect F'],['pfc','PFC'],['eco','ECO'],['everOff','Ever Off'],
+        ['iduFaultFlag','IDU Fault (sys)']]) {
+        if (cur[key] !== prev[key])
+            evts.push(`${ts} >> [${name}] ${cur[key] ? 'ON' : 'OFF >> Cleared'}`);
+    }
+
+    // Fault byte (byte 39)
+    if ((cur.faultByte!==0) !== (prev.faultByte!==0))
+        evts.push(`${ts} >> [Fault] ${cur.faultByte!==0 ? 'ON' : 'OFF >> Cleared'}`);
+
+    // Text fields
+    for (const [key,name] of [['iduFault','IDU Fault'],['oduFault','ODU Fault'],
+        ['drvFault','Drv Fault'],['protect','Protect']]) {
+        if (cur[key] !== prev[key])
+            evts.push(cur[key] ? `${ts} >> [${name}] >> ${cur[key]}` : `${ts} >> [${name}] OFF >> Cleared`);
+    }
+
+    // LimitFreq with detail
+    if (cur.limitFreq !== prev.limitFreq)
+        evts.push(cur.limitFreq
+            ? `${ts} >> [LimitFreq] ON >> ${cur.limitFreq}/Ta ${cur.ta}C/Limit F${cur.targetFreq} Run`
+            : `${ts} >> [LimitFreq] OFF >> Cleared`);
+
+    // DownFreq
+    if (cur.downFreq !== prev.downFreq)
+        evts.push(cur.downFreq ? `${ts} >> [DownFreq] ON >> ${cur.downFreq}` : `${ts} >> [DownFreq] OFF >> Cleared`);
+
+    // Comp state & mode
+    if (cur.compState !== prev.compState && prev.compState !== '')
+        evts.push(`${ts} >> [Comp State] ${cur.compState}`);
+    if (cur.mode !== prev.mode && prev.mode !== '')
+        evts.push(`${ts} >> [Mode] ${prev.mode} >> ${cur.mode}`);
+
+    topicStates[topic] = cur;
+
+    if (evts.length === 0) return;
+
+    // Store (keep last 500 per topic)
+    topicEventLogs[topic].push(...evts);
+    if (topicEventLogs[topic].length > 500) topicEventLogs[topic] = topicEventLogs[topic].slice(-500);
+    // Auto-save to localStorage (web) or disk file (Electron)
+    _saveEventLines(topic, evts);
+
+    // If this topic's dashboard is currently open, append to live display
+    if (activeStreamTopic === topic) evts.forEach(e => _appendToEventDisplay(e));
+}
+
+// Append a pre-formatted event line to the event display (no extra timestamp)
+function _appendToEventDisplay(line) {
+    ['event_log_stream','event_log_stream_terminal'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.innerText += line + '\n'; el.scrollTop = el.scrollHeight; }
+    });
+}
+// =============================================================================
+// END PER-TOPIC BACKGROUND EVENT ENGINE
+// =============================================================================
+// =============================================================================
+// AMBER CSV RECORDING ENGINE  — all topics → single file
 // =============================================================================
 const CSV_HEADERS = [
     "YearMonth","Day","Time","Topic","Mode","Fan_Level","Real_Hz","Target_Hz","Set_Hz",
@@ -851,11 +990,31 @@ let _recDate   = '';
 
 function _bits(byte, pairs){ return pairs.filter(([m])=>byte&m).map(([,n])=>n).join(', '); }
 
+// Syncs BOTH the login-screen button and the dashboard button to current state
+function _syncRecUI() {
+    const isRec = _recActive;
+    // Login screen
+    const lb = document.getElementById('login_btn_record');
+    const lc = document.getElementById('login_rec_count');
+    if (lb) { lb.textContent = isRec ? '⏹ Stop & Save' : '⏺ Start Recording';
+               lb.style.background = isRec ? '#8b1a1a' : '#004d00';
+               lb.style.borderColor= isRec ? '#aa0000' : '#006600'; }
+    if (lc) lc.style.display = isRec ? 'inline' : 'none';
+    // Dashboard status bar
+    const db = document.getElementById('btn_record');
+    const dc = document.getElementById('rec_count');
+    if (db) { db.textContent = isRec ? '⏹ Stop & Save' : '⏺ Start Recording';
+               db.style.backgroundColor = isRec ? '#8b1a1a' : '#004d00';
+               db.style.borderColor     = isRec ? '#aa0000' : '#006600'; }
+    if (dc) dc.style.display = isRec ? 'inline' : 'none';
+}
+
+// Called from background scanner for EVERY topic — this is the recording heart
 function _recWriteRow(d, topic) {
     if (!_recActive || !topic) return;
-    const now  = new Date();
+    const now   = new Date();
     const today = now.toLocaleDateString('en-CA').replace(/-/g,'');
-    // Daily rotation: auto-save and start fresh when date changes
+    // Daily rotation: auto-download current file and start fresh
     if (_recDate && today !== _recDate) {
         _downloadCsv();
         _recRows = [CSV_HEADERS];
@@ -893,33 +1052,23 @@ function _recWriteRow(d, topic) {
         ...Array.from({length:13},(_,i)=>d[47+i]||0),
         ...Array.from({length:13},(_,i)=>d[60+i]||0),
     ]);
-
-    // Update counter in status bar
-    const cnt = document.getElementById('rec_count');
-    if (cnt) cnt.textContent = `⏺ ${_recRows.length - 1} rows`;
 }
 
 function toggleRecording() {
-    const btn = document.getElementById('btn_record');
-    const cnt = document.getElementById('rec_count');
     if (!_recActive) {
+        // START
         _recRows  = [CSV_HEADERS];
         _recDate  = new Date().toLocaleDateString('en-CA').replace(/-/g,'');
         _recActive = true;
-        btn.textContent = '⏹ Stop & Save';
-        btn.style.backgroundColor = '#8b1a1a';
-        btn.style.borderColor     = '#aa0000';
-        if (cnt) { cnt.textContent = '⏺ 0 rows'; cnt.style.display = 'inline'; }
-        appendEventLog('CSV recording started.');
+        _syncRecUI();
+        appendEventLog('CSV recording started — all online nodes captured in single file.');
     } else {
+        // STOP
         _recActive = false;
         const saved = _recRows.length - 1;
         _downloadCsv();
-        btn.textContent           = '⏺ Start Recording';
-        btn.style.backgroundColor = '#004d00';
-        btn.style.borderColor     = '#006600';
-        if (cnt) cnt.style.display = 'none';
-        appendEventLog(`CSV recording stopped — ${saved} rows downloaded.`);
+        _syncRecUI();
+        appendEventLog(`CSV recording stopped — ${saved} rows from ${new Set(_recRows.slice(1).map(r=>r[3])).size} AC(s) downloaded.`);
         _recRows = [];
     }
 }
@@ -945,10 +1094,95 @@ function _downloadCsv() {
 // =============================================================================
 // INIT
 // =============================================================================
+
+// =============================================================================
+// EVENT LOG PERSISTENCE  — localStorage (web) / disk file (Electron)
+// =============================================================================
+
+// Save new event lines for a topic
+// Track which topic+date files have been initialised this session
+const _evtFileInited = {};
+
+function _saveEventLines(topic, lines) {
+    if (!lines || lines.length === 0) return;
+    const safeT = topic.replace(/[\/\\:*?"<>|]/g, '_');
+    const date  = new Date().toLocaleDateString('en-CA').replace(/-/g,'');
+    const fname = `AMBER_Events_${safeT}_${date}.txt`;
+    if (window.electronAPI) {
+        // Electron: write directly to disk — same folder as CSV files
+        if (!_evtFileInited[fname]) {
+            _evtFileInited[fname] = true;
+            const header = `AMBER Event Log — ${topic}\r\nDate: ${new Date().toLocaleDateString()}\r\n${'='.repeat(60)}\r\n`;
+            window.electronAPI.appendEventLog(fname, header);
+        }
+        lines.forEach(l => window.electronAPI.appendEventLog(fname, l));
+    } else {
+        // Web: accumulate in localStorage (keeps last 1000 per topic)
+        try {
+            const key  = `AMBER_EVT_${topic}`;
+            const prev = JSON.parse(localStorage.getItem(key) || '[]');
+            const next = prev.concat(lines).slice(-1000);
+            localStorage.setItem(key, JSON.stringify(next));
+        } catch(e) {}
+    }
+}
+
+// Restore all topic event logs from localStorage on page load (web only)
+function _restoreEventLogsFromStorage() {
+    if (window.electronAPI) return;  // Electron reads from disk files directly
+    try {
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('AMBER_EVT_')) {
+                const topic = key.replace('AMBER_EVT_', '');
+                const lines = JSON.parse(localStorage.getItem(key) || '[]');
+                if (lines.length > 0 && !topicEventLogs[topic]) {
+                    topicEventLogs[topic] = lines;
+                }
+            }
+        }
+    } catch(e) {}
+}
+
+// Download a single topic's event log as a .txt file (web)
+function downloadTopicEventLog(topic) {
+    const lines = topicEventLogs[topic];
+    if (!lines || lines.length === 0) { alert('No events recorded for ' + topic); return; }
+    const ts      = new Date().toISOString().replace(/[-T:.Z]/g,'').slice(0,15);
+    const safeT   = topic.replace(/[^a-zA-Z0-9]/g,'_');
+    const header  = `AMBER Event Log — ${topic}\nExported: ${new Date().toLocaleString()}\n${'='.repeat(60)}\n\n`;
+    const content = header + lines.join('\n');
+    const a = Object.assign(document.createElement('a'), {
+        href: URL.createObjectURL(new Blob([content], {type:'text/plain'})),
+        download: `AMBER_Events_${safeT}_${ts}.txt`
+    });
+    a.click(); URL.revokeObjectURL(a.href);
+}
+
+// Download ALL topic event logs combined as one .txt file (web)
+function downloadAllEventLogs() {
+    const topics = Object.keys(topicEventLogs).filter(t => topicEventLogs[t]?.length > 0);
+    if (topics.length === 0) { alert('No events recorded yet.'); return; }
+    const ts   = new Date().toISOString().replace(/[-T:.Z]/g,'').slice(0,15);
+    let content = `AMBER Event Logs — All Topics\nExported: ${new Date().toLocaleString()}\n${'='.repeat(60)}\n\n`;
+    topics.forEach(t => {
+        content += `Topic: ${t}\n${'-'.repeat(40)}\n`;
+        content += (topicEventLogs[t] || []).join('\n') + '\n\n';
+    });
+    const a = Object.assign(document.createElement('a'), {
+        href: URL.createObjectURL(new Blob([content], {type:'text/plain'})),
+        download: `AMBER_Events_ALL_${ts}.txt`
+    });
+    a.click(); URL.revokeObjectURL(a.href);
+}
+// =============================================================================
+// END EVENT LOG PERSISTENCE
+// =============================================================================
 function initializeParallelDiscoveryNetwork() {
     document.getElementById('cfg_broker_host').value = cfg.host;
     document.getElementById('cfg_mqtt_user').value   = cfg.user;
     document.getElementById('cfg_mqtt_pass').value   = cfg.pass;
+    _restoreEventLogsFromStorage();   // restore persisted event logs
     appendEventLog("Asset register loaded. Provisioning sockets…");
     fetchDevicesFromRegistry().forEach(dev => initializeBackgroundDeviceScanner(dev.topic));
     renderDeviceInventoryTable();
