@@ -169,10 +169,6 @@
             </div>
         </div>
         <div class="login-topbar-right">
-            <span id="login_rec_count" style="display:none; font-size:11px; color:#FF4444; font-weight:bold; font-family:monospace;"></span>
-            <button id="login_btn_record"
-                style="background:#004d00; border:1px solid #006600; border-radius:5px; color:#fff; font-size:11px; font-weight:bold; padding:5px 16px; cursor:pointer; letter-spacing:1px;"
-                onclick="toggleRecording()">⏺ Start Recording</button>
             <span id="login_clock" style="font-size:13px; color:#a0c4e0; font-family:monospace; letter-spacing:1px;">--:--:-- --</span>
         </div>
     </div>
@@ -232,12 +228,6 @@
         <span id="status_text">Pipeline Idle: Please choose an active AC from your Asset Dashboard...</span>
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
-        <!-- ── RECORDING CONTROLS ── -->
-        <span id="rec_count" style="display:none; font-size:10px; color:#FF4444; font-weight:bold; font-family:monospace;"></span>
-        <button id="btn_record" class="win-classic-btn"
-            style="display:none; padding:1px 10px; font-size:10px; background-color:#004d00; color:#fff; border-color:#006600;"
-            onclick="toggleRecording()">⏺ Start Recording</button>
-        <!-- ── END RECORDING CONTROLS ── -->
         <button class="win-classic-btn" style="padding:1px 6px; font-size:10px;" onclick="returnToInventoryDashboard()">Asset Menu</button>
         <span id="live_clock">00:00:00 AM</span>
     </div>
@@ -507,15 +497,6 @@ setInterval(() => {
     if (el1) el1.innerText=ts; if (el2) el2.innerText=ts;
     if (el3) el3.innerText=now.toLocaleString();
     evaluateAllDeviceHeartbeats();
-    // Update recording counters every second from clock
-    if (_recActive) {
-        const n = Math.max(0, _recRows.length - 1);
-        const txt = `⏺ ${n} rows`;
-        const c1 = document.getElementById('rec_count');
-        const c2 = document.getElementById('login_rec_count');
-        if (c1) c1.textContent = txt;
-        if (c2) c2.textContent = txt;
-    }
 }, 1000);
 
 // =============================================================================
@@ -641,9 +622,6 @@ function launchDiagnosticMonitorScreen(topic) {
     } else {
         appendEventLog(`Stream focus switched to [${topic}].`);
     }
-    // Show recording button in dashboard and sync to current recording state
-    document.getElementById('btn_record').style.display='inline-block';
-    _syncRecUI();
     renderDeviceInventoryTable();
 }
 function returnToInventoryDashboard() {
@@ -704,8 +682,6 @@ function initializeBackgroundDeviceScanner(topicStr){
             const raw=payload.subarray(idx);
             if(raw.length>=70&&raw[raw.length-1]===0xAA){
                 activeDevicesHeartbeats[topicStr]={ts:Date.now(),data:raw.slice()};
-                // ── Record ALL topics from background — single CSV, all nodes ──
-                _recWriteRow(raw, topicStr);
                 // ── Generate per-topic event logs in background ──
                 processTopicEvents(topicStr, raw);
                 if(document.getElementById('device_manager').style.display!=='none')refreshSingleCard(topicStr,raw);
@@ -965,132 +941,6 @@ function _appendToEventDisplay(line) {
         if (el) { el.innerText += line + '\n'; el.scrollTop = el.scrollHeight; }
     });
 }
-// =============================================================================
-// END PER-TOPIC BACKGROUND EVENT ENGINE
-// =============================================================================
-// =============================================================================
-// AMBER CSV RECORDING ENGINE  — all topics → single file
-// =============================================================================
-const CSV_HEADERS = [
-    "YearMonth","Day","Time","Topic","Mode","Fan_Level","Real_Hz","Target_Hz","Set_Hz",
-    "Tr_C","Ts_C","Te_C","Tsu_C","Ta_C","Tc_C","Td_C",
-    "AC_Vol_V","AC_Cur_A","DC_Vol_V","DC_Cur_A",
-    "EEV_P","Tipm_C","FanIPM_C","ODU_Fan_RPM","IDU_Fan_RPM",
-    "Comp_State","Comp_Time_s","Soft_Ver","Soft_Date",
-    "IDU_Fault","Drv_Fault","ODU_Fault","Protect","LimitFreq","DownFreq",
-    "Comp","Defrost","4Way","RetOil","OutFan","Test","Preheat","CollectF",
-    "PFC","ECO","EverOff","IDU_Fault_Flag",
-    "CF1","CF2","CF3","CF4","CF5","CF6","CF7","CF8","CF9","CF10","CF11","CF12","CF13",
-    "HF1","HF2","HF3","HF4","HF5","HF6","HF7","HF8","HF9","HF10","HF11","HF12","HF13"
-];
-
-let _recRows   = [];
-let _recActive = false;
-let _recDate   = '';
-
-function _bits(byte, pairs){ return pairs.filter(([m])=>byte&m).map(([,n])=>n).join(', '); }
-
-// Syncs BOTH the login-screen button and the dashboard button to current state
-function _syncRecUI() {
-    const isRec = _recActive;
-    // Login screen
-    const lb = document.getElementById('login_btn_record');
-    const lc = document.getElementById('login_rec_count');
-    if (lb) { lb.textContent = isRec ? '⏹ Stop & Save' : '⏺ Start Recording';
-               lb.style.background = isRec ? '#8b1a1a' : '#004d00';
-               lb.style.borderColor= isRec ? '#aa0000' : '#006600'; }
-    if (lc) lc.style.display = isRec ? 'inline' : 'none';
-    // Dashboard status bar
-    const db = document.getElementById('btn_record');
-    const dc = document.getElementById('rec_count');
-    if (db) { db.textContent = isRec ? '⏹ Stop & Save' : '⏺ Start Recording';
-               db.style.backgroundColor = isRec ? '#8b1a1a' : '#004d00';
-               db.style.borderColor     = isRec ? '#aa0000' : '#006600'; }
-    if (dc) dc.style.display = isRec ? 'inline' : 'none';
-}
-
-// Called from background scanner for EVERY topic — this is the recording heart
-function _recWriteRow(d, topic) {
-    if (!_recActive || !topic) return;
-    const now   = new Date();
-    const today = now.toLocaleDateString('en-CA').replace(/-/g,'');
-    // Daily rotation: auto-download current file and start fresh
-    if (_recDate && today !== _recDate) {
-        _downloadCsv();
-        _recRows = [CSV_HEADERS];
-    }
-    _recDate = today;
-
-    const modes=['Standby','Cool','Heat','FAN','Dry'], fans=['Stop','Weak','Silence','Low','Medium','High','Force'];
-    const iduF = d[45]&0x01?'Fan fault':d[45]&0x02?'Te fault':d[45]&0x04?'Tr fault':d[45]&0x08?'NoFo fault':d[45]&0x10?'WiFi fault':(d[45]?'IDU fault':'');
-    const drvF = d[16]&0x02?'Over Current':d[16]&0x04?'Over Voltage':d[16]&0x08?'Step Out':d[16]&0x10?'Reverse':'';
-    const oduF = _bits(d[5],[[0x02,'Ta sensor'],[0x04,'Tc sensor'],[0x08,'Td sensor'],[0x10,'Communication'],[0x20,'Out Fan'],[0x40,'Compressor'],[0x80,'IPM']]);
-    const prot = [
-        _bits(d[40],[[0x01,'DC Volt Stop'],[0x02,'DC Current Stop'],[0x04,'Tc freeze'],[0x08,'Te overload'],[0x10,'IPM overtemp'],[0x20,'IPM permanent'],[0x40,'Start Fail Preheat']]),
-        _bits(d[6], [[0x01,'Tr Protect'],[0x02,'Tc Protect'],[0x04,'Te Protect'],[0x08,'Ta Protect'],[0x10,'AC Current'],[0x20,'AC Voltage'],[0x40,'Comp perm stop'],[0x80,'Td Protect']])
-    ].filter(Boolean).join(', ');
-    const limF = _bits(d[7], [[0x01,'DC Current Limit'],[0x02,'IPM Limit'],[0x04,'Tc Limit'],[0x08,'Te Limit'],[0x10,'Ta Limit'],[0x20,'AC Voltage Limit'],[0x40,'AC Current Limit'],[0x80,'Td Limit']]);
-    const dwnF = _bits(d[27],[[0x01,'Condenser temp'],[0x02,'Evaporator temp'],[0x04,'Comp discharge temp'],[0x08,'AC current'],[0x10,'Comp phase current'],[0x20,'IPM temperature']]);
-
-    _recRows.push([
-        now.toLocaleDateString('en-CA').slice(0,7),
-        String(now.getDate()).padStart(2,'0'),
-        now.toLocaleTimeString('en-GB'),
-        topic,
-        modes[d[1]]||`Mode${d[1]}`, fans[d[18]]||`Level${d[18]}`,
-        d[2], d[3], d[4],
-        ((d[9]/2)-30).toFixed(1), ((d[8]/2)-30).toFixed(1), ((d[12]/2)-30).toFixed(1),
-        ((d[30]/2)-30).toFixed(1), ((d[10]/2)-30).toFixed(1), ((d[13]/2)-30).toFixed(1), (d[11]-30).toFixed(0),
-        d[14]*2, (d[15]/10).toFixed(1), d[19]*2, (d[20]/10).toFixed(1),
-        d[24]*2, d[25], d[44], d[21]*10, d[32]*10,
-        d[41]===1?'On':'Off', (d[42]<<8)|d[43],
-        `${d[28]}.${d[29]}.0`, `20${String(d[33]).padStart(2,'0')}-${String(d[34]).padStart(2,'0')}-${String(d[35]).padStart(2,'0')}`,
-        iduF, drvF, oduF, prot, limF, dwnF,
-        (d[17]&0x80)?1:0, (d[17]&0x04)?1:0, (d[17]&0x08)?1:0, (d[17]&0x40)?1:0,
-        (d[17]&0x20)?1:0, (d[17]&0x02)?1:0, (d[17]&0x01)?1:0, (d[17]&0x10)?1:0,
-        (d[26]&0x10)?1:0, (d[26]&0x08)?1:0, (d[26]&0x01)?1:0, (d[26]&0x02)?1:0,
-        ...Array.from({length:13},(_,i)=>d[47+i]||0),
-        ...Array.from({length:13},(_,i)=>d[60+i]||0),
-    ]);
-}
-
-function toggleRecording() {
-    if (!_recActive) {
-        // START
-        _recRows  = [CSV_HEADERS];
-        _recDate  = new Date().toLocaleDateString('en-CA').replace(/-/g,'');
-        _recActive = true;
-        _syncRecUI();
-        appendEventLog('CSV recording started — all online nodes captured in single file.');
-    } else {
-        // STOP
-        _recActive = false;
-        const saved = _recRows.length - 1;
-        _downloadCsv();
-        _syncRecUI();
-        appendEventLog(`CSV recording stopped — ${saved} rows from ${new Set(_recRows.slice(1).map(r=>r[3])).size} AC(s) downloaded.`);
-        _recRows = [];
-    }
-}
-
-function _downloadCsv() {
-    if (_recRows.length <= 1) return;
-    const ts   = new Date().toISOString().replace(/[-T:.Z]/g,'').slice(0,15);
-    const name = `AMBER_${ts}.csv`;
-    const csv  = _recRows.map(r =>
-        r.map(v => (typeof v==='string' && (v.includes(',') || v.includes('"')))
-            ? `"${v.replace(/"/g,'""')}"` : v).join(',')
-    ).join('\r\n');
-    const a = Object.assign(document.createElement('a'), {
-        href: URL.createObjectURL(new Blob([csv], {type:'text/csv'})),
-        download: name
-    });
-    a.click(); URL.revokeObjectURL(a.href);
-}
-// =============================================================================
-// END CSV RECORDING ENGINE
-// =============================================================================
-
 // =============================================================================
 // INIT
 // =============================================================================
