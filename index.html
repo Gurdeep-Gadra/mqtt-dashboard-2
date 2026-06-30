@@ -228,6 +228,7 @@
         <span id="status_text">Pipeline Idle: Please choose an active AC from your Asset Dashboard...</span>
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
+        <button class="win-classic-btn" style="padding:1px 6px; font-size:10px;" onclick="exportCurrentTopicEvents()">📄 Export Events</button>
         <button class="win-classic-btn" style="padding:1px 6px; font-size:10px;" onclick="returnToInventoryDashboard()">Asset Menu</button>
         <span id="live_clock">00:00:00 AM</span>
     </div>
@@ -625,11 +626,10 @@ function launchDiagnosticMonitorScreen(topic) {
     renderDeviceInventoryTable();
 }
 function returnToInventoryDashboard() {
-    // Web: auto-download the current topic's event log as .txt when leaving dashboard
-    if (!window.electronAPI && activeStreamTopic && topicEventLogs[activeStreamTopic]?.length > 0) {
-        downloadTopicEventLog(activeStreamTopic);
-    }
-    // Recording keeps running in background when returning to login screen
+    // Navigate back to the Asset Dashboard. Background MQTT scanning and
+    // event-log capture continue running regardless of which screen is shown —
+    // no download or popup happens here. Use the "Export Events" button on the
+    // monitor screen if you want to save the current topic's event log.
     activeStreamTopic=null;
     document.getElementById('device_manager').style.display='flex';
     const d=document.getElementById('status_dot'),t=document.getElementById('status_text');
@@ -994,10 +994,24 @@ function _restoreEventLogsFromStorage() {
     } catch(e) {}
 }
 
+// Explicit user action — triggered by the "📄 Export Events" button on the
+// monitor screen. Non-blocking: uses the status bar instead of alert() so it
+// never freezes the UI thread or interrupts live data rendering.
+function exportCurrentTopicEvents() {
+    if (!activeStreamTopic) return;
+    const lines = topicEventLogs[activeStreamTopic];
+    if (!lines || lines.length === 0) {
+        appendEventLog(`No events recorded yet for [${activeStreamTopic}] — nothing to export.`);
+        return;
+    }
+    downloadTopicEventLog(activeStreamTopic);
+    appendEventLog(`Event log exported for [${activeStreamTopic}] (${lines.length} lines).`);
+}
+
 // Download a single topic's event log as a .txt file (web)
 function downloadTopicEventLog(topic) {
     const lines = topicEventLogs[topic];
-    if (!lines || lines.length === 0) { alert('No events recorded for ' + topic); return; }
+    if (!lines || lines.length === 0) { appendEventLog('No events recorded for ' + topic); return; }
     const ts      = new Date().toISOString().replace(/[-T:.Z]/g,'').slice(0,15);
     const safeT   = topic.replace(/[^a-zA-Z0-9]/g,'_');
     const header  = `AMBER Event Log — ${topic}\nExported: ${new Date().toLocaleString()}\n${'='.repeat(60)}\n\n`;
