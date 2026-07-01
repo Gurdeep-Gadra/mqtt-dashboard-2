@@ -3,392 +3,850 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMBER — Realtime Diagnostic Monitor</title>
+    <title>AMBER — Web Monitor</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #D4D0C8; color: #000000; font-family: 'Tahoma', 'Segoe UI', Arial, sans-serif; padding: 6px; font-size: 11px; user-select: none; }
-        .login-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 40%, #0a3d62 100%); display: flex; flex-direction: column; justify-content: flex-start; align-items: center; z-index: 88888; overflow-y: auto; padding: 20px; }
-        .login-topbar { width: 100%; max-width: 1100px; display: flex; justify-content: space-between; align-items: center; padding: 0 0 18px 0; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
+
+        /* ── LIGHT THEME BASE ── */
+        body { background: #f0f4f8; color: #1a2a3a; font-family: 'Segoe UI', Arial, sans-serif;
+               padding: 4px; font-size: 11px; user-select: none; }
+
+        /* ── MAIN DASHBOARD ── */
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #eef2f7;
+            display: flex; flex-direction: column; align-items: center;
+            z-index: 88888; overflow-y: auto; padding: 8px 14px; }
+
+        /* ── TOPBAR ── */
+        .login-topbar { width: 100%; max-width: 1600px; display: flex;
+            justify-content: space-between; align-items: center;
+            padding: 8px 16px; margin-bottom: 8px;
+            background: #1a2e42; border-radius: 10px; }
         .login-brand { display: flex; align-items: center; gap: 10px; }
-        .login-brand-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #00c853, #00838f); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: #fff; font-family: 'Arial Black', sans-serif; box-shadow: 0 2px 8px rgba(0,200,83,0.4); }
-        .login-brand-text { font-family: 'Arial Black', sans-serif; font-size: 18px; font-weight: 900; color: #ffffff; letter-spacing: 1px; }
-        .login-brand-sub { font-size: 10px; color: #80b0cc; margin-top: 1px; letter-spacing: 2px; text-transform: uppercase; }
-        .login-topbar-right { display: flex; align-items: center; gap: 14px; }
-        #login_clock { font-size: 13px; color: #a0c4e0; font-family: monospace; letter-spacing: 1px; }
-        .broker-config-card { width: 100%; max-width: 1100px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10); border-radius: 10px; padding: 14px 18px; margin-bottom: 18px; }
-        .broker-config-card-title { font-size: 10px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; color: #5bbfdd; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-        .broker-config-card-title::before { content: ''; display: inline-block; width: 3px; height: 12px; background: linear-gradient(180deg, #00c853, #00838f); border-radius: 2px; }
+        .login-brand-icon { width: 34px; height: 34px;
+            background: linear-gradient(135deg, #00c853, #00838f);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 17px; font-weight: 900; color: #fff;
+            font-family: 'Arial Black', sans-serif; }
+        .login-brand-text { font-family: 'Arial Black', sans-serif; font-size: 17px;
+            font-weight: 900; color: #fff; letter-spacing: 1px; }
+        .login-brand-sub { font-size: 9px; color: #90b8cc; margin-top: 1px;
+            letter-spacing: 2px; text-transform: uppercase; }
+        .login-topbar-right { display: flex; align-items: center; gap: 10px; }
+
+        /* broker dot */
+        .topbar-broker-status { display: flex; align-items: center; gap: 5px;
+            font-size: 10px; color: #a0c8d8; letter-spacing: 0.5px; }
+        .topbar-broker-dot { width: 7px; height: 7px; border-radius: 50%;
+            background: #e74c3c; flex-shrink: 0; transition: background 0.3s; }
+        .topbar-broker-dot.connected { background: #00c853;
+            box-shadow: 0 0 5px rgba(0,200,83,0.7); }
+
+        /* rec indicator */
+        .rec-indicator { display: none; align-items: center; gap: 5px; font-size: 10px;
+            color: #ff3333; font-family: monospace; font-weight: bold; }
+        .rec-indicator.active { display: flex; }
+        .rec-dot-pulse { width: 7px; height: 7px; border-radius: 50%; background: #ff3333;
+            animation: recPulse 1s ease-in-out infinite; }
+        @keyframes recPulse { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+        #login_clock { font-size: 12px; color: #c0dae8; font-family: monospace; letter-spacing: 1px; }
+
+        /* ── SETUP TOOLBAR ── */
+        .setup-toolbar { width: 100%; max-width: 1600px; display: flex; align-items: center;
+            background: #fff; border: 1px solid #d0dce8; border-radius: 8px;
+            margin-bottom: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        .setup-toolbar-section { display: flex; align-items: center; gap: 8px; padding: 7px 14px;
+            cursor: pointer; transition: background 0.15s;
+            border-right: 1px solid #e4eaf0; }
+        .setup-toolbar-section:last-child { border-right: none; }
+        .setup-toolbar-section:hover { background: #f0f6ff; }
+        .setup-toolbar-label { font-size: 9px; font-weight: bold; letter-spacing: 2px;
+            text-transform: uppercase; color: #6a8898; }
+        .setup-toolbar-value { font-size: 10px; color: #1a5a7a; font-family: monospace; font-weight: bold; }
+        .setup-toolbar-chevron { font-size: 8px; color: #8aa8b8; margin-left: 2px;
+            transition: transform 0.2s; }
+        .setup-toolbar-section.open .setup-toolbar-chevron { transform: rotate(180deg); }
+        .setup-toolbar-add-btn { margin-left: auto; display: flex; align-items: center; gap: 6px;
+            padding: 7px 16px; cursor: pointer; transition: background 0.15s; }
+        .setup-toolbar-add-btn:hover { background: #e8f4ff; }
+        .setup-toolbar-add-label { font-size: 9px; font-weight: bold; letter-spacing: 2px;
+            text-transform: uppercase; color: #0070b8; }
+
+        /* dropdown panels */
+        .setup-panel-dropdown { width: 100%; max-width: 1600px; display: none; margin-bottom: 8px; }
+        .setup-panel-dropdown.open { display: block; animation: dropIn 0.18s ease; }
+        @keyframes dropIn { from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);} }
+        .setup-panel-inner { background: #fff; border: 1px solid #d0dce8; border-radius: 8px;
+            padding: 12px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+        /* form fields */
         .broker-config-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: end; }
-        .broker-field-group { display: flex; flex-direction: column; gap: 4px; }
-        .broker-field-label { font-size: 10px; color: #7a9fbb; letter-spacing: 1px; text-transform: uppercase; }
-        .broker-field-input { background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); border-radius: 5px; color: #e0f0ff; font-family: 'Courier New', monospace; font-size: 11px; padding: 6px 10px; outline: none; transition: border-color 0.2s; width: 100%; }
-        .broker-field-input:focus { border-color: #00c853; background: rgba(0,0,0,0.5); }
-        .broker-apply-btn { background: linear-gradient(135deg, #00c853, #00838f); border: none; border-radius: 5px; color: #fff; font-size: 11px; font-weight: bold; padding: 6px 16px; cursor: pointer; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; transition: opacity 0.15s; }
-        .broker-apply-btn:hover { opacity: 0.85; }
-        .add-device-card { width: 100%; max-width: 1100px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10); border-radius: 10px; padding: 14px 18px; margin-bottom: 18px; }
         .add-device-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; }
-        .add-device-btn { background: rgba(0,120,200,0.25); border: 1px solid rgba(0,150,255,0.35); border-radius: 5px; color: #80d4ff; font-size: 11px; font-weight: bold; padding: 6px 16px; cursor: pointer; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; transition: background 0.15s; }
-        .add-device-btn:hover { background: rgba(0,120,200,0.4); }
-        .device-grid-title { width: 100%; max-width: 1100px; font-size: 10px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; color: #5bbfdd; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-        .device-grid-title::before { content: ''; display: inline-block; width: 3px; height: 12px; background: linear-gradient(180deg, #0078c8, #00c853); border-radius: 2px; }
-        .device-grid { width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-bottom: 8px; }
-        .inactive-node-row { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: background 0.15s; position: relative; overflow: hidden; }
-        .inactive-node-row::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; border-radius: 7px 0 0 7px; }
-        .inactive-node-row.row-syncing::before { background: #f39c12; }
-        .inactive-node-row.row-offline::before  { background: #c0392b; }
-        .inactive-node-row:hover { background: rgba(255,255,255,0.08); }
-        .inactive-node-info { flex: 1; min-width: 0; }
-        .inactive-node-name { font-size: 11px; font-weight: bold; color: #c0d8ec; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .inactive-node-topic { font-size: 9px; color: #5a7a8a; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .inactive-node-badge { font-size: 9px; font-weight: bold; padding: 1px 6px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
-        .inactive-del-btn { background: transparent; border: none; color: #5a3a3a; font-size: 11px; cursor: pointer; padding: 0 2px; flex-shrink: 0; transition: color 0.15s; }
-        .inactive-del-btn:hover { color: #e74c3c; }
-        .device-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10); border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: background 0.15s, border-color 0.15s, transform 0.1s; position: relative; overflow: hidden; }
-        .device-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(0,200,83,0.4); transform: translateY(-1px); }
-        .device-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: #404040; border-radius: 10px 0 0 10px; transition: background 0.3s; }
+        .broker-field-group { display: flex; flex-direction: column; gap: 4px; }
+        .broker-field-label { font-size: 9px; color: #6a8898; letter-spacing: 1px; text-transform: uppercase; }
+        .broker-field-input { background: #f5f8fa; border: 1px solid #c0d0dc; border-radius: 5px;
+            color: #1a2a3a; font-family: 'Courier New', monospace; font-size: 11px;
+            padding: 6px 10px; outline: none; transition: border-color 0.2s; width: 100%; }
+        .broker-field-input:focus { border-color: #0080c8; background: #fff;
+            box-shadow: 0 0 0 2px rgba(0,128,200,0.12); }
+        .broker-apply-btn { background: linear-gradient(135deg, #00a844, #00707a); border: none;
+            border-radius: 5px; color: #fff; font-size: 11px; font-weight: bold;
+            padding: 7px 16px; cursor: pointer; letter-spacing: 1px; text-transform: uppercase;
+            white-space: nowrap; transition: opacity 0.15s; }
+        .broker-apply-btn:hover { opacity: 0.88; }
+        .add-device-btn { background: #0078c8; border: none; border-radius: 5px; color: #fff;
+            font-size: 11px; font-weight: bold; padding: 7px 16px; cursor: pointer;
+            letter-spacing: 1px; text-transform: uppercase; white-space: nowrap;
+            transition: background 0.15s; }
+        .add-device-btn:hover { background: #0060a8; }
+
+        /* ── SECTION HEADERS ── */
+        .section-header { width: 100%; max-width: 1600px; display: flex; align-items: center;
+            justify-content: space-between; margin-bottom: 6px; }
+        .section-title { font-size: 9px; font-weight: bold; letter-spacing: 2px;
+            text-transform: uppercase; color: #3a6070;
+            display: flex; align-items: center; gap: 6px; }
+        .section-title::before { content: ''; display: inline-block; width: 2px; height: 10px;
+            background: linear-gradient(180deg, #00a844, #0070a0); border-radius: 2px; }
+        .section-count { font-size: 9px; font-weight: bold; padding: 1px 7px;
+            border-radius: 20px; background: #d6f5e5; color: #007030;
+            border: 1px solid #a0dbb8; margin-left: 6px; }
+        .section-count.offline { background: #fff3d6; color: #a05800; border-color: #f0c060; }
+
+        /* ── SUMMARY BAR ── */
+        .summary-bar { width: 100%; max-width: 1600px; display: flex; align-items: stretch;
+            background: #1a2e42; border-radius: 8px; margin-bottom: 8px;
+            overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .sum-cell { display: flex; flex-direction: column; align-items: center;
+            justify-content: center; padding: 8px 14px;
+            border-right: 1px solid rgba(255,255,255,0.08); flex: 1; min-width: 0; }
+        .sum-cell:last-child { border-right: none; }
+        .sum-cell-label { font-size: 8px; font-weight: bold; letter-spacing: 1.5px;
+            text-transform: uppercase; color: #708898; margin-bottom: 2px; }
+        .sum-cell-value { font-size: 17px; font-weight: bold; font-family: monospace; color: #a0b8c8; }
+        .sum-cell-value.val-green  { color: #00d860; }
+        .sum-cell-value.val-red    { color: #ff5050; }
+        .sum-cell-value.val-orange { color: #ffaa20; }
+        .sum-cell-value.val-grey   { color: #3a5060; }
+        .sum-fault-list { font-size: 9px; color: #ff8070; font-family: monospace;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 100%; margin-top: 1px; }
+        .sum-fault-list.no-fault { color: #508070; }
+
+        /* ── MAIN CONTENT AREA ── */
+        .main-content-area { width: 100%; max-width: 1600px; display: flex;
+            gap: 8px; align-items: flex-start; flex: 1; }
+        .online-panel { flex: 1; min-width: 0; }
+        .offline-panel { width: 190px; flex-shrink: 0; }
+
+        /* ── ONLINE AC GRID ── */
+        .device-grid { width: 100%; display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 7px; margin-bottom: 6px; }
+
+        /* ── ONLINE AC CARD ── */
+        .device-card { background: #ffffff; border: 1px solid #d4e0ec; border-radius: 9px;
+            padding: 10px 11px 8px 14px; cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+            position: relative; overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+        .device-card:hover { border-color: #00a844; transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,168,68,0.15); }
+        .device-card::before { content: ''; position: absolute; top: 0; left: 0;
+            width: 4px; height: 100%; background: #ccc;
+            border-radius: 9px 0 0 9px; transition: background 0.3s; }
         .device-card.card-online::before  { background: linear-gradient(180deg, #00c853, #00838f); }
-        .device-card.card-offline::before { background: #c0392b; }
-        .device-card.card-syncing::before { background: #f39c12; }
-        .device-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .device-card-name { font-size: 13px; font-weight: bold; color: #e8f4ff; display: flex; align-items: center; gap: 6px; }
-        .device-card-topic { font-size: 10px; color: #7a9fbb; font-family: monospace; margin-top: 2px; }
-        .device-status-pill { font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
-        .pill-online  { background: rgba(0,200,83,0.15);  color: #00c853; border: 1px solid rgba(0,200,83,0.3); }
-        .pill-offline { background: rgba(192,57,43,0.15); color: #e74c3c; border: 1px solid rgba(192,57,43,0.3); }
-        .pill-syncing { background: rgba(243,156,18,0.15);color: #f39c12; border: 1px solid rgba(243,156,18,0.3); }
-        .device-card-tele { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
-        .tele-cell { background: rgba(0,0,0,0.25); border-radius: 4px; padding: 4px 6px; }
-        .tele-cell-label { font-size: 9px; color: #5a8aa8; text-transform: uppercase; letter-spacing: 0.5px; }
-        .tele-cell-value { font-size: 12px; font-weight: bold; color: #80d4ff; font-family: monospace; white-space: nowrap; }
-        .tele-cell-value.fault-val { color: #ff6b6b !important; }
-        .device-card-indicators { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
-        .mini-ind { display: flex; align-items: center; gap: 3px; font-size: 9px; color: #6a8a9a; background: rgba(0,0,0,0.2); border-radius: 3px; padding: 2px 5px; }
-        .mini-ind-dot { width: 6px; height: 6px; border-radius: 50%; background: #333; flex-shrink: 0; }
-        .mini-ind-dot.on-green  { background: #00c853; box-shadow: 0 0 4px #00c853; }
-        .mini-ind-dot.on-orange { background: #ff9900; box-shadow: 0 0 4px #ff9900; }
-        .mini-ind-dot.on-red    { background: #ff4444; box-shadow: 0 0 4px #ff4444; }
-        .device-card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; }
-        .card-launch-hint { font-size: 10px; color: #3a6a8a; letter-spacing: 1px; }
-        .card-delete-btn { background: rgba(192,57,43,0.15); border: 1px solid rgba(192,57,43,0.25); border-radius: 4px; color: #e74c3c; font-size: 10px; padding: 2px 8px; cursor: pointer; transition: background 0.15s; }
-        .card-delete-btn:hover { background: rgba(192,57,43,0.3); }
-        .card-no-data { font-size: 10px; color: #3a6070; font-style: italic; text-align: center; padding: 8px 0; }
-        .win-classic-btn { background-color: #D4D0C8; border: 2px solid #FFFFFF; border-right-color: #808080; border-bottom-color: #808080; padding: 3px 14px; font-family: 'Tahoma', sans-serif; font-size: 11px; cursor: pointer; box-shadow: inset 1px 1px 0px #FFFFFF; }
-        .win-classic-btn:active { border: 2px solid #808080; border-right-color: #FFFFFF; border-bottom-color: #FFFFFF; padding: 4px 13px 2px 15px; box-shadow: none; }
-        .group-box-frame { border: 2px solid #FFFFFF; border-top-color: #808080; border-left-color: #808080; border-right-color: #DFDFDF; border-bottom-color: #DFDFDF; background-color: #D4D0C8; padding: 12px 8px 8px 8px; margin-bottom: 8px; position: relative; }
-        .group-box-title { position: absolute; top: -7px; left: 8px; background-color: #D4D0C8; padding: 0 4px; font-weight: normal; color: #000000; font-size: 11px; }
-        .monitor-workspace-split { display: flex; gap: 8px; align-items: flex-start; }
-        .left-telemetry-column { flex: 1; display: flex; flex-direction: column; }
-        .right-sidebar-column { width: 250px; display: flex; flex-direction: column; }
-        .telemetry-row-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 12px; }
-        .param-field-box { display: flex; align-items: center; justify-content: space-between; gap: 4px; height: 20px; }
-        .param-label { color: #000000; font-size: 11px; white-space: nowrap; min-width: 60px; text-align: right; padding-right: 2px; }
-        .param-value-input { background-color: #FFFFFF; border: 1px solid #808080; border-right-color: #FFFFFF; border-bottom-color: #FFFFFF; color: #0000FF; padding: 1px 4px; font-family: monospace; font-size: 11px; font-weight: bold; flex: 1; height: 14px; display: flex; align-items: center; }
-        .param-value-input.fault-active { color: #FF0000 !important; font-weight: bold; }
-        .broker-status-strip { background-color: #D4D0C8; border: 1px solid #808080; padding: 2px 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 11px; }
-        .status-beacon-dot { width: 6px; height: 6px; background-color: #FF0000; border-radius: 50%; display: inline-block; margin-right: 4px; }
-        .status-beacon-dot.connected { background-color: #00FF00; box-shadow: 0 0 4px #00FF00; }
-        .sidebar-indicator-layout { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
-        .checkbox-row-item { display: flex; align-items: flex-start; gap: 6px; font-size: 11px; min-height: 16px; flex-wrap: wrap; }
-        .checkbox-row-item > .indicator-square-box { margin-top: 2px; flex-shrink: 0; }
-        .checkbox-row-item > span:not([id]) { flex-shrink: 0; white-space: nowrap; }
-        .checkbox-row-item > span[id] { color: #FF0000; font-weight: bold; font-size: 10px; white-space: normal; word-break: break-word; line-height: 1.3; flex: 1 1 100%; padding-left: 16px; margin-top: 1px; }
-        .indicator-square-box { width: 10px; height: 10px; border: 1px solid #808080; background-color: #FFFFFF; flex-shrink: 0; }
-        .indicator-square-box.active-green  { background-color: #00FF00 !important; }
-        .indicator-square-box.active-orange { background-color: #FF9900 !important; }
-        .indicator-square-box.active-red    { background-color: #FF0000 !important; }
-        .freq-strip-container-row { display: flex; align-items: center; background-color: #D4D0C8; padding: 2px 4px; margin-top: 2px; }
-        .freq-strip-heading-label { font-size: 11px; color: #000000; width: 70px; white-space: nowrap; }
-        .freq-strip-13-column-grid { display: grid; grid-template-columns: repeat(13, minmax(28px, 1fr)); gap: 4px; flex: 1; }
-        .freq-grid-label-text { font-size: 11px; color: #000000; text-align: center; }
-        .freq-grid-data-textbox { background-color: #FFFFFF; border: 1px solid #808080; color: #000000; font-family: 'Tahoma', Arial, sans-serif; font-size: 11px; text-align: center; padding: 1px 0; height: 14px; display: flex; align-items: center; justify-content: center; }
-        .logger-panel-split { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
-        .terminal-box-frame { border: 1px solid #808080; background-color: #FFFFFF; }
-        .terminal-box-header { background-color: #000080; color: #FFFFFF; padding: 2px 6px; font-size: 11px; font-weight: bold; }
-        pre { margin: 0; padding: 4px; height: 100px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 11px; color: #000000; background-color: #FFFFFF; line-height: 1.2; white-space: pre-wrap; }
-        .brand-logo-panel { text-align: right; padding: 8px 4px 0 0; position: relative; }
-        .brand-sub-date { font-family: 'Tahoma', Arial, sans-serif; font-size: 11px; color: #000000; margin-top: 2px; }
-        #event_log_stream { white-space: pre-wrap !important; word-break: break-word !important; overflow-wrap: break-word !important; }
+        .device-card.card-offline::before { background: #e74c3c; }
+        .device-card.card-syncing::before { background: #f39c12;
+            animation: syncPulse 1.5s ease-in-out infinite; }
+        .device-card.has-fault { border-color: #e74c3c !important;
+            box-shadow: 0 2px 10px rgba(231,76,60,0.18) !important; }
+        .device-card.has-fault::before { background: linear-gradient(180deg,#e74c3c,#c0392b) !important;
+            animation: faultBar 1.5s ease-in-out infinite !important; }
+        @keyframes syncPulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
+        @keyframes faultBar  { 0%,100%{opacity:1;}50%{opacity:0.4;} }
+
+        /* card header */
+        .device-card-header { display: flex; justify-content: space-between;
+            align-items: flex-start; margin-bottom: 6px; }
+        .device-card-name { font-size: 12px; font-weight: bold; color: #1a2a3a;
+            display: flex; align-items: center; gap: 4px; }
+        .device-card-topic { font-size: 8px; color: #7a98a8; font-family: monospace; margin-top: 1px; }
+        .device-status-pill { font-size: 8px; font-weight: bold; padding: 2px 7px;
+            border-radius: 20px; white-space: nowrap; }
+        .pill-online  { background: #d6f5e5; color: #006830; border: 1px solid #80d0a0; }
+        .pill-offline { background: #fde8e6; color: #a02010; border: 1px solid #f0a090; }
+        .pill-syncing { background: #fff3d6; color: #a05800; border: 1px solid #f0c060; }
+
+        /* stats strip */
+        .card-stats-strip { display: flex; gap: 4px; margin-bottom: 6px; }
+        .card-stat { flex: 1; background: #f2f6fa; border: 1px solid #dde8f0;
+            border-radius: 5px; padding: 4px 5px; text-align: center; }
+        .card-stat-label { font-size: 7px; color: #7a98a8; text-transform: uppercase; font-weight: bold; }
+        .card-stat-value { font-size: 11px; font-weight: bold; font-family: monospace; }
+        .card-stat-value.stat-faults  { color: #c04000; }
+        .card-stat-value.stat-faults.zero { color: #008840; }
+        .card-stat-value.stat-comp-on  { color: #006830; font-family: monospace; }
+        .card-stat-value.stat-comp-off { color: #7a5800; font-family: monospace; }
+
+        /* PRIMARY telemetry */
+        .tele-primary { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 5px; }
+        .tele-primary .tele-cell { background: #f0f6ff; border-radius: 6px; padding: 6px 8px;
+            border: 1px solid #c8ddf0; }
+        .tele-primary .tele-cell-label { font-size: 8px; color: #6a8898; text-transform: uppercase;
+            letter-spacing: 0.5px; margin-bottom: 2px; }
+        .tele-primary .tele-cell-value { font-size: 15px; font-weight: bold; color: #003a6a;
+            font-family: monospace; }
+
+        /* SECONDARY telemetry */
+        .tele-secondary { display: grid; grid-template-columns: repeat(3,1fr);
+            gap: 3px; margin-bottom: 5px; }
+        .tele-secondary .tele-cell { background: #f5f8fa; border-radius: 4px; padding: 3px 5px;
+            border: 1px solid #dde8f0; }
+        .tele-secondary .tele-cell-label { font-size: 7.5px; color: #7a98a8; text-transform: uppercase; }
+        .tele-secondary .tele-cell-value { font-size: 11px; font-weight: bold; color: #1a4a6a;
+            font-family: monospace; }
+
+        /* comp badge */
+        .comp-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 9px;
+            font-weight: bold; padding: 2px 7px; border-radius: 4px; margin-bottom: 4px; }
+        .comp-badge.comp-on  { background: #d6f5e5; color: #005828; border: 1px solid #80c898; }
+        .comp-badge.comp-off { background: #f0f4f8; color: #8098a8; border: 1px solid #c8d8e4; }
+        .comp-dot { width: 5px; height: 5px; border-radius: 50%; }
+        .comp-on .comp-dot  { background: #00a844; box-shadow: 0 0 4px rgba(0,168,68,0.5); }
+        .comp-off .comp-dot { background: #b0c0cc; }
+
+        /* last-seen */
+        .last-seen-txt { font-size: 8px; color: #90a8b8; margin-left: auto; font-style: italic; }
+
+        /* indicator clusters */
+        .ind-clusters { display: flex; flex-direction: column; gap: 3px; margin-bottom: 5px; }
+        .ind-cluster { display: flex; flex-wrap: wrap; gap: 2px; }
+        .ind-cluster-label { font-size: 7px; color: #7a98a8; letter-spacing: 1px;
+            text-transform: uppercase; width: 100%; margin-bottom: 1px; font-weight: bold; }
+        .mini-ind { display: flex; align-items: center; gap: 2px; font-size: 8px;
+            border-radius: 3px; padding: 1px 4px; transition: opacity 0.2s; color: #3a5060; }
+        .mini-ind.ind-active  { background: rgba(0,0,0,0.05); font-weight: bold; }
+        .mini-ind.ind-inactive { opacity: 0.3; }
+        .mini-ind-dot { width: 5px; height: 5px; border-radius: 50%; background: #c8d8e4; flex-shrink: 0; }
+        .mini-ind-dot.on-green  { background: #00a844; box-shadow: 0 0 3px rgba(0,168,68,0.5); }
+        .mini-ind-dot.on-orange { background: #e07000; box-shadow: 0 0 3px rgba(224,112,0,0.4); }
+        .mini-ind-dot.on-red    { background: #d02010; box-shadow: 0 0 3px rgba(208,32,16,0.4); }
+
+        /* fault row */
+        .card-fault-row { font-size: 9px; color: #c01810; font-weight: bold;
+            min-height: 12px; margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
+
+        /* card footer */
+        .device-card-footer { display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid #e8eef4; padding-top: 5px; margin-top: 3px; }
+        .card-launch-hint { font-size: 8px; color: #7a98a8; letter-spacing: 0.5px; }
+        .card-delete-btn { background: #fff0ee; border: 1px solid #f0c0b8;
+            border-radius: 4px; color: #c03020; font-size: 8px; padding: 2px 7px;
+            cursor: pointer; transition: background 0.15s; }
+        .card-delete-btn:hover { background: #ffe0d8; }
+
+        /* ── INACTIVE NODE LIST ── */
+        .inactive-node-row { background: #fff; border: 1px solid #d4e0ec;
+            border-radius: 7px; padding: 7px 10px; display: flex; align-items: center; gap: 7px;
+            cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+            position: relative; overflow: hidden; margin-bottom: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .inactive-node-row::before { content: ''; position: absolute; top: 0; left: 0;
+            width: 3px; height: 100%; border-radius: 7px 0 0 7px; }
+        .inactive-node-row.row-syncing::before { background: #f39c12;
+            animation: syncPulse 1.5s ease-in-out infinite; }
+        .inactive-node-row.row-offline::before { background: #e74c3c; }
+        .inactive-node-row:hover { border-color: #a8c8e0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .inactive-node-info { flex: 1; min-width: 0; }
+        .inactive-node-name { font-size: 10px; font-weight: bold; color: #1a2a3a;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .inactive-node-topic { font-size: 8px; color: #7a98a8; font-family: monospace;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .inactive-node-meta { font-size: 8px; color: #90a8b8; margin-top: 1px; font-style: italic; }
+        .inactive-node-badge { font-size: 8px; font-weight: bold; padding: 2px 7px;
+            border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+        .spin-ring { display: inline-block; width: 8px; height: 8px;
+            border: 1.5px solid rgba(243,156,18,0.3); border-top-color: #f39c12;
+            border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .inactive-del-btn { background: transparent; border: none; color: #b0c0cc;
+            font-size: 10px; cursor: pointer; padding: 0 2px; flex-shrink: 0;
+            transition: color 0.15s; }
+        .inactive-del-btn:hover { color: #e74c3c; }
+
+        /* empty state */
+        #device_grid_empty { color: #90a8b8; font-size: 12px; text-align: center;
+            padding: 40px 0; font-style: italic; }
+
+        /* ── RECORD / DISPLAY BUTTONS ── */
+
+        .display-btn { background: #fff; border: 1px solid #c0d0dc; border-radius: 5px;
+            color: #4a6070; font-size: 12px; padding: 4px 9px; cursor: pointer; transition: all 0.2s; }
+
+        /* ══ FAULT ALERT BANNER ══ */
+        .fault-alert-banner { width:100%; max-width:1600px; display:none; align-items:center;
+            gap:12px; padding:9px 16px; margin-bottom:8px; border-radius:8px;
+            background: #fff0ee; border:1px solid #f0a090;
+            animation: alertPulse 2s ease-in-out infinite; }
+        .fault-alert-banner.show { display:flex; }
+        @keyframes alertPulse { 0%,100%{ border-color:#f0a090;} 50%{ border-color:#e04030;} }
+        .fault-alert-icon { font-size:16px; }
+        .fault-alert-text { flex:1; min-width:0; font-size:12px; font-weight:bold;
+            color:#b01808; letter-spacing:0.3px; white-space:nowrap;
+            overflow:hidden; text-overflow:ellipsis; }
+        .fault-alert-count { font-size:11px; font-weight:bold; color:#fff;
+            background:#c01810; padding:2px 10px; border-radius:20px; white-space:nowrap; }
+
+        /* ══ CONTROLS BAR ══ */
+        .controls-bar { width:100%; max-width:1600px; display:flex; align-items:center;
+            gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+        .search-box { flex:1; min-width:180px; display:flex; align-items:center; gap:7px;
+            background:#fff; border:1px solid #c8d8e4; border-radius:7px; padding:6px 11px;
+            box-shadow:0 1px 3px rgba(0,0,0,0.06);
+            transition:border-color 0.2s, box-shadow 0.2s; }
+        .search-box:focus-within { border-color:#0078c8;
+            box-shadow:0 0 0 2px rgba(0,120,200,0.12); }
+        .search-box-icon { font-size:12px; color:#90a8b8; }
+        .search-box input { flex:1; background:transparent; border:none; outline:none;
+            color:#1a2a3a; font-size:12px; font-family:'Segoe UI',sans-serif; }
+        .search-box input::placeholder { color:#b0c8d8; }
+        .search-clear { font-size:12px; color:#90a8b8; cursor:pointer;
+            padding:0 3px; display:none; }
+        .search-clear.show { display:block; }
+        .sort-group { display:flex; align-items:center; background:#fff;
+            border:1px solid #c8d8e4; border-radius:7px; overflow:hidden;
+            box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+        .sort-label { font-size:9px; font-weight:bold; letter-spacing:1.5px;
+            text-transform:uppercase; color:#8aa8b8; padding:0 10px; }
+        .sort-btn { font-size:10px; font-weight:bold; color:#5a7888; background:transparent;
+            border:none; padding:7px 12px; cursor:pointer; letter-spacing:0.5px;
+            border-left:1px solid #e0eaf0; transition:background 0.15s, color 0.15s; }
+        .sort-btn:hover { background:#f0f6ff; color:#003a6a; }
+        .sort-btn.active { background:#e8f2ff; color:#0050a0;
+            box-shadow:inset 0 -2px 0 #0070c8; }
+        .filter-chip { font-size:10px; font-weight:bold; color:#6a7888; background:#fff;
+            border:1px solid #c8d8e4; border-radius:7px; padding:7px 13px; cursor:pointer;
+            letter-spacing:0.5px; transition:all 0.15s; white-space:nowrap;
+            box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+        .filter-chip:hover { border-color:#f09080; color:#a02010; }
+        .filter-chip.active { background:#fff0ee; border-color:#f09080; color:#b01808; }
+
+        /* ══ SUMMARY OVERRIDE (keep dark) ══ */
+        .summary-bar { background:#1a2e42 !important; border:none !important; }
+        .sum-cell-value.val-green  { color:#00d860 !important; }
+        .sum-cell-value.val-red    { color:#ff5050 !important; }
+        .sum-cell-value.val-orange { color:#ffaa20 !important; }
+        .sum-cell-value.val-grey   { color:#3a5060 !important; }
+
+        /* hidden card during filter */
+        .device-card.filtered-out { display:none !important; }
+        .inactive-node-row.filtered-out { display:none !important; }
+
+        /* no-results msg */
+        .no-results-msg { display:none; color:#90a8b8; font-size:12px; text-align:center;
+            padding:30px 0; font-style:italic; grid-column:1/-1; }
+        .no-results-msg.show { display:block; }
+
+        /* ══ MONITOR SCREEN — Megmeet Original Style ══ */
+        .mon-statusbar { background:linear-gradient(90deg,#001840,#003478); border-bottom:2px solid #3050a0;
+            padding:4px 12px; display:flex; justify-content:space-between; align-items:center; }
+        .mon-status-left { display:flex; align-items:center; gap:8px; }
+        .mon-beacon { width:8px; height:8px; background:#e74c3c; border-radius:50%;
+            display:inline-block; transition:background 0.3s; flex-shrink:0; }
+        .mon-beacon.connected { background:#00e060; box-shadow:0 0 5px rgba(0,220,96,0.7); }
+        #status_text { color:#ffffff; font-size:10px; font-weight:600; font-family:Arial,sans-serif; }
+        .mon-status-right { display:flex; align-items:center; gap:8px; }
+        #live_clock { font-size:11px; color:#ffffff; font-family:monospace; font-weight:600; }
+
+        /* main workspace — light grey like Windows app */
+        .monitor-workspace-split { display:flex; align-items:flex-start;
+            background:#dde4ec; padding:6px; gap:6px; }
+        .left-telemetry-column { flex:1; display:flex; flex-direction:column; gap:4px; }
+        .right-sidebar-column { width:230px; flex-shrink:0; display:flex; flex-direction:column; gap:4px; }
+
+        /* group boxes — Windows-style raised panel with title */
+        .dark-box { background:#dde4ec; border:1px solid #b0c0d0;
+            border-radius:5px; padding:8px 10px 8px 12px; position:relative;
+            box-shadow:0 2px 6px rgba(0,30,80,0.10); }
+        .dark-box-title { font-size:9.5px; font-weight:700; color:#002060;
+            margin-bottom:7px; padding-left:8px; border-left:3px solid #00a040;
+            display:flex; align-items:center; letter-spacing:0.8px;
+            text-transform:uppercase; font-family:"Segoe UI",Arial,sans-serif; }
+        .dark-box-title::before { display:none; }
+
+        /* event log — cream yellow like original */
+        .dark-event-log { height:130px; overflow-y:auto;
+            font-family:"Consolas","Courier New",monospace; font-size:10px; color:#000000;
+            background:#ffffc8; border:1px solid #c0b060; border-radius:3px;
+            line-height:1.6; white-space:pre-wrap; word-break:break-word;
+            padding:5px 8px; }
+        .dark-event-log::-webkit-scrollbar { width:12px; }
+        .dark-event-log::-webkit-scrollbar-thumb { background:#808080; border-radius:0; }
+        .dark-event-log::-webkit-scrollbar-track { background:#d4d0c8; }
+
+        /* telemetry grid */
+        .tele-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:3px 8px; }
+        .tele-field { display:flex; align-items:center; height:22px; gap:3px; }
+        .tele-label { color:#1a3050; font-size:10px; font-weight:600;
+            white-space:nowrap; min-width:58px; text-align:right;
+            font-family:"Segoe UI",Arial,sans-serif; }
+        .tele-val { background:#ffffff; border:1px solid #90a8c0;
+            border-top-color:#6080a0; border-left-color:#6080a0;
+            border-radius:3px; color:#001040; padding:1px 6px;
+            font-family:"Consolas","Courier New",monospace;
+            font-size:11px; font-weight:700; flex:1; min-height:20px;
+            display:flex; align-items:center; }
+        .tele-val.fault-active { color:#cc0000 !important; background:#ffffff !important;
+            font-weight:bold !important; }
+
+        /* purple horizontal divider between Indoor and Outdoor */
+        .mon-section-divider { height:4px; background:#8040a0;
+            margin:4px -10px; }
+
+        /* frequency table */
+        .freq-strip-row { display:flex; align-items:center;
+            background:#dde4ec; padding:2px 3px; margin-top:2px; border-radius:2px; }
+        .freq-strip-label { font-size:10px; color:#000080; font-weight:bold;
+            width:60px; white-space:nowrap; font-family:Arial,sans-serif; }
+        .freq-13-grid { display:grid; grid-template-columns:repeat(13,minmax(26px,1fr));
+            gap:2px; flex:1; }
+        .freq-col-head { font-size:9px; color:#002060; font-weight:700;
+            text-align:center; font-family:"Segoe UI",Arial,sans-serif; }
+        .freq-cell { background:#ffffff; border:1px solid #90a8c0; border-radius:2px;
+            color:#001040; font-family:"Consolas","Courier New",monospace; font-size:10px;
+            font-weight:700; text-align:center; padding:1px 0;
+            min-height:17px; display:flex; align-items:center; justify-content:center; }
+
+        /* right sidebar — indicators */
+        .ind-section { display:flex; flex-direction:column; gap:2px; }
+        .ind-row-item { display:flex; align-items:flex-start; gap:4px;
+            font-size:10px; color:#1a2a3a; font-weight:500; min-height:16px; flex-wrap:wrap;
+            font-family:"Segoe UI",Arial,sans-serif; }
+        .ind-box { width:12px; height:12px; border:1.5px solid #8098b0;
+            border-radius:2px; background:#e8eef4;
+            flex-shrink:0; margin-top:2px; transition:all 0.15s; }
+        .ind-box.active-green  { background:#00c000 !important; border-color:#007000 !important; }
+        .ind-box.active-orange { background:#ff8000 !important; border-color:#804000 !important; }
+        .ind-box.active-red    { background:#ff0000 !important; border-color:#800000 !important; }
+        .ind-detail { color:#cc0000; font-weight:bold; font-size:9px;
+            white-space:normal; word-break:break-word; line-height:1.3;
+            flex:1 1 100%; padding-left:16px; margin-top:1px;
+            font-family:Arial,sans-serif; }
+        .ind-divider { border:none; border-top:1px solid #808080; margin:3px 0; }
+        .ind-2col { display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+
+        /* fault label in sidebar — red like original */
+        .ind-row-item .fault-label { color:#cc0000; font-weight:bold; font-size:10px; }
+
+        /* freq display sidebar */
+        .freq-disp-field { display:flex; align-items:center;
+            height:22px; gap:3px; }
+        .freq-disp-label { color:#000000; font-size:10px; min-width:60px;
+            text-align:right; font-family:Arial,sans-serif; }
+
+        /* RX beacon — round like original red circle */
+        #rx_pulse_beacon { width:14px; height:14px; border-radius:50%;
+            background:#cc0000; border:1px solid #800000;
+            transition:background 0.05s ease; }
+
+        /* log terminals at bottom */
+        .logger-panel-split { display:grid; grid-template-columns:1fr 1fr;
+            gap:5px; padding:0 6px 6px 6px; background:#dde4ec; }
+        .dark-terminal { border:1px solid #8090a8; border-radius:4px; overflow:hidden;
+            box-shadow:0 1px 4px rgba(0,0,0,0.10); }
+        .dark-terminal-header { background:#002060; color:#c8e0f8; padding:3px 10px;
+            font-size:9px; font-family:"Segoe UI",monospace; letter-spacing:1px; font-weight:700;
+            text-transform:uppercase; }
+        pre { margin:0; padding:4px 6px; height:90px; overflow-y:auto;
+            font-family:'Courier New',monospace; font-size:10px; color:#000000;
+            background:#ffffff; line-height:1.4; white-space:pre-wrap; border:none; }
+        pre::-webkit-scrollbar { width:12px; }
+        pre::-webkit-scrollbar-thumb { background:#808080; }
+        pre::-webkit-scrollbar-track { background:#d4d0c8; }
+
+        .sys-type-row { font-size:10px; line-height:1.8; color:#1a2a3a;
+            font-family:"Segoe UI",Arial,sans-serif; }
+        .sys-type-val { font-weight:700; color:#002060; }
+
+        #lbl_branding_date { font-size:9px; color:#002060; font-family:"Segoe UI",Arial,sans-serif;
+            font-weight:600;
+            margin-top:4px; text-align:right; }
+
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            body { padding: 4px; }
-            .login-overlay { padding: 12px 10px; }
-            .login-topbar { flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom: 12px; padding-bottom: 12px; }
-            .login-brand-text { font-size: 15px; }
+            .login-overlay { padding: 10px; }
             .broker-config-row { grid-template-columns: 1fr 1fr; }
             .broker-config-row > :nth-child(1) { grid-column: 1 / -1; }
             .broker-apply-btn { grid-column: 1 / -1; width: 100%; }
             .add-device-row { grid-template-columns: 1fr; }
             .add-device-btn { width: 100%; }
-            .login-overlay > div[style*="display:flex"][style*="gap:14px"] { flex-direction: column !important; }
-            .login-overlay > div[style*="display:flex"][style*="gap:14px"] > div:last-child { width: 100% !important; }
+            .main-content-area { flex-direction: column; }
+            .offline-panel { width: 100%; }
             .device-grid { grid-template-columns: 1fr; }
             .monitor-workspace-split { flex-direction: column; }
             .right-sidebar-column { width: 100% !important; }
-            .sidebar-indicator-layout > div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: repeat(3, 1fr) !important; }
-            .telemetry-row-grid { grid-template-columns: repeat(2, 1fr) !important; }
-            .freq-strip-container-row { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-            .freq-strip-13-column-grid { grid-template-columns: repeat(13, minmax(26px, 1fr)) !important; min-width: 340px; }
+            .tele-grid { grid-template-columns: repeat(2,1fr) !important; }
             .logger-panel-split { grid-template-columns: 1fr !important; }
-            pre { height: 80px; }
+            .freq-13-grid { grid-template-columns: repeat(13, minmax(22px, 1fr)) !important; }
+            .freq-strip-row { overflow-x: auto; }
         }
         @media (max-width: 480px) {
-            .login-overlay { padding: 8px 6px; }
-            .login-brand-icon { width: 28px; height: 28px; font-size: 14px; }
-            .login-brand-text { font-size: 13px; }
-            .login-brand-sub  { font-size: 9px; }
-            .broker-config-row { grid-template-columns: 1fr; }
-            .broker-config-row > * { grid-column: 1 / -1; }
-            .device-card-tele { grid-template-columns: repeat(2, 1fr) !important; }
-            .freq-strip-container-row { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-            .freq-strip-13-column-grid { grid-template-columns: repeat(13, minmax(22px, 1fr)) !important; min-width: 300px; gap: 2px !important; }
-            .freq-grid-data-textbox, .freq-grid-label-text { font-size: 9px !important; }
-            .freq-strip-heading-label { width: 40px; font-size: 9px; flex-shrink: 0; }
-            .param-label { min-width: 44px !important; font-size: 10px; }
-            .param-value-input { font-size: 10px; }
-            .checkbox-row-item span { display: inline !important; }
-            .checkbox-row-item > span[id^="txt_"] { font-size: 9px; padding-left: 14px; }
-            .sidebar-indicator-layout > div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
-            pre { height: 60px; font-size: 9px; }
-            .broker-config-card, .add-device-card { padding: 10px; }
-            .broker-field-input { font-size: 12px; padding: 8px 10px; }
-            .add-device-btn, .broker-apply-btn { padding: 10px 16px; font-size: 12px; }
-            .broker-status-strip { flex-wrap: wrap; gap: 4px; }
-            #live_clock { font-size: 10px; }
-            #event_log_stream { height: 90px !important; }
+            .tele-secondary { grid-template-columns: repeat(2,1fr) !important; }
+            .controls-bar { flex-wrap: wrap; }
         }
-    </style>
+</style>
 </head>
 <body>
 
+<!-- ══════════════════════════════════════════════
+     MAIN DASHBOARD
+══════════════════════════════════════════════ -->
 <div id="device_manager" class="login-overlay">
+
+    <!-- TOPBAR -->
     <div class="login-topbar">
         <div class="login-brand">
             <div class="login-brand-icon">A</div>
             <div>
                 <div class="login-brand-text">AMBER</div>
-                <div class="login-brand-sub">Realtime Diagnostic Monitor</div>
+                <div class="login-brand-sub">Realtime Web Monitor</div>
             </div>
         </div>
         <div class="login-topbar-right">
-            <span id="login_clock" style="font-size:13px; color:#a0c4e0; font-family:monospace; letter-spacing:1px;">--:--:-- --</span>
+            <!-- broker connection dot -->
+            <div class="topbar-broker-status">
+                <div id="topbar_broker_dot" class="topbar-broker-dot"></div>
+                <span id="topbar_broker_txt">Connecting…</span>
+            </div>
+            
+            
+            <span id="login_clock">--:--:--</span>
         </div>
     </div>
 
-    <div class="broker-config-card">
-        <div class="broker-config-card-title">MQTT Cloud Broker Connection</div>
-        <div class="broker-config-row">
-            <div class="broker-field-group">
-                <div class="broker-field-label">Broker Host (wss:// URI)</div>
-                <input type="text" id="cfg_broker_host" class="broker-field-input" placeholder="broker.hivemq.cloud">
+    <!-- SETUP TOOLBAR (single slim row) -->
+    <div class="setup-toolbar" style="max-width:1600px;">
+        <div class="setup-toolbar-section" id="toolbar_broker_section" onclick="toggleSetupPanel('panel_broker','toolbar_broker_section')">
+            <div>
+                <div class="setup-toolbar-label">Broker</div>
+                <div class="setup-toolbar-value" id="toolbar_broker_host_txt">—</div>
             </div>
-            <div class="broker-field-group">
-                <div class="broker-field-label">Auth Username</div>
-                <input type="text" id="cfg_mqtt_user" class="broker-field-input" placeholder="username">
+            <span class="setup-toolbar-chevron">▼</span>
+        </div>
+        <div class="setup-toolbar-add-btn" onclick="toggleSetupPanel('panel_addac','toolbar_addac_section')">
+            <div id="toolbar_addac_section">
+                <div class="setup-toolbar-label">+ Register New AC</div>
             </div>
-            <div class="broker-field-group">
-                <div class="broker-field-label">Auth Password</div>
-                <input type="password" id="cfg_mqtt_pass" class="broker-field-input" placeholder="••••••••">
-            </div>
-            <button class="broker-apply-btn" onclick="saveBrokerCredentialsToRegistry()">Apply &amp; Reconnect</button>
+            <span class="setup-toolbar-chevron" id="toolbar_addac_chevron">▼</span>
         </div>
     </div>
 
-    <div class="add-device-card">
-        <div class="broker-config-card-title">Register New AC</div>
-        <div class="add-device-row">
-            <div class="broker-field-group">
-                <div class="broker-field-label">AC Label</div>
-                <input type="text" id="add_dev_name" class="broker-field-input" placeholder="e.g. LAB_1_COMP">
+    <!-- BROKER PANEL dropdown -->
+    <div class="setup-panel-dropdown" id="panel_broker" style="max-width:1600px;">
+        <div class="setup-panel-inner">
+            <div class="broker-config-row">
+                <div class="broker-field-group">
+                    <div class="broker-field-label">Broker Host (wss:// URI)</div>
+                    <input type="text" id="cfg_broker_host" class="broker-field-input" placeholder="broker.hivemq.cloud">
+                </div>
+                <div class="broker-field-group">
+                    <div class="broker-field-label">Auth Username</div>
+                    <input type="text" id="cfg_mqtt_user" class="broker-field-input" placeholder="username">
+                </div>
+                <div class="broker-field-group">
+                    <div class="broker-field-label">Auth Password</div>
+                    <input type="password" id="cfg_mqtt_pass" class="broker-field-input" placeholder="••••••••">
+                </div>
+                <button class="broker-apply-btn" onclick="saveBrokerCredentialsToRegistry()">Apply &amp; Reconnect</button>
             </div>
-            <div class="broker-field-group">
-                <div class="broker-field-label">MQTT Topic</div>
-                <input type="text" id="add_dev_topic" class="broker-field-input" placeholder="e.g. TTW/LAB1">
-            </div>
-            <button class="add-device-btn" onclick="commitDeviceToDatabase()">+ Add AC</button>
         </div>
     </div>
 
-    <div style="width:100%; max-width:1100px; display:flex; gap:14px; align-items:flex-start;">
-        <div style="flex:1; min-width:0;">
-            <div class="device-grid-title">Online ACs — Click to Open Live Monitor</div>
+    <!-- ADD AC PANEL dropdown -->
+    <div class="setup-panel-dropdown" id="panel_addac" style="max-width:1600px;">
+        <div class="setup-panel-inner">
+            <div class="add-device-row">
+                <div class="broker-field-group">
+                    <div class="broker-field-label">AC Label</div>
+                    <input type="text" id="add_dev_name" class="broker-field-input" placeholder="e.g. LAB_1_COMP">
+                </div>
+                <div class="broker-field-group">
+                    <div class="broker-field-label">MQTT Topic</div>
+                    <input type="text" id="add_dev_topic" class="broker-field-input" placeholder="e.g. TTW/LAB1">
+                </div>
+                <button class="add-device-btn" onclick="commitDeviceToDatabase()">+ Add AC</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUMMARY STATUS BAR -->
+    <div class="summary-bar" id="summary_bar">
+        <div class="sum-cell">
+            <div class="sum-cell-label">Online</div>
+            <div class="sum-cell-value val-green" id="sum_online">0</div>
+        </div>
+        <div class="sum-cell">
+            <div class="sum-cell-label">Offline</div>
+            <div class="sum-cell-value val-grey" id="sum_offline">0</div>
+        </div>
+        <div class="sum-cell">
+            <div class="sum-cell-label">Syncing</div>
+            <div class="sum-cell-value val-orange" id="sum_syncing">0</div>
+        </div>
+        <div class="sum-cell" style="flex:2; align-items:flex-start; padding-left:18px;">
+            <div class="sum-cell-label">Active Faults</div>
+            <div class="sum-fault-list no-fault" id="sum_faults">No faults detected</div>
+        </div>
+        <div class="sum-cell">
+            <div class="sum-cell-label">Fault Count</div>
+            <div class="sum-cell-value val-grey" id="sum_fault_count">0</div>
+        </div>
+        <div class="sum-cell">
+            <div class="sum-cell-label">Limiters</div>
+            <div class="sum-cell-value val-grey" id="sum_lim_count">0</div>
+        </div>
+        <div class="sum-cell">
+            <div class="sum-cell-label">Comp Running</div>
+            <div class="sum-cell-value val-green" id="sum_comp_on">0</div>
+        </div>
+    </div>
+
+    <!-- FAULT ALERT BANNER -->
+    <div class="fault-alert-banner" id="fault_alert_banner">
+        <span class="fault-alert-icon">⚠</span>
+        <span class="fault-alert-text" id="fault_alert_text">Fault detected</span>
+        <span class="fault-alert-count" id="fault_alert_count">0 ACs</span>
+    </div>
+
+    <!-- CONTROLS BAR: search / filter / sort -->
+    <div class="controls-bar">
+        <div class="search-box">
+            <span class="search-box-icon">🔍</span>
+            <input type="text" id="ac_search" placeholder="Search ACs by name, topic, or fault…" oninput="applyFiltersAndSort()">
+            <span class="search-clear" id="search_clear" onclick="clearSearch()">✕</span>
+        </div>
+        <div class="filter-chip" id="filter_faults_chip" onclick="toggleFaultFilter()">⚠ Faults only</div>
+        <div class="sort-group">
+            <span class="sort-label">Sort</span>
+            <button class="sort-btn active" id="sort_default" onclick="setSort('default')">Default</button>
+            <button class="sort-btn" id="sort_fault" onclick="setSort('fault')">Fault</button>
+            <button class="sort-btn" id="sort_temp" onclick="setSort('temp')">Temp</button>
+            <button class="sort-btn" id="sort_freq" onclick="setSort('freq')">Freq</button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content-area">
+        <!-- Online AC grid -->
+        <div class="online-panel">
+            <div class="section-header">
+                <div class="section-title">Online<span class="section-count" id="count_online">0</span></div>
+                <span style="font-size:9px; color:#5a8898;">Click any card to open live monitor</span>
+            </div>
             <div class="device-grid" id="device_grid_online"></div>
-            <div id="device_grid_empty" style="display:none; color:#3a6070; font-size:12px; text-align:center; padding:30px 0; font-style:italic;">No online ACs detected yet…</div>
+            <div class="no-results-msg" id="no_results_msg">No ACs match your search or filter.</div>
+            <div id="device_grid_empty" style="display:none;">No online ACs detected yet…</div>
         </div>
-        <div style="width:240px; flex-shrink:0;">
-            <div class="device-grid-title" style="max-width:none;">Other ACs</div>
-            <div id="device_list_inactive" style="display:flex; flex-direction:column; gap:6px;"></div>
-            <div id="device_list_empty" style="display:none; color:#3a6070; font-size:11px; font-style:italic; padding:10px 4px;">All ACs are online</div>
+        <!-- Offline / Syncing list -->
+        <div class="offline-panel">
+            <div class="section-header">
+                <div class="section-title" style="color:#6a9ab0;">Other<span class="section-count offline" id="count_offline">0</span></div>
+            </div>
+            <div id="device_list_inactive"></div>
+            <div id="device_list_empty" style="display:none; color:#5a8898; font-size:10px; font-style:italic; padding:8px 4px;">All ACs are online</div>
         </div>
     </div>
 </div>
 
-<!-- ── CLASSIC WIN DASHBOARD ── -->
-<div id="status_bar" class="broker-status-strip">
-    <div>
-        <div id="status_dot" class="status-beacon-dot"></div>
-        <span id="status_text">Pipeline Idle: Please choose an active AC from your Asset Dashboard...</span>
+<!-- ══════════════════════════════════════════════
+     DARK MONITOR SCREEN
+══════════════════════════════════════════════ -->
+
+<!-- status bar -->
+<div id="status_bar" class="mon-statusbar">
+    <div class="mon-status-left">
+        <div id="status_dot" class="mon-beacon"></div>
+        <span id="status_text">Idle — select an AC from the dashboard</span>
     </div>
-    <div style="display:flex; align-items:center; gap:8px;">
-        <button class="win-classic-btn" style="padding:1px 6px; font-size:10px;" onclick="exportCurrentTopicEvents()">📄 Export Events</button>
-        <button class="win-classic-btn" style="padding:1px 6px; font-size:10px;" onclick="returnToInventoryDashboard()">Asset Menu</button>
-        <span id="live_clock">00:00:00 AM</span>
+    <div class="mon-status-right">
+        
+        
+        <button class="rec-btn" style="background:#0f2030; border-color:#2a4a60; color:#60a8c8;" onclick="returnToInventoryDashboard()">← Dashboard</button>
+        <span id="live_clock">00:00:00</span>
     </div>
 </div>
 
+<!-- telemetry workspace -->
 <div class="monitor-workspace-split">
     <div class="left-telemetry-column">
-        <div class="group-box-frame" style="margin-bottom:6px; padding-bottom:4px;">
-            <div class="group-box-title">Event</div>
-            <div id="event_log_stream" style="height:110px; overflow-y:auto; font-family:'Tahoma',Arial,sans-serif; font-size:11px; white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; padding-left:2px; color:#000000; line-height:1.4;"></div>
+
+        <!-- Event log -->
+        <div class="dark-box">
+            <div class="dark-box-title">Events</div>
+            <div id="event_log_stream" class="dark-event-log"></div>
         </div>
-        <div class="group-box-frame" style="margin-bottom:6px; padding-bottom:8px;">
-            <div class="group-box-title">Version Message</div>
-            <div class="telemetry-row-grid">
-                <div class="param-field-box"><span class="param-label">Soft Ver</span><div id="val_softver" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Soft Data</span><div id="val_softdata" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Driver Lib</span><div id="val_driverlib" class="param-value-input">--</div></div>
+
+        <!-- Version -->
+        <div class="dark-box">
+            <div class="dark-box-title">Firmware</div>
+            <div class="tele-grid" style="grid-template-columns:repeat(3,1fr);">
+                <div class="tele-field"><span class="tele-label">Soft Ver</span><div id="val_softver" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Soft Date</span><div id="val_softdata" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Driver Lib</span><div id="val_driverlib" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">IDU MCU_EE</span><div id="val_idumcuee" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">ODU MCU_EE</span><div id="val_odumcuee" class="tele-val">--</div></div>
                 <div></div>
-                <div class="param-field-box"><span class="param-label">IDU MCU_EE</span><div id="val_idumcuee" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">ODU MCU_EE</span><div id="val_odumcuee" class="param-value-input">--</div></div>
             </div>
         </div>
-        <div class="group-box-frame" style="margin-bottom:6px; padding-bottom:8px;">
-            <div class="group-box-title">Indoor</div>
-            <div class="telemetry-row-grid" style="margin-bottom:6px;">
-                <div class="param-field-box"><span class="param-label">Mode</span><div id="val_mode" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Tr</span><div id="val_tr" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Ts</span><div id="val_ts" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Te</span><div id="val_te" class="param-value-input">--</div></div>
+
+        <!-- Indoor -->
+        <div class="dark-box">
+            <div class="dark-box-title">Indoor</div>
+            <div class="tele-grid" style="margin-bottom:6px;">
+                <div class="tele-field"><span class="tele-label">Mode</span><div id="val_mode" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Tr</span><div id="val_tr" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Ts</span><div id="val_ts" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Te</span><div id="val_te" class="tele-val">--</div></div>
             </div>
-            <div class="telemetry-row-grid" style="border-top:1px dashed #808080; padding-top:6px;">
-                <div class="param-field-box"><span class="param-label">Rated Mode</span><div id="val_ratedmode" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Fan Level</span><div id="val_fanlevel" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Fan rpm</span><div id="val_idufan" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label" style="min-width:100px;">IDU fault</span><div id="val_idufaultstr" class="param-value-input fault-active">--</div></div>
-            </div>
-        </div>
-        <div class="group-box-frame" style="margin-bottom:4px; padding-bottom:8px;">
-            <div class="group-box-title">Outdoor</div>
-            <div class="telemetry-row-grid" style="margin-bottom:6px;">
-                <div class="param-field-box"><span class="param-label">Tsu</span><div id="val_tsu" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Ta</span><div id="val_ta" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Tc</span><div id="val_tc" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Td</span><div id="val_td" class="param-value-input">--</div></div>
-            </div>
-            <div class="telemetry-row-grid" style="margin-bottom:6px;">
-                <div class="param-field-box"><span class="param-label">Area</span><div id="val_area" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">PCB Type</span><div id="val_pcbtype" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Fan rpm</span><div id="val_odufan" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Drv Fault</span><div id="val_drvfault" class="param-value-input fault-active">--</div></div>
-            </div>
-            <div class="telemetry-row-grid" style="margin-bottom:6px;">
-                <div class="param-field-box"><span class="param-label">DC CUR</span><div id="val_dccur" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">DC VOL</span><div id="val_dcvol" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">AC CUR</span><div id="val_accur" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">AC VOL</span><div id="val_acvol" class="param-value-input">--</div></div>
-            </div>
-            <div class="telemetry-row-grid">
-                <div class="param-field-box"><span class="param-label">EEV</span><div id="val_eev" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Tipm</span><div id="val_tipm" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">FAN IPM</span><div id="val_fanipm" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Comp Time</span><div id="Comp_Time" class="param-value-input">--</div></div>
+            <div class="tele-grid" style="border-top:1px solid rgba(255,255,255,0.05); padding-top:6px;">
+                <div class="tele-field"><span class="tele-label">Rated Mode</span><div id="val_ratedmode" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Fan Level</span><div id="val_fanlevel" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Fan RPM</span><div id="val_idufan" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label" style="min-width:70px;">IDU Fault</span><div id="val_idufaultstr" class="tele-val fault-active">--</div></div>
             </div>
         </div>
-        <div class="freq-strip-container-row">
-            <span class="freq-strip-heading-label">FreqLevel</span>
-            <div class="freq-strip-13-column-grid">
-                <div class="freq-grid-label-text">F1</div><div class="freq-grid-label-text">F2</div>
-                <div class="freq-grid-label-text">F3</div><div class="freq-grid-label-text">F4</div>
-                <div class="freq-grid-label-text">F5</div><div class="freq-grid-label-text">F6</div>
-                <div class="freq-grid-label-text">F7</div><div class="freq-grid-label-text">F8</div>
-                <div class="freq-grid-label-text">F9</div><div class="freq-grid-label-text">F10</div>
-                <div class="freq-grid-label-text">F11</div><div class="freq-grid-label-text">F12</div>
-                <div class="freq-grid-label-text">F13</div>
+
+        <!-- Outdoor -->
+        <div class="mon-section-divider"></div>
+        <div class="dark-box">
+            <div class="dark-box-title">Outdoor</div>
+            <div class="tele-grid" style="margin-bottom:6px;">
+                <div class="tele-field"><span class="tele-label">Tsu</span><div id="val_tsu" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Ta</span><div id="val_ta" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Tc</span><div id="val_tc" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Td</span><div id="val_td" class="tele-val">--</div></div>
+            </div>
+            <div class="tele-grid" style="margin-bottom:6px;">
+                <div class="tele-field"><span class="tele-label">Area</span><div id="val_area" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">PCB Type</span><div id="val_pcbtype" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Fan RPM</span><div id="val_odufan" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Drv Fault</span><div id="val_drvfault" class="tele-val fault-active">--</div></div>
+            </div>
+            <div class="tele-grid" style="margin-bottom:6px;">
+                <div class="tele-field"><span class="tele-label">DC CUR</span><div id="val_dccur" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">DC VOL</span><div id="val_dcvol" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">AC CUR</span><div id="val_accur" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">AC VOL</span><div id="val_acvol" class="tele-val">--</div></div>
+            </div>
+            <div class="tele-grid">
+                <div class="tele-field"><span class="tele-label">EEV</span><div id="val_eev" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Tipm</span><div id="val_tipm" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">FAN IPM</span><div id="val_fanipm" class="tele-val">--</div></div>
+                <div class="tele-field"><span class="tele-label">Comp Time</span><div id="Comp_Time" class="tele-val">--</div></div>
             </div>
         </div>
-        <div class="freq-strip-container-row" style="margin-top:1px;">
-            <span class="freq-strip-heading-label">Cool</span>
-            <div class="freq-strip-13-column-grid">
-                <div id="f_f1" class="freq-grid-data-textbox">--</div><div id="f_f2" class="freq-grid-data-textbox">--</div>
-                <div id="f_f3" class="freq-grid-data-textbox">--</div><div id="f_f4" class="freq-grid-data-textbox">--</div>
-                <div id="f_f5" class="freq-grid-data-textbox">--</div><div id="f_f6" class="freq-grid-data-textbox">--</div>
-                <div id="f_f7" class="freq-grid-data-textbox">--</div><div id="f_f8" class="freq-grid-data-textbox">--</div>
-                <div id="f_f9" class="freq-grid-data-textbox">--</div><div id="f_f10" class="freq-grid-data-textbox">--</div>
-                <div id="f_f11" class="freq-grid-data-textbox">--</div><div id="f_f12" class="freq-grid-data-textbox">--</div>
-                <div id="f_f13" class="freq-grid-data-textbox">--</div>
+
+        <!-- Freq strips -->
+        <div class="dark-box" style="padding:8px 10px;">
+            <div class="freq-strip-row">
+                <span class="freq-strip-label">FreqLevel</span>
+                <div class="freq-13-grid">
+                    <div class="freq-col-head">F1</div><div class="freq-col-head">F2</div><div class="freq-col-head">F3</div>
+                    <div class="freq-col-head">F4</div><div class="freq-col-head">F5</div><div class="freq-col-head">F6</div>
+                    <div class="freq-col-head">F7</div><div class="freq-col-head">F8</div><div class="freq-col-head">F9</div>
+                    <div class="freq-col-head">F10</div><div class="freq-col-head">F11</div><div class="freq-col-head">F12</div>
+                    <div class="freq-col-head">F13</div>
+                </div>
             </div>
-        </div>
-        <div class="freq-strip-container-row" style="margin-top:1px;">
-            <span class="freq-strip-heading-label">Heat</span>
-            <div class="freq-strip-13-column-grid">
-                <div id="Hf_f1" class="freq-grid-data-textbox">--</div><div id="Hf_f2" class="freq-grid-data-textbox">--</div>
-                <div id="Hf_f3" class="freq-grid-data-textbox">--</div><div id="Hf_f4" class="freq-grid-data-textbox">--</div>
-                <div id="Hf_f5" class="freq-grid-data-textbox">--</div><div id="Hf_f6" class="freq-grid-data-textbox">--</div>
-                <div id="Hf_f7" class="freq-grid-data-textbox">--</div><div id="Hf_f8" class="freq-grid-data-textbox">--</div>
-                <div id="Hf_f9" class="freq-grid-data-textbox">--</div><div id="Hf_f10" class="freq-grid-data-textbox">--</div>
-                <div id="Hf_f11" class="freq-grid-data-textbox">--</div><div id="Hf_f12" class="freq-grid-data-textbox">--</div>
-                <div id="Hf_f13" class="freq-grid-data-textbox">--</div>
+            <div class="freq-strip-row" style="margin-top:2px;">
+                <span class="freq-strip-label">Cool</span>
+                <div class="freq-13-grid">
+                    <div id="f_f1" class="freq-cell">--</div><div id="f_f2" class="freq-cell">--</div><div id="f_f3" class="freq-cell">--</div>
+                    <div id="f_f4" class="freq-cell">--</div><div id="f_f5" class="freq-cell">--</div><div id="f_f6" class="freq-cell">--</div>
+                    <div id="f_f7" class="freq-cell">--</div><div id="f_f8" class="freq-cell">--</div><div id="f_f9" class="freq-cell">--</div>
+                    <div id="f_f10" class="freq-cell">--</div><div id="f_f11" class="freq-cell">--</div><div id="f_f12" class="freq-cell">--</div>
+                    <div id="f_f13" class="freq-cell">--</div>
+                </div>
+            </div>
+            <div class="freq-strip-row" style="margin-top:2px;">
+                <span class="freq-strip-label">Heat</span>
+                <div class="freq-13-grid">
+                    <div id="Hf_f1" class="freq-cell">--</div><div id="Hf_f2" class="freq-cell">--</div><div id="Hf_f3" class="freq-cell">--</div>
+                    <div id="Hf_f4" class="freq-cell">--</div><div id="Hf_f5" class="freq-cell">--</div><div id="Hf_f6" class="freq-cell">--</div>
+                    <div id="Hf_f7" class="freq-cell">--</div><div id="Hf_f8" class="freq-cell">--</div><div id="Hf_f9" class="freq-cell">--</div>
+                    <div id="Hf_f10" class="freq-cell">--</div><div id="Hf_f11" class="freq-cell">--</div><div id="Hf_f12" class="freq-cell">--</div>
+                    <div id="Hf_f13" class="freq-cell">--</div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- RIGHT SIDEBAR -->
     <div class="right-sidebar-column">
-        <div class="group-box-frame" style="margin-bottom:6px; padding-bottom:8px;">
-            <div class="group-box-title">Freq Display</div>
-            <div style="display:flex; flex-direction:column; gap:4px;">
-                <div class="param-field-box"><span class="param-label">Target</span><div id="ui_target_freq" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Set</span><div id="ui_set_freq" class="param-value-input">--</div></div>
-                <div class="param-field-box"><span class="param-label">Real Freq</span><div id="ui_real_freq" class="param-value-input">--</div></div>
+        <!-- Freq display -->
+        <div class="dark-box">
+            <div class="dark-box-title">Freq</div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <div class="freq-disp-field"><span class="freq-disp-label">Target</span><div id="ui_target_freq" class="tele-val">--</div></div>
+                <div class="freq-disp-field"><span class="freq-disp-label">Set</span><div id="ui_set_freq" class="tele-val">--</div></div>
+                <div class="freq-disp-field"><span class="freq-disp-label">Real</span><div id="ui_real_freq" class="tele-val">--</div></div>
             </div>
         </div>
-        <div class="group-box-frame" style="flex:1; padding-bottom:8px; margin-bottom:0;">
-            <div class="sidebar-indicator-layout">
-                <div class="checkbox-row-item"><div id="chk_fault" class="indicator-square-box"></div><span>Fault</span><span id="txt_fault_type" style="color:#FF0000; font-weight:bold; font-family:'Tahoma',sans-serif; font-size:10px;"></span></div>
-                <div class="checkbox-row-item"><div id="chk_fault2" class="indicator-square-box"></div><span>ODU Fault</span><span id="txt_fault2_type" style="color:#FF0000; font-weight:bold; font-family:'Tahoma',sans-serif; font-size:10px;"></span></div>
-                <div class="checkbox-row-item"><div id="chk_protect" class="indicator-square-box"></div><span>Protect</span><span id="txt_protect_type" style="color:#FF0000; font-weight:bold; font-family:'Tahoma',sans-serif; font-size:10px;"></span></div>
-                <div class="checkbox-row-item"><div id="chk_limitfreq" class="indicator-square-box"></div><span>LimitFreq</span><span id="txt_Limitfreq_type" style="color:#FF0000; font-weight:bold; font-family:'Tahoma',sans-serif; font-size:10px;"></span></div>
-                <div class="checkbox-row-item"><div id="chk_downfreq" class="indicator-square-box"></div><span>DownFreq</span><span id="txt_downfreq_type" style="color:#FF0000; font-weight:bold; font-family:'Tahoma',sans-serif; font-size:10px;"></span></div>
-                <div style="border-top:1px dashed #808080; margin:4px 0;"></div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px;">
-                    <div class="checkbox-row-item"><div id="chk_comp"     class="indicator-square-box"></div><span>Comp:</span></div>
-                    <div class="checkbox-row-item"><div id="chk_defrost"  class="indicator-square-box"></div><span>Defrost:</span></div>
-                    <div class="checkbox-row-item"><div id="chk_4way"     class="indicator-square-box"></div><span>4Way:</span></div>
-                    <div class="checkbox-row-item"><div id="chk_retoil"   class="indicator-square-box"></div><span>Ret Oil:</span></div>
-                    <div class="checkbox-row-item"><div id="chk_outfan"   class="indicator-square-box"></div><span>Out Fan:</span></div>
-                    <div class="checkbox-row-item"><div id="chk_test"     class="indicator-square-box"></div><span>Test:</span></div>
-                    <div class="checkbox-row-item"><div id="chk_preheat"  class="indicator-square-box"></div><span>Preheat:</span></div>
-                    <div class="checkbox-row-item"><div id="chk_collectf" class="indicator-square-box"></div><span>Collect F:</span></div>
+
+        <!-- Indicators -->
+        <div class="dark-box" style="flex:1;">
+            <div class="dark-box-title">Status</div>
+            <div class="ind-section">
+                <div class="ind-row-item"><div id="chk_fault" class="ind-box"></div><span>Fault</span><span id="txt_fault_type" class="ind-detail"></span></div>
+                <div class="ind-row-item"><div id="chk_fault2" class="ind-box"></div><span>ODU Fault</span><span id="txt_fault2_type" class="ind-detail"></span></div>
+                <div class="ind-row-item"><div id="chk_protect" class="ind-box"></div><span>Protect</span><span id="txt_protect_type" class="ind-detail"></span></div>
+                <div class="ind-row-item"><div id="chk_limitfreq" class="ind-box"></div><span>LimitFreq</span><span id="txt_Limitfreq_type" class="ind-detail"></span></div>
+                <div class="ind-row-item"><div id="chk_downfreq" class="ind-box"></div><span>DownFreq</span><span id="txt_downfreq_type" class="ind-detail"></span></div>
+                <hr class="ind-divider">
+                <div class="ind-2col">
+                    <div class="ind-row-item"><div id="chk_comp" class="ind-box"></div><span>Comp</span></div>
+                    <div class="ind-row-item"><div id="chk_defrost" class="ind-box"></div><span>Defrost</span></div>
+                    <div class="ind-row-item"><div id="chk_4way" class="ind-box"></div><span>4Way</span></div>
+                    <div class="ind-row-item"><div id="chk_retoil" class="ind-box"></div><span>Ret Oil</span></div>
+                    <div class="ind-row-item"><div id="chk_outfan" class="ind-box"></div><span>Out Fan</span></div>
+                    <div class="ind-row-item"><div id="chk_test" class="ind-box"></div><span>Test</span></div>
+                    <div class="ind-row-item"><div id="chk_preheat" class="ind-box"></div><span>Preheat</span></div>
+                    <div class="ind-row-item"><div id="chk_collectf" class="ind-box"></div><span>Collect F</span></div>
                 </div>
-                <div style="border-top:1px dashed #808080; margin:4px 0;"></div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px;">
-                    <div class="checkbox-row-item"><div id="chk_pfc"      class="indicator-square-box"></div><span>PFC:</span></div>
-                    <div class="checkbox-row-item"><div id="chk_eco"      class="indicator-square-box"></div><span>ECO:</span></div>
+                <hr class="ind-divider">
+                <div class="ind-2col">
+                    <div class="ind-row-item"><div id="chk_pfc" class="ind-box"></div><span>PFC</span></div>
+                    <div class="ind-row-item"><div id="chk_eco" class="ind-box"></div><span>ECO</span></div>
                 </div>
-                <div class="checkbox-row-item"><div id="chk_everoff"  class="indicator-square-box"></div><span>Ever Off:</span></div>
-                <div class="checkbox-row-item"><div id="chk_idufault" class="indicator-square-box"></div><span>IDU Fault:</span></div>
+                <div class="ind-row-item"><div id="chk_everoff" class="ind-box"></div><span>Ever Off</span></div>
+                <div class="ind-row-item"><div id="chk_idufault" class="ind-box"></div><span>IDU Fault</span></div>
             </div>
-            <div style="margin-top:8px; font-size:11px; line-height:1.4; color:#444444;">
-                <div>System Type: <span id="lbl_systype"  style="font-weight:bold; color:#000000;">--</span></div>
-                <div>Comp Type:   <span id="lbl_comptype" style="font-weight:bold; color:#000000;">--</span></div>
-                <div>Fan Type:    <span id="lbl_fantype"  style="font-weight:bold; color:#000000;">--</span></div>
+            <hr class="ind-divider">
+            <div class="sys-type-row">
+                <div>System: <span id="lbl_systype" class="sys-type-val">--</span></div>
+                <div>Comp: <span id="lbl_comptype" class="sys-type-val">--</span></div>
+                <div>Fan: <span id="lbl_fantype" class="sys-type-val">--</span></div>
             </div>
-            <div class="brand-logo-panel">
-                <div style="display:flex; justify-content:flex-end; align-items:center; gap:6px; margin-bottom:4px;">
-                    <span style="font-size:10px; font-weight:bold; color:#000000; font-family:'Tahoma',sans-serif;">RX_DATA_PULSE:</span>
-                    <div id="rx_pulse_beacon" style="width:14px; height:14px; border:2px solid #808080; background-color:#00FF00; box-shadow:inset 1px 1px 0px #FFFFFF; transition:background-color 0.05s ease;"></div>
-                </div>
-                <div id="lbl_branding_date" class="brand-sub-date">--</div>
+            <div style="display:flex;justify-content:flex-end;align-items:center;gap:6px;margin-top:8px;">
+                <span style="font-size:9px;color:#2a4a60;letter-spacing:1px;font-weight:700;">RX PULSE</span>
+                <div id="rx_pulse_beacon"></div>
             </div>
+            <div id="lbl_branding_date">--</div>
         </div>
     </div>
 </div>
 
+<!-- log terminals -->
 <div class="logger-panel-split">
-    <div class="terminal-box-frame">
-        <div class="terminal-box-header">live_packet_stream.log</div>
+    <div class="dark-terminal">
+        <div class="dark-terminal-header">live_packet_stream.log</div>
         <pre id="console_output"></pre>
     </div>
-    <div class="terminal-box-frame">
-        <div class="terminal-box-header">system_event_tracker.log</div>
+    <div class="dark-terminal">
+        <div class="dark-terminal-header">system_event_tracker.log</div>
         <pre id="event_log_stream_terminal"></pre>
     </div>
 </div>
@@ -399,9 +857,7 @@
 // =============================================================================
 const WS_PORT = 8884;
 
-function brokerKey(host) {
-    return 'MEGMEET_NODES_' + (host || 'DEFAULT').replace(/[^a-zA-Z0-9]/g, '_');
-}
+function brokerKey(host) { return 'MEGMEET_NODES_' + (host || 'DEFAULT').replace(/[^a-zA-Z0-9]/g, '_'); }
 function loadBrokerConfig() {
     return {
         host: localStorage.getItem('MEGMEET_HOST') || "e897bc6d6145492e99f4a7f09df8ffd9.s1.eu.hivemq.cloud",
@@ -416,13 +872,56 @@ let backgroundDiscoverySockets = {};
 let activeDevicesHeartbeats    = {};
 let prevIndicatorState         = {};
 let prevLabelText              = {};
-let topicStates    = {};   // per-topic previous state for event detection
-let topicEventLogs = {};   // per-topic accumulated event lines
+let topicStates    = {};
+let topicEventLogs = {};
 
-function resetStateTrackers() {
-    prevIndicatorState = {};
-    prevLabelText      = {};
-    lastRecordedEventCodeValue = null;
+// ── NEW: uptime + fault history tracking ──
+let acFirstSeen    = {};   // topic -> timestamp of first packet (session uptime)
+let acFaultHistory = {};   // topic -> count of fault-onset events this session
+let acPrevFaultState = {}; // topic -> was-faulted boolean (for edge detection)
+let acRuntimeAccum = {};   // topic -> accumulated compressor-on seconds (approx)
+
+// ── NEW: search / filter / sort state ──
+let _searchQuery   = '';
+let _faultFilterOn = false;
+let _sortMode      = 'default';
+
+function resetStateTrackers() { prevIndicatorState = {}; prevLabelText = {}; lastRecordedEventCodeValue = null; }
+
+// =============================================================================
+// SETUP TOOLBAR TOGGLE
+// =============================================================================
+function toggleSetupPanel(panelId, sectionId) {
+    const panel = document.getElementById(panelId);
+    const isOpen = panel.classList.contains('open');
+    // close all panels first
+    document.querySelectorAll('.setup-panel-dropdown').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.setup-toolbar-section, .setup-toolbar-add-btn').forEach(s => s.classList.remove('open'));
+    document.getElementById('toolbar_addac_chevron') && (document.getElementById('toolbar_addac_chevron').style.transform = '');
+    if (!isOpen) {
+        panel.classList.add('open');
+        const sec = document.getElementById(sectionId);
+        if (sec) sec.classList.add('open');
+        if (panelId === 'panel_addac') { const ch = document.getElementById('toolbar_addac_chevron'); if(ch) ch.style.transform = 'rotate(180deg)'; }
+    }
+}
+
+// update toolbar broker host text
+function updateToolbarBrokerTxt() {
+    const el = document.getElementById('toolbar_broker_host_txt');
+    if (el) el.textContent = cfg.host ? cfg.host.split('.')[0] + '…' : '—';
+}
+
+// =============================================================================
+// BROKER STATUS DOT
+// =============================================================================
+let _anyConnected = false;
+function updateBrokerDot(connected) {
+    _anyConnected = connected;
+    const dot = document.getElementById('topbar_broker_dot');
+    const txt = document.getElementById('topbar_broker_txt');
+    if (dot) dot.className = 'topbar-broker-dot' + (connected ? ' connected' : '');
+    if (txt) txt.textContent = connected ? 'Broker connected' : 'Connecting…';
 }
 
 // =============================================================================
@@ -437,127 +936,385 @@ function saveBrokerCredentialsToRegistry() {
     localStorage.setItem('MEGMEET_HOST', cfg.host);
     localStorage.setItem('MEGMEET_USER', cfg.user);
     localStorage.setItem('MEGMEET_PASS', cfg.pass);
+    updateToolbarBrokerTxt();
     if (changed) {
         appendEventLog("Broker config changed. Closing all sockets and reloading AC list...");
         Object.keys(backgroundDiscoverySockets).forEach(t => { try { backgroundDiscoverySockets[t].close(); } catch(e) {} });
-        backgroundDiscoverySockets = {};
-        activeDevicesHeartbeats    = {};
+        backgroundDiscoverySockets = {}; activeDevicesHeartbeats = {};
         fetchDevicesFromRegistry().forEach(dev => initializeBackgroundDeviceScanner(dev.topic));
         renderDeviceInventoryTable();
     }
+    // close panel after apply
+    document.querySelectorAll('.setup-panel-dropdown').forEach(p => p.classList.remove('open'));
 }
 
 // =============================================================================
 // DEVICE DATABASE
 // =============================================================================
 function fetchDevicesFromRegistry() {
-    const key    = brokerKey(cfg.host);
-    const stored = localStorage.getItem(key);
+    const key = brokerKey(cfg.host), stored = localStorage.getItem(key);
     if (stored) return JSON.parse(stored);
     if (cfg.host === "e897bc6d6145492e99f4a7f09df8ffd9.s1.eu.hivemq.cloud") {
-        const def = [
-            { name: "Megmeet_TTW_LAB1", topic: "TTW/LAB1" },
-            { name: "Megmeet_TTW_LAB2", topic: "TTW/LAB2" },
-            { name: "Megmeet_TTW_LAB3", topic: "TTW/LAB3" }
-        ];
-        localStorage.setItem(key, JSON.stringify(def));
-        return def;
+        const def = [{ name:"Megmeet_TTW_LAB1",topic:"TTW/LAB1"},{name:"Megmeet_TTW_LAB2",topic:"TTW/LAB2"},{name:"Megmeet_TTW_LAB3",topic:"TTW/LAB3"}];
+        localStorage.setItem(key, JSON.stringify(def)); return def;
     }
     return [];
 }
 function saveDevicesToRegistry(devices) { localStorage.setItem(brokerKey(cfg.host), JSON.stringify(devices)); }
 function commitDeviceToDatabase() {
-    const nameEl  = document.getElementById('add_dev_name');
-    const topicEl = document.getElementById('add_dev_topic');
-    const name = nameEl.value.trim(), topic = topicEl.value.trim();
-    if (!name || !topic) { alert("Both AC Label and MQTT Topic are required."); return; }
-    const devices = fetchDevicesFromRegistry();
-    if (devices.find(d => d.topic === topic)) { alert("An AC with that topic already exists."); return; }
-    devices.push({ name, topic });
-    saveDevicesToRegistry(devices);
-    nameEl.value = ''; topicEl.value = '';
-    initializeBackgroundDeviceScanner(topic);
-    renderDeviceInventoryTable();
+    const nameEl=document.getElementById('add_dev_name'), topicEl=document.getElementById('add_dev_topic');
+    const name=nameEl.value.trim(), topic=topicEl.value.trim();
+    if (!name||!topic) { alert("Both AC Label and MQTT Topic are required."); return; }
+    const devices=fetchDevicesFromRegistry();
+    if (devices.find(d=>d.topic===topic)) { alert("An AC with that topic already exists."); return; }
+    devices.push({name,topic}); saveDevicesToRegistry(devices);
+    nameEl.value=''; topicEl.value='';
+    initializeBackgroundDeviceScanner(topic); renderDeviceInventoryTable();
+    document.querySelectorAll('.setup-panel-dropdown').forEach(p=>p.classList.remove('open'));
 }
 function purgeDeviceEntry(ev, index, topic) {
     ev.stopPropagation();
-    const devices = fetchDevicesFromRegistry();
-    devices.splice(index, 1);
-    saveDevicesToRegistry(devices);
-    if (backgroundDiscoverySockets[topic]) { try { backgroundDiscoverySockets[topic].close(); } catch(e) {} delete backgroundDiscoverySockets[topic]; }
-    delete activeDevicesHeartbeats[topic];
-    renderDeviceInventoryTable();
+    const devices=fetchDevicesFromRegistry(); devices.splice(index,1); saveDevicesToRegistry(devices);
+    if (backgroundDiscoverySockets[topic]) { try{backgroundDiscoverySockets[topic].close();}catch(e){} delete backgroundDiscoverySockets[topic]; }
+    delete activeDevicesHeartbeats[topic]; renderDeviceInventoryTable();
 }
 
 // =============================================================================
-// CLOCK
+// DISPLAY SLEEP TOGGLE
+// =============================================================================
+let _displaySleepPrevented = false;
+function toggleDisplayMode() {
+    _displaySleepPrevented = !_displaySleepPrevented;
+    const btn = document.getElementById('btn_display_toggle');
+    if (btn) {
+        btn.textContent = _displaySleepPrevented ? '☀️' : '🌙';
+        btn.style.background  = _displaySleepPrevented ? '#2a1a00' : '#0f1e2a';
+        btn.style.borderColor = _displaySleepPrevented ? '#aa6600' : '#1a3040';
+        btn.style.color       = _displaySleepPrevented ? '#ffcc00' : '#4a7090';
+    }
+    if (window.electronAPI && window.electronAPI.setDisplayMode) window.electronAPI.setDisplayMode(_displaySleepPrevented);
+}
+
+// =============================================================================
+// VISIBILITY + SYSTEM EVENTS
+// =============================================================================
+document.addEventListener('visibilitychange', () => {
+    const interval = document.hidden ? 10000 : 25000;
+    Object.values(backgroundDiscoverySockets).forEach(ws => {
+        if (ws && ws.pingTimer) { clearInterval(ws.pingTimer); ws.pingTimer = setInterval(()=>sendMqttPingreqPacketRaw(ws), interval); }
+    });
+});
+if (window.electronAPI && window.electronAPI.onSystemResume) {
+    window.electronAPI.onSystemResume(() => {
+        Object.keys(backgroundDiscoverySockets).forEach(topic => {
+            const ws = backgroundDiscoverySockets[topic];
+            if (ws) { try{ws.close();}catch(e){} delete backgroundDiscoverySockets[topic]; }
+        });
+        setTimeout(() => { fetchDevicesFromRegistry().forEach(dev => { if (!backgroundDiscoverySockets[dev.topic]) initializeBackgroundDeviceScanner(dev.topic); }); }, 500);
+    });
+}
+if (window.electronAPI && window.electronAPI.onSystemSuspend) {
+    window.electronAPI.onSystemSuspend(() => console.log('[AMBER] System suspending'));
+}
+
+// =============================================================================
+// TICK — clock + heartbeat eval + rec counter
 // =============================================================================
 setInterval(() => {
-    const now = new Date(), ts = now.toLocaleTimeString();
-    const el1=document.getElementById('live_clock'), el2=document.getElementById('login_clock'), el3=document.getElementById('lbl_branding_date');
-    if (el1) el1.innerText=ts; if (el2) el2.innerText=ts;
-    if (el3) el3.innerText=now.toLocaleString();
+    const now=new Date(), ts=now.toLocaleTimeString();
+    const el1=document.getElementById('live_clock'),el2=document.getElementById('login_clock'),el3=document.getElementById('lbl_branding_date');
+    if(el1)el1.innerText=ts; if(el2)el2.innerText=ts;
+    if(el3)el3.innerText=now.toLocaleString();
     evaluateAllDeviceHeartbeats();
+    if (_recActive) {
+        const n=Math.max(0,_recRows.length), txt=`⏺ ${n} rows`;
+        const c1=document.getElementById('rec_count'), c2=document.getElementById('login_rec_count');
+        if(c1)c1.textContent=txt; if(c2)c2.textContent=txt;
+    }
 }, 1000);
 
 // =============================================================================
 // LOGGING
 // =============================================================================
 function appendLine(text) {
-    const box = document.getElementById('console_output');
-    if (!box) return;
-    const d = document.createElement('div'); d.innerText = text;
-    box.appendChild(d); box.scrollTop = box.scrollHeight;
+    const box=document.getElementById('console_output'); if(!box)return;
+    const d=document.createElement('div'); d.innerText=text; box.appendChild(d); box.scrollTop=box.scrollHeight;
 }
 function appendEventLog(text) {
-    const line = `${new Date().toLocaleTimeString()} >> ${text}\n`;
-    ['event_log_stream','event_log_stream_terminal'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) { el.innerText += line; el.scrollTop = el.scrollHeight; }
-    });
+    const line=`${new Date().toLocaleTimeString()} >> ${text}\n`;
+    ['event_log_stream','event_log_stream_terminal'].forEach(id=>{const el=document.getElementById(id);if(el){el.innerText+=line;el.scrollTop=el.scrollHeight;}});
 }
 function clearEventLogs() {
-    ['event_log_stream','event_log_stream_terminal','console_output'].forEach(id => {
-        const el = document.getElementById(id); if (el) el.innerText = '';
-    });
+    ['event_log_stream','event_log_stream_terminal','console_output'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerText='';});
 }
 
 // =============================================================================
-// DEVICE RENDERER
+// NEW: PER-AC STATS TRACKING (uptime, fault history, runtime)
 // =============================================================================
+function trackAcStats(topic, d) {
+    const now = Date.now();
+    if (!acFirstSeen[topic]) acFirstSeen[topic] = now;
+    // fault-onset edge detection
+    const isFaulted = !!(d[39]) || !!(d[5]) || !!(d[40]||d[6]) || !!(d[26]&0x02) || !!(d[45]);
+    if (isFaulted && !acPrevFaultState[topic]) {
+        acFaultHistory[topic] = (acFaultHistory[topic]||0) + 1;
+    }
+    acPrevFaultState[topic] = isFaulted;
+    // runtime accumulation (compressor on) — approx 1s per packet at ~1Hz
+    if (d[17]&0x80) acRuntimeAccum[topic] = (acRuntimeAccum[topic]||0) + 1;
+}
+
+function _fmtUptime(ms) {
+    if (!ms) return '—';
+    const s = Math.floor(ms/1000);
+    if (s < 60) return s+'s';
+    if (s < 3600) return Math.floor(s/60)+'m';
+    if (s < 86400) return Math.floor(s/3600)+'h '+Math.floor((s%3600)/60)+'m';
+    return Math.floor(s/86400)+'d '+Math.floor((s%86400)/3600)+'h';
+}
+function _fmtRuntime(sec) {
+    if (!sec) return '0m';
+    if (sec < 3600) return Math.floor(sec/60)+'m';
+    return Math.floor(sec/3600)+'h '+Math.floor((sec%3600)/60)+'m';
+}
+
+// =============================================================================
+// NEW: SEARCH / FILTER / SORT
+// =============================================================================
+function clearSearch() {
+    const inp = document.getElementById('ac_search');
+    if (inp) inp.value = '';
+    _searchQuery = '';
+    document.getElementById('search_clear').classList.remove('show');
+    applyFiltersAndSort();
+}
+function toggleFaultFilter() {
+    _faultFilterOn = !_faultFilterOn;
+    document.getElementById('filter_faults_chip').classList.toggle('active', _faultFilterOn);
+    applyFiltersAndSort();
+}
+function setSort(mode) {
+    _sortMode = mode;
+    ['default','fault','temp','freq'].forEach(m => {
+        document.getElementById('sort_'+m)?.classList.toggle('active', m===mode);
+    });
+    renderDeviceInventoryTable();
+}
+
+function _cardMatchesSearch(dev, d) {
+    if (!_searchQuery) return true;
+    const q = _searchQuery.toLowerCase();
+    if (dev.name.toLowerCase().includes(q)) return true;
+    if (dev.topic.toLowerCase().includes(q)) return true;
+    if (d) {
+        // search fault text
+        let faults = '';
+        if(d[45]&0x01)faults+='fan fault ';else if(d[45]&0x02)faults+='te fault ';
+        else if(d[45]&0x04)faults+='tr fault ';else if(d[45])faults+='idu fault ';
+        if(d[39])faults+='fault ';
+        if(d[5])faults+='odu fault ';
+        if(d[40]||d[6])faults+='protect ';
+        const modeStr=(['standby','cool','heat','fan','dry'])[d[1]]||'';
+        if(modeStr.includes(q)) return true;
+        if(faults.includes(q)) return true;
+    }
+    return false;
+}
+function _cardHasFault(d) {
+    if (!d) return false;
+    return !!(d[39]) || !!(d[5]) || !!(d[40]||d[6]) || !!(d[26]&0x02) || !!(d[45]);
+}
+
+function applyFiltersAndSort() {
+    const inp = document.getElementById('ac_search');
+    _searchQuery = inp ? inp.value.trim() : '';
+    document.getElementById('search_clear')?.classList.toggle('show', _searchQuery.length>0);
+    renderDeviceInventoryTable();
+}
+
+// =============================================================================
+// SUMMARY BAR
+// =============================================================================
+function updateSummaryBar() {
+    const devices = fetchDevicesFromRegistry();
+    let online=0, offline=0, syncing=0, faultCount=0, limCount=0, compOn=0;
+    const faultNames = [];
+    devices.forEach(dev => {
+        const hb = activeDevicesHeartbeats[dev.topic];
+        const lastSeen = hb ? hb.ts : null;
+        const d = hb ? hb.data : null;
+        if (!lastSeen) { syncing++; return; }
+        const age = (Date.now() - lastSeen) / 1000;
+        if (age > 5) { offline++; return; }
+        online++;
+        if (!d) return;
+        // faults
+        const hasFault = !!(d[39]) || !!(d[5]) || !!(d[40]||d[6]) || !!(d[26]&0x02);
+        if (hasFault) {
+            faultCount++;
+            let fn = dev.name;
+            if (d[45]) { const t=d[45]&0x01?'Fan':d[45]&0x02?'Te':d[45]&0x04?'Tr':d[45]&0x08?'NoFo':'IDU'; fn+=`:${t}`; }
+            else if (d[39]) fn+=':Fault';
+            else if (d[5]) fn+=':ODU';
+            faultNames.push(fn);
+        }
+        // limiters
+        if (d[7] || d[27]) limCount++;
+        // comp
+        if (d[17]&0x80) compOn++;
+    });
+
+    const setEl = (id, val, cls) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = val;
+        if (cls) el.className = 'sum-cell-value ' + cls;
+    };
+    setEl('sum_online',  online,  online>0  ? 'sum-cell-value val-green'  : 'sum-cell-value val-grey');
+    setEl('sum_offline', offline, offline>0 ? 'sum-cell-value val-red'    : 'sum-cell-value val-grey');
+    setEl('sum_syncing', syncing, syncing>0 ? 'sum-cell-value val-orange' : 'sum-cell-value val-grey');
+    setEl('sum_fault_count', faultCount, faultCount>0 ? 'sum-cell-value val-red'    : 'sum-cell-value val-grey');
+    setEl('sum_lim_count',   limCount,   limCount>0   ? 'sum-cell-value val-orange' : 'sum-cell-value val-grey');
+    setEl('sum_comp_on',     compOn,     compOn>0     ? 'sum-cell-value val-green'  : 'sum-cell-value val-grey');
+    const fEl = document.getElementById('sum_faults');
+    if (fEl) {
+        fEl.textContent = faultNames.length > 0 ? faultNames.join('  |  ') : 'No faults detected';
+        fEl.className = 'sum-fault-list' + (faultNames.length > 0 ? '' : ' no-fault');
+    }
+    // ── Fault alert banner ──
+    const banner = document.getElementById('fault_alert_banner');
+    if (banner) {
+        if (faultCount > 0) {
+            banner.classList.add('show');
+            document.getElementById('fault_alert_text').textContent =
+                'FAULT DETECTED — ' + faultNames.join('  •  ');
+            document.getElementById('fault_alert_count').textContent =
+                faultCount + (faultCount === 1 ? ' AC' : ' ACs');
+        } else {
+            banner.classList.remove('show');
+        }
+    }
+}
+
+// =============================================================================
+// DEVICE RENDERER — improved AC cards
+// =============================================================================
+function _timeSince(ts) {
+    if (!ts) return '';
+    const s = Math.floor((Date.now()-ts)/1000);
+    if (s < 10) return 'just now';
+    if (s < 60) return `${s}s ago`;
+    return `${Math.floor(s/60)}m ago`;
+}
+
 function buildOnlineCard(dev, idx, d) {
-    const modeStr=(['Standby','Cool','Heat','FAN','Dry'])[d[1]]||`M${d[1]}`;
+    const modeStr=(['Standby','Cool','Heat','FAN','Dry','Auto','','Test'])[d[1]]||`Mode${d[1]}`;
     const tr=((d[9]/2)-30).toFixed(1), ts_v=((d[8]/2)-30).toFixed(1), tc=((d[13]/2)-30).toFixed(1);
-    const acVol=d[14]*2, acCur=(d[15]/10).toFixed(1), iduFan=d[32]*10;
+    const acVol=d[14]*2, acCur=(d[15]/10).toFixed(1), iduFan=d[32]*10, realHz=d[2];
+    const compOn=!!(d[17]&0x80), CompTime=(d[42]<<8)|d[43];
+    const hb=activeDevicesHeartbeats[dev.topic];
+    const lastSeenTxt=hb?_timeSince(hb.ts):'';
+
     let iduFaultTxt='';
-    if(d[45]&0x01)iduFaultTxt='Fan fault'; else if(d[45]&0x02)iduFaultTxt='Te fault';
-    else if(d[45]&0x04)iduFaultTxt='Tr fault'; else if(d[45]&0x08)iduFaultTxt='NoFo fault';
-    else if(d[45]&0x10)iduFaultTxt='WiFi fault'; else if(d[45])iduFaultTxt='IDU fault';
-    const teleHTML=`<div class="device-card-tele">
-        <div class="tele-cell"><div class="tele-cell-label">Mode</div><div class="tele-cell-value" data-cid="mode">${modeStr}</div></div>
-        <div class="tele-cell"><div class="tele-cell-label">Real Freq</div><div class="tele-cell-value" data-cid="freq">${d[2]}Hz</div></div>
-        <div class="tele-cell"><div class="tele-cell-label">Tr</div><div class="tele-cell-value" data-cid="tr">${tr}°C</div></div>
-        <div class="tele-cell"><div class="tele-cell-label">Ts</div><div class="tele-cell-value" data-cid="ts">${ts_v}°C</div></div>
-        <div class="tele-cell"><div class="tele-cell-label">Tc</div><div class="tele-cell-value" data-cid="tc">${tc}°C</div></div>
-        <div class="tele-cell"><div class="tele-cell-label">AC V</div><div class="tele-cell-value" data-cid="acvol">${acVol}V</div></div>
-        <div class="tele-cell"><div class="tele-cell-label">AC A</div><div class="tele-cell-value" data-cid="accur">${acCur}A</div></div>
-        <div class="tele-cell"><div class="tele-cell-label">IDU Fan</div><div class="tele-cell-value" data-cid="idufan">${iduFan}r</div></div>
-    </div><div style="font-size:10px;color:#ff6b6b;margin-bottom:6px;min-height:14px;" data-fault-row>${iduFaultTxt?'⚠ '+iduFaultTxt:''}</div>`;
-    const inds=[
-        {key:'comp',on:!!(d[17]&0x80),cls:'on-green'},{key:'defrost',on:!!(d[17]&0x04),cls:'on-green'},
-        {key:'fw4',on:!!(d[17]&0x08),cls:'on-green'},{key:'outfan',on:!!(d[17]&0x20),cls:'on-green'},
-        {key:'preheat',on:!!(d[17]&0x01),cls:'on-green'},{key:'retoil',on:!!(d[17]&0x40),cls:'on-green'},
-        {key:'test',on:!!(d[17]&0x02),cls:'on-green'},{key:'collectf',on:!!(d[17]&0x10),cls:'on-green'},
-        {key:'fault',on:!!(d[39]),cls:'on-red'},{key:'oduflt',on:!!(d[5]),cls:'on-red'},
-        {key:'protect',on:!!(d[40]||d[6]),cls:'on-red'},{key:'limfreq',on:!!(d[7]),cls:'on-orange'},
-        {key:'dwnfreq',on:!!(d[27]),cls:'on-orange'},{key:'pfc',on:!!(d[26]&0x10),cls:'on-orange'},
-        {key:'eco',on:!!(d[26]&0x08),cls:'on-orange'},{key:'iduflt',on:!!(d[26]&0x02),cls:'on-red'},
+    if(d[45]&0x01)iduFaultTxt='Fan fault';else if(d[45]&0x02)iduFaultTxt='Te fault';
+    else if(d[45]&0x04)iduFaultTxt='Tr fault';else if(d[45]&0x08)iduFaultTxt='NoFo fault';
+    else if(d[45]&0x10)iduFaultTxt='WiFi fault';else if(d[45])iduFaultTxt='IDU fault';
+
+    // grouped indicators
+    const faultInds=[
+        {key:'fault',  on:!!(d[39]),         cls:'on-red',    lbl:'Fault'},
+        {key:'oduflt', on:!!(d[5]),           cls:'on-red',    lbl:'ODU Flt'},
+        {key:'protect',on:!!(d[40]||d[6]),    cls:'on-red',    lbl:'Protect'},
+        {key:'iduflt', on:!!(d[26]&0x02),     cls:'on-red',    lbl:'IDU Flt'},
     ];
-    const labels=['Comp','Defrost','4Way','OutFan','Preheat','RetOil','Test','CollF','Fault','ODU Flt','Protect','LimFreq','DwnFreq','PFC','ECO','IDU Flt'];
-    const indHTML='<div class="device-card-indicators">'+inds.map((i,n)=>`<div class="mini-ind"><div class="mini-ind-dot${i.on?' '+i.cls:''}" data-dot="${i.key}"></div>${labels[n]}</div>`).join('')+'</div>';
+    const limInds=[
+        {key:'limfreq',on:!!(d[7]),           cls:'on-orange', lbl:'LimFreq'},
+        {key:'dwnfreq',on:!!(d[27]),          cls:'on-orange', lbl:'DwnFreq'},
+        {key:'pfc',    on:!!(d[26]&0x10),     cls:'on-orange', lbl:'PFC'},
+        {key:'eco',    on:!!(d[26]&0x08),     cls:'on-orange', lbl:'ECO'},
+    ];
+    const runInds=[
+        {key:'comp',   on:compOn,             cls:'on-green',  lbl:'Comp'},
+        {key:'defrost',on:!!(d[17]&0x04),     cls:'on-green',  lbl:'Defrost'},
+        {key:'fw4',    on:!!(d[17]&0x08),     cls:'on-green',  lbl:'4Way'},
+        {key:'outfan', on:!!(d[17]&0x20),     cls:'on-green',  lbl:'OutFan'},
+        {key:'preheat',on:!!(d[17]&0x01),     cls:'on-green',  lbl:'Preheat'},
+        {key:'retoil', on:!!(d[17]&0x40),     cls:'on-green',  lbl:'RetOil'},
+        {key:'test',   on:!!(d[17]&0x02),     cls:'on-green',  lbl:'Test'},
+        {key:'collectf',on:!!(d[17]&0x10),    cls:'on-green',  lbl:'CollF'},
+    ];
+
+    function renderCluster(inds) {
+        return inds.map(i=>`<div class="mini-ind ${i.on?'ind-active':'ind-inactive'}"><div class="mini-ind-dot${i.on?' '+i.cls:''}" data-dot="${i.key}"></div>${i.lbl}</div>`).join('');
+    }
+
+    // ── Color-coding helpers for light theme ──
+    const trN=parseFloat(tr), tsN=parseFloat(ts_v), tcN=parseFloat(tc);
+    const _cMode  = modeStr==='Cool'?'#0060a8': modeStr==='Heat'?'#c04000': modeStr==='Standby'?'#7a9898':'#1a4a6a';
+    const _cFreq  = realHz>0?'#0060a8':'#90a8b8';
+    const _cTr    = trN>30?'#c05000': trN>28?'#e07000':'#1a4a6a';
+    const _cTs    = tsN>28?'#c05000': tsN>26?'#e07000':'#1a4a6a';
+    const _cTc    = tcN>35?'#c00800': tcN>30?'#c05000': tcN>28?'#e07000':'#1a4a6a';
+    const _cFan   = iduFan===0&&compOn?'#c00800':'#1a4a6a';
+    const _cAcV   = acVol>240?'#c00800': acVol>220?'#c05000': acVol<100?'#c05000':'#1a4a6a';
+    const _cAcA   = parseFloat(acCur)>8?'#c00800': parseFloat(acCur)>5?'#c05000':'#1a4a6a';
+    const hasFault = faultInds.some(i=>i.on);
+    const hasLim   = limInds.some(i=>i.on);
+
     const card=document.createElement('div');
-    card.className='device-card card-online'; card.id=`card_${btoa(dev.topic)}`;
-    card.innerHTML=`<div class="device-card-header"><div><div class="device-card-name">🖥 ${dev.name}</div><div class="device-card-topic">${dev.topic}</div></div><span class="device-status-pill pill-online">Online</span></div>${teleHTML}${indHTML}<div class="device-card-footer"><span class="card-launch-hint">▶ CLICK TO OPEN MONITOR</span><button class="card-delete-btn" onclick="purgeDeviceEntry(event,${idx},'${dev.topic}')">✕ Remove</button></div>`;
+    const _cardFaulted = hasFault || !!iduFaultTxt;
+    card.className='device-card card-online' + (_cardFaulted ? ' has-fault' : '');
+    card.id=`card_${btoa(dev.topic)}`;
+    const _faults = acFaultHistory[dev.topic] || 0;
+    const _compStatus = compOn ? `ON  ${CompTime}s` : `OFF ${CompTime}s`;
+    const _compStatClass = compOn ? 'stat-comp-on' : 'stat-comp-off';
+    card.innerHTML=`
+        <div class="device-card-header">
+            <div>
+                <div class="device-card-name">🖥 ${dev.name}</div>
+                <div class="device-card-topic">${dev.topic}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+                <span class="device-status-pill pill-online">Online</span>
+                ${lastSeenTxt?`<span class="last-seen-txt">${lastSeenTxt}</span>`:''}
+            </div>
+        </div>
+        <div class="card-stats-strip">
+            <div class="card-stat"><div class="card-stat-label">Faults</div><div class="card-stat-value stat-faults ${_faults===0?'zero':''}" data-cid="faulthist">${_faults}</div></div>
+            <div class="card-stat" style="flex:2"><div class="card-stat-label">Comp</div><div class="card-stat-value ${_compStatClass}" data-cid="compstatus">${_compStatus}</div></div>
+        </div>
+        <div class="tele-primary">
+            <div class="tele-cell">
+                <div class="tele-cell-label">Mode</div>
+                <div class="tele-cell-value" data-cid="mode" style="color:${_cMode}">${modeStr}</div>
+            </div>
+            <div class="tele-cell">
+                <div class="tele-cell-label">Real Freq</div>
+                <div class="tele-cell-value" data-cid="freq" style="color:${_cFreq}">${realHz} Hz</div>
+            </div>
+        </div>
+        <div class="tele-secondary">
+            <div class="tele-cell"><div class="tele-cell-label">Tr</div><div class="tele-cell-value" data-cid="tr" style="color:${_cTr}">${tr}°C</div></div>
+            <div class="tele-cell"><div class="tele-cell-label">Ts</div><div class="tele-cell-value" data-cid="ts" style="color:${_cTs}">${ts_v}°C</div></div>
+            <div class="tele-cell"><div class="tele-cell-label">Tc</div><div class="tele-cell-value" data-cid="tc" style="color:${_cTc}">${tc}°C</div></div>
+            <div class="tele-cell"><div class="tele-cell-label">IDU Fan</div><div class="tele-cell-value" data-cid="idufan" style="color:${_cFan}">${iduFan}r</div></div>
+            <div class="tele-cell"><div class="tele-cell-label">AC V</div><div class="tele-cell-value" data-cid="acvol" style="color:${_cAcV}">${acVol}V</div></div>
+            <div class="tele-cell"><div class="tele-cell-label">AC A</div><div class="tele-cell-value" data-cid="accur" style="color:${_cAcA}">${acCur}A</div></div>
+        </div>
+        <div class="comp-badge ${compOn?'comp-on':'comp-off'}" data-comp-badge>
+            <div class="comp-dot"></div>
+            Comp ${compOn?'ON — '+CompTime+'s':'OFF'}
+        </div>
+        <div class="card-fault-row" data-fault-row>${iduFaultTxt?'⚠ '+iduFaultTxt:''}</div>
+        <div class="ind-clusters">
+            ${hasFault?`<div class="ind-cluster"><div class="ind-cluster-label">Faults</div>${renderCluster(faultInds)}</div>`:`<div class="ind-cluster">${renderCluster(faultInds)}</div>`}
+            ${hasLim?`<div class="ind-cluster"><div class="ind-cluster-label">Limiters</div>${renderCluster(limInds)}</div>`:`<div class="ind-cluster">${renderCluster(limInds)}</div>`}
+            <div class="ind-cluster"><div class="ind-cluster-label">Running</div>${renderCluster(runInds)}</div>
+        </div>
+        <div class="device-card-footer">
+            <span class="card-launch-hint">▶ open live monitor</span>
+            <button class="card-delete-btn" onclick="purgeDeviceEntry(event,${idx},'${dev.topic}')">✕ Remove</button>
+        </div>`;
     card.onclick=()=>launchDiagnosticMonitorScreen(dev.topic);
     return card;
 }
@@ -565,22 +1322,69 @@ function buildOnlineCard(dev, idx, d) {
 function renderDeviceInventoryTable() {
     const og=document.getElementById('device_grid_online'), il=document.getElementById('device_list_inactive');
     const eo=document.getElementById('device_grid_empty'), ei=document.getElementById('device_list_empty');
-    if(!og||!il) return;
+    if(!og||!il)return;
     og.innerHTML=''; il.innerHTML='';
     const devices=fetchDevicesFromRegistry();
-    if(devices.length===0){if(eo){eo.style.display='block';eo.innerText='No ACs registered. Add one above.';}if(ei)ei.style.display='none';return;}
-    let onlineCount=0,inactiveCount=0;
+    if(devices.length===0){if(eo){eo.style.display='block';eo.innerText='No ACs registered — use "+ Register New AC" above.';}if(ei)ei.style.display='none';
+        document.getElementById('count_online').textContent='0'; document.getElementById('count_offline').textContent='0'; return;}
+    let onlineCount=0, inactiveCount=0;
+    // ── Build online list with data, then filter + sort ──
+    let onlineList = [];
     devices.forEach((dev,idx)=>{
         const hb=activeDevicesHeartbeats[dev.topic],lastSeen=hb?hb.ts:null,lastData=hb?hb.data:null;
-        let isOnline=false,statusClass='row-syncing',pillClass='pill-syncing',pillText='Syncing…';
-        if(lastSeen){const s=(Date.now()-lastSeen)/1000;if(s<=5){isOnline=true;}else{statusClass='row-offline';pillClass='pill-offline';pillText='Offline';}}
-        if(isOnline&&lastData){og.appendChild(buildOnlineCard(dev,idx,lastData));onlineCount++;}
-        else{const row=document.createElement('div');row.className=`inactive-node-row ${statusClass}`;row.id=`card_${btoa(dev.topic)}`;
-            row.innerHTML=`<div class="inactive-node-info"><div class="inactive-node-name">🖥 ${dev.name}</div><div class="inactive-node-topic">${dev.topic}</div></div><span class="inactive-node-badge ${pillClass}" id="pill_${btoa(dev.topic)}">${pillText}</span><button class="inactive-del-btn" onclick="purgeDeviceEntry(event,${idx},'${dev.topic}')" title="Remove">✕</button>`;
-            row.onclick=()=>launchDiagnosticMonitorScreen(dev.topic);il.appendChild(row);inactiveCount++;}
+        let isOnline=false;
+        if(lastSeen){const s=(Date.now()-lastSeen)/1000; if(s<=5) isOnline=true;}
+        if(isOnline&&lastData) onlineList.push({dev,idx,d:lastData});
+    });
+    // filter: search + faults-only
+    let visibleOnline = onlineList.filter(o =>
+        _cardMatchesSearch(o.dev, o.d) && (!_faultFilterOn || _cardHasFault(o.d))
+    );
+    // sort
+    if (_sortMode === 'fault') {
+        visibleOnline.sort((a,b)=>(_cardHasFault(b.d)?1:0)-(_cardHasFault(a.d)?1:0));
+    } else if (_sortMode === 'temp') {
+        visibleOnline.sort((a,b)=>((b.d[9]/2-30))-((a.d[9]/2-30)));
+    } else if (_sortMode === 'freq') {
+        visibleOnline.sort((a,b)=>b.d[2]-a.d[2]);
+    }
+    visibleOnline.forEach(o => { og.appendChild(buildOnlineCard(o.dev,o.idx,o.d)); });
+    onlineCount = onlineList.length;
+
+    // no-results message (search/filter active but nothing matches)
+    const nrm = document.getElementById('no_results_msg');
+    if (nrm) nrm.classList.toggle('show', onlineList.length>0 && visibleOnline.length===0);
+
+    // ── Inactive/other list ──
+    devices.forEach((dev,idx)=>{
+        const hb=activeDevicesHeartbeats[dev.topic],lastSeen=hb?hb.ts:null,lastData=hb?hb.data:null;
+        let isOnline=false, statusClass='row-syncing', pillClass='pill-syncing', pillText='Syncing';
+        if(lastSeen){const s=(Date.now()-lastSeen)/1000; if(s<=5){isOnline=true;}else{statusClass='row-offline';pillClass='pill-offline';pillText='Offline';}}
+        if(isOnline&&lastData){ /* already handled above */ }
+        else{
+            // apply search filter to inactive rows too (skip if faults-only filter on)
+            if (_faultFilterOn) { inactiveCount++; return; }
+            if (_searchQuery && !dev.name.toLowerCase().includes(_searchQuery.toLowerCase()) && !dev.topic.toLowerCase().includes(_searchQuery.toLowerCase())) { inactiveCount++; return; }
+            const row=document.createElement('div'); row.className=`inactive-node-row ${statusClass}`; row.id=`card_${btoa(dev.topic)}`;
+            const lastSeenTxt=lastSeen?_timeSince(lastSeen):'';
+            const spinnerOrDot=statusClass==='row-syncing'?`<div class="spin-ring"></div>`:'';
+            row.innerHTML=`<div class="inactive-node-info">
+                <div class="inactive-node-name">🖥 ${dev.name}</div>
+                <div class="inactive-node-topic">${dev.topic}</div>
+                ${lastSeenTxt?`<div class="inactive-node-meta">Last: ${lastSeenTxt}</div>`:''}
+            </div>${spinnerOrDot}<span class="inactive-node-badge ${pillClass}" id="pill_${btoa(dev.topic)}">${pillText}</span>
+            <button class="inactive-del-btn" onclick="purgeDeviceEntry(event,${idx},'${dev.topic}')" title="Remove">✕</button>`;
+            row.onclick=()=>launchDiagnosticMonitorScreen(dev.topic); il.appendChild(row); inactiveCount++;
+        }
     });
     if(eo)eo.style.display=onlineCount===0?'block':'none';
     if(ei)ei.style.display=inactiveCount===0?'block':'none';
+    document.getElementById('count_online').textContent=onlineCount;
+    document.getElementById('count_offline').textContent=inactiveCount;
+    // update broker dot based on any active socket
+    const anyConn=Object.values(backgroundDiscoverySockets).some(ws=>ws&&ws.readyState===1);
+    updateBrokerDot(anyConn||onlineCount>0);
+    updateSummaryBar();
 }
 
 // =============================================================================
@@ -592,15 +1396,22 @@ function evaluateAllDeviceHeartbeats() {
         const hb=activeDevicesHeartbeats[dev.topic],lastSeen=hb?hb.ts:null;
         if(loginVisible){
             const pill=document.getElementById(`pill_${btoa(dev.topic)}`),card=document.getElementById(`card_${btoa(dev.topic)}`);
-            if(!lastSeen){if(pill){pill.className='inactive-node-badge pill-syncing';pill.innerText='Syncing…';}if(card)card.className=`inactive-node-row row-syncing`;}
+            if(!lastSeen){if(pill){pill.className='inactive-node-badge pill-syncing';pill.innerText='Syncing';}if(card)card.className='inactive-node-row row-syncing';}
             else{const s=(Date.now()-lastSeen)/1000;
-                if(s>5){if(card&&card.classList.contains('device-card')){renderDeviceInventoryTable();return;}if(pill){pill.className='inactive-node-badge pill-offline';pill.innerText='Offline';}if(card)card.className=`inactive-node-row row-offline`;}
-                else{if(card&&card.classList.contains('inactive-node-row')){renderDeviceInventoryTable();return;}}}
+                if(s>5){if(card&&card.classList.contains('device-card')){renderDeviceInventoryTable();return;}
+                    if(pill){pill.className='inactive-node-badge pill-offline';pill.innerText='Offline';}if(card)card.className='inactive-node-row row-offline';}
+                else{if(card&&card.classList.contains('inactive-node-row')){renderDeviceInventoryTable();return;}}
+            }
         }
         if(activeStreamTopic===dev.topic){
             const mText=document.getElementById('status_text'),mDot=document.getElementById('status_dot'),pulse=document.getElementById('rx_pulse_beacon');
-            if(mText&&mDot){if(!lastSeen){mText.innerText=`Selected Stream: Syncing [${dev.topic}]…`;mDot.className='status-beacon-dot';if(pulse)pulse.style.backgroundColor='#FF0000';}
-            else{const s=(Date.now()-lastSeen)/1000;if(s>5){mText.innerText=`Selected Stream Idle: Connection lost [${dev.topic}]`;mDot.className='status-beacon-dot';if(pulse)pulse.style.backgroundColor='#FF0000';}else{mText.innerText=`Selected Stream: Connected [${dev.topic}]`;mDot.className='status-beacon-dot connected';}}}
+            if(mText&&mDot){
+                if(!lastSeen){mText.innerText=`Syncing [${dev.topic}]…`;mDot.className='mon-beacon';if(pulse)pulse.style.background='#c0392b';}
+                else{const s=(Date.now()-lastSeen)/1000;
+                    if(s>5){mText.innerText=`Connection lost [${dev.topic}]`;mDot.className='mon-beacon';if(pulse)pulse.style.background='#c0392b';}
+                    else{mText.innerText=`Connected [${dev.topic}]`;mDot.className='mon-beacon connected';}
+                }
+            }
         }
     });
 }
@@ -609,32 +1420,20 @@ function evaluateAllDeviceHeartbeats() {
 // NAVIGATION
 // =============================================================================
 function launchDiagnosticMonitorScreen(topic) {
-    activeStreamTopic=topic;
-    clearEventLogs(); resetStateTrackers();
+    activeStreamTopic=topic; clearEventLogs(); resetStateTrackers();
     document.getElementById('device_manager').style.display='none';
-    const mText=document.getElementById('status_text');
-    if(mText)mText.innerText=`Selected Stream: Checking link for [${topic}]…`;
-    // Load this topic's accumulated background event log
-    if (topicEventLogs[topic] && topicEventLogs[topic].length > 0) {
-        ['event_log_stream','event_log_stream_terminal'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) { el.innerText = topicEventLogs[topic].join('\n') + '\n'; el.scrollTop = el.scrollHeight; }
-        });
-    } else {
-        appendEventLog(`Stream focus switched to [${topic}].`);
-    }
-    renderDeviceInventoryTable();
+    const mText=document.getElementById('status_text'); if(mText)mText.innerText=`Checking link [${topic}]…`;
+    if(topicEventLogs[topic]&&topicEventLogs[topic].length>0){
+        ['event_log_stream','event_log_stream_terminal'].forEach(id=>{const el=document.getElementById(id);if(el){el.innerText=topicEventLogs[topic].join('\n')+'\n';el.scrollTop=el.scrollHeight;}});
+    } else { appendEventLog(`Stream focus switched to [${topic}].`); }
+    document.getElementById('btn_record').style.display='inline-block'; _syncRecUI(); renderDeviceInventoryTable();
 }
 function returnToInventoryDashboard() {
-    // Navigate back to the Asset Dashboard. Background MQTT scanning and
-    // event-log capture continue running regardless of which screen is shown —
-    // no download or popup happens here. Use the "Export Events" button on the
-    // monitor screen if you want to save the current topic's event log.
+    // event log stays in memory — no auto-download in web version
     activeStreamTopic=null;
     document.getElementById('device_manager').style.display='flex';
     const d=document.getElementById('status_dot'),t=document.getElementById('status_text');
-    if(d)d.className='status-beacon-dot';
-    if(t)t.innerText="Pipeline Idle: Please choose an active AC from Asset Dashboard…";
+    if(d)d.className='mon-beacon'; if(t)t.innerText='Idle — select an AC from the dashboard';
     renderDeviceInventoryTable();
 }
 
@@ -670,7 +1469,7 @@ function initializeBackgroundDeviceScanner(topicStr){
     if(backgroundDiscoverySockets[topicStr])return;
     const ws=new WebSocket(`wss://${cfg.host}:${WS_PORT}/mqtt`,["mqtt"]);
     ws.binaryType="arraybuffer";
-    ws.onopen=()=>sendMqttConnectPacketRaw(ws);
+    ws.onopen=()=>{ sendMqttConnectPacketRaw(ws); updateBrokerDot(true); };
     ws.onmessage=(event)=>{
         const payload=new Uint8Array(event.data);if(!payload.length)return;
         const pType=payload[0]>>4;
@@ -681,14 +1480,17 @@ function initializeBackgroundDeviceScanner(topicStr){
             const tLen=(payload[idx++]<<8)+payload[idx++];idx+=tLen;
             const raw=payload.subarray(idx);
             if(raw.length>=70&&raw[raw.length-1]===0xAA){
+                const wasOnline=!!(activeDevicesHeartbeats[topicStr]);
                 activeDevicesHeartbeats[topicStr]={ts:Date.now(),data:raw.slice()};
-                // ── Generate per-topic event logs in background ──
-                processTopicEvents(topicStr, raw);
+                if(!wasOnline&&window.electronAPI)window.electronAPI.sendOnlineStatus(topicStr,true);
+                trackAcStats(topicStr, raw);
+                _recWriteRow(raw,topicStr);
+                processTopicEvents(topicStr,raw);
                 if(document.getElementById('device_manager').style.display!=='none')refreshSingleCard(topicStr,raw);
                 if(activeStreamTopic===topicStr){
                     const st=document.getElementById('status_text'),sd=document.getElementById('status_dot');
-                    if(st)st.innerText=`Selected Stream: Connected [${topicStr}]`;
-                    if(sd)sd.className='status-beacon-dot connected';
+                    if(st)st.innerText=`Connected [${topicStr}]`;
+                    if(sd)sd.className='mon-beacon connected';
                     parseMegmeetCorePacket(raw);
                 }
             }
@@ -702,25 +1504,57 @@ function refreshSingleCard(topicStr,d){
     const card=document.getElementById(`card_${btoa(topicStr)}`);
     if(!card||card.classList.contains('inactive-node-row')){renderDeviceInventoryTable();return;}
     if(!card.querySelector('[data-cid="mode"]')){renderDeviceInventoryTable();return;}
-    const modeStr=(['Standby','Cool','Heat','FAN','Dry'])[d[1]]||`M${d[1]}`;
+    const modeStr=(['Standby','Cool','Heat','FAN','Dry','Auto','','Test'])[d[1]]||`Mode${d[1]}`;
     const tr=((d[9]/2)-30).toFixed(1),ts_v=((d[8]/2)-30).toFixed(1),tc=((d[13]/2)-30).toFixed(1);
-    const acVol=d[14]*2,acCur=(d[15]/10).toFixed(1),iduFan=d[32]*10;
+    const acVol=d[14]*2,acCur=(d[15]/10).toFixed(1),iduFan=d[32]*10,realHz=d[2];
+    const compOn=!!(d[17]&0x80),CompTime=(d[42]<<8)|d[43];
     let iduFaultTxt='';
     if(d[45]&0x01)iduFaultTxt='Fan fault';else if(d[45]&0x02)iduFaultTxt='Te fault';
     else if(d[45]&0x04)iduFaultTxt='Tr fault';else if(d[45]&0x08)iduFaultTxt='NoFo fault';
     else if(d[45]&0x10)iduFaultTxt='WiFi fault';else if(d[45])iduFaultTxt='IDU fault';
-    function setCell(id,val){const el=card.querySelector(`[data-cid="${id}"]`);if(el)el.innerText=val;}
-    setCell('mode',modeStr);setCell('freq',d[2]+'Hz');setCell('tr',tr+'°C');setCell('ts',ts_v+'°C');
-    setCell('tc',tc+'°C');setCell('acvol',acVol+'V');setCell('accur',acCur+'A');setCell('idufan',iduFan+'r');
+    function sc(id,val,color){
+        const el=card.querySelector(`[data-cid="${id}"]`);
+        if(el){el.innerText=val; if(color)el.style.color=color; else el.style.color='';}
+    }
+    // Color logic: temp = orange/red if high, freq = blue, fault = red, normal = navy
+    const trN=parseFloat(tr), tsN=parseFloat(ts_v), tcN=parseFloat(tc);
+    sc('mode', modeStr,
+        modeStr==='Cool'?'#0060a8': modeStr==='Heat'?'#c04000': modeStr==='Standby'?'#7a9898': '#1a4a6a');
+    sc('freq', realHz+' Hz', realHz>0?'#0060a8':'#90a8b8');
+    sc('tr',  tr+'°C',  trN>30?'#c05000': trN>28?'#e07000':'#1a4a6a');
+    sc('ts',  ts_v+'°C', tsN>28?'#c05000': tsN>26?'#e07000':'#1a4a6a');
+    sc('tc',  tc+'°C',  tcN>35?'#c00800': tcN>30?'#c05000': tcN>28?'#e07000':'#1a4a6a');
+    sc('idufan', iduFan+'r', iduFan===0&&compOn?'#c00800':'#1a4a6a');
+    sc('acvol', acVol+'V',   acVol>240?'#c00800': acVol>220?'#c05000': acVol<100?'#c05000':'#1a4a6a');
+    sc('accur', acCur+'A',   parseFloat(acCur)>8?'#c00800': parseFloat(acCur)>5?'#c05000':'#1a4a6a');
+    // update quick stats
+    const _compSt = compOn ? `ON  ${CompTime}s` : `OFF ${CompTime}s`;
+    const csEl = card.querySelector('[data-cid="compstatus"]');
+    if(csEl){ csEl.innerText=_compSt; csEl.className='card-stat-value '+(compOn?'stat-comp-on':'stat-comp-off'); }
+    const fhEl=card.querySelector('[data-cid="faulthist"]');
+    if(fhEl){const fc=acFaultHistory[topicStr]||0;fhEl.innerText=fc;fhEl.className='card-stat-value stat-faults'+(fc===0?' zero':'');}
+    // toggle card fault class
+    const _hasF = !!(d[39])||!!(d[5])||!!(d[40]||d[6])||!!(d[26]&0x02)||!!(d[45]);
+    card.classList.toggle('has-fault', _hasF);
     const fr=card.querySelector('[data-fault-row]');if(fr)fr.innerHTML=iduFaultTxt?`⚠ ${iduFaultTxt}`:'';
-    const inds=[{key:'comp',on:!!(d[17]&0x80)},{key:'defrost',on:!!(d[17]&0x04)},{key:'fw4',on:!!(d[17]&0x08)},
-        {key:'outfan',on:!!(d[17]&0x20)},{key:'preheat',on:!!(d[17]&0x01)},{key:'retoil',on:!!(d[17]&0x40)},
-        {key:'test',on:!!(d[17]&0x02)},{key:'collectf',on:!!(d[17]&0x10)},
+    const cb=card.querySelector('[data-comp-badge]');
+    if(cb){cb.className=`comp-badge ${compOn?'comp-on':'comp-off'}`;cb.innerHTML=`<div class="comp-dot"></div>Comp ${compOn?'ON — '+CompTime+'s':'OFF'}`;}
+    const allInds=[
+        {key:'comp',on:compOn,cls:'on-green'},{key:'defrost',on:!!(d[17]&0x04),cls:'on-green'},
+        {key:'fw4',on:!!(d[17]&0x08),cls:'on-green'},{key:'outfan',on:!!(d[17]&0x20),cls:'on-green'},
+        {key:'preheat',on:!!(d[17]&0x01),cls:'on-green'},{key:'retoil',on:!!(d[17]&0x40),cls:'on-green'},
+        {key:'test',on:!!(d[17]&0x02),cls:'on-green'},{key:'collectf',on:!!(d[17]&0x10),cls:'on-green'},
         {key:'fault',on:!!(d[39]),cls:'on-red'},{key:'oduflt',on:!!(d[5]),cls:'on-red'},
         {key:'protect',on:!!(d[40]||d[6]),cls:'on-red'},{key:'limfreq',on:!!(d[7]),cls:'on-orange'},
         {key:'dwnfreq',on:!!(d[27]),cls:'on-orange'},{key:'pfc',on:!!(d[26]&0x10),cls:'on-orange'},
-        {key:'eco',on:!!(d[26]&0x08),cls:'on-orange'},{key:'iduflt',on:!!(d[26]&0x02),cls:'on-red'}];
-    inds.forEach(i=>{const dot=card.querySelector(`[data-dot="${i.key}"]`);if(dot)dot.className='mini-ind-dot'+(i.on?' '+(i.cls||'on-green'):'');});
+        {key:'eco',on:!!(d[26]&0x08),cls:'on-orange'},{key:'iduflt',on:!!(d[26]&0x02),cls:'on-red'},
+    ];
+    allInds.forEach(i=>{
+        const dot=card.querySelector(`[data-dot="${i.key}"]`);
+        if(dot){dot.className='mini-ind-dot'+(i.on?' '+i.cls:'');}
+        const ind=dot?dot.closest('.mini-ind'):null;
+        if(ind){ind.className=`mini-ind ${i.on?'ind-active':'ind-inactive'}`;}
+    });
 }
 
 // =============================================================================
@@ -729,11 +1563,11 @@ function refreshSingleCard(topicStr,d){
 function setIndicator(chkId,spanId,rawState,cssClass,groupName,detailText){
     const chkEl=document.getElementById(chkId),spanEl=spanId?document.getElementById(spanId):null;
     const isNow=!!rawState;
-    if(chkEl)chkEl.className=isNow?`indicator-square-box ${cssClass}`:'indicator-square-box';
+    if(chkEl)chkEl.className=isNow?`ind-box ${cssClass}`:'ind-box';
     if(spanEl)spanEl.innerText=detailText;
     prevIndicatorState[chkId]=isNow; prevLabelText[chkId]=detailText;
 }
-function setDisplayField(elementId,newText,fieldName){
+function setDisplayField(elementId,newText){
     const el=document.getElementById(elementId);if(!el)return;
     prevLabelText[elementId]=newText; el.innerText=newText;
 }
@@ -743,316 +1577,204 @@ function setDisplayField(elementId,newText,fieldName){
 // =============================================================================
 function parseMegmeetCorePacket(d){
     const pulse=document.getElementById('rx_pulse_beacon');
-    if(pulse){pulse.style.backgroundColor='#FF0000';setTimeout(()=>pulse.style.backgroundColor='#00FF00',120);}
-
+    if(pulse){pulse.style.background='#ffee00'; pulse.style.boxShadow='0 0 6px #ffee00'; setTimeout(()=>{pulse.style.background='#cc0000'; pulse.style.boxShadow='none';},150);}
     const tr=(d[9]/2)-30,ts_v=(d[8]/2)-30,te=(d[12]/2)-30;
     const tsu=(d[30]/2)-30,ta=(d[10]/2)-30,tc=(d[13]/2)-30,td=d[11]-30;
     const acVol=d[14]*2,acCur=(d[15]/10),dcVol=d[19]*2,dcCur=(d[20]/10);
     const eev=d[24]*2,tipm=d[25],fanIpm=d[44],oduFan=d[21]*10,iduFan=d[32]*10;
     const CompTime=(d[42]<<8)|d[43];
     const fanLevelStr=(['Stop','Weak','Silence','Low','Medium','High','Force'])[d[18]]||`Level ${d[18]}`;
-    const modeStr=(['Standby','Cool','Heat','FAN','Dry'])[d[1]]||`Mode ${d[1]}`;
-    // Event code and state-change events now generated by processTopicEvents() in background scanner
-
+    const modeStr=(['Standby','Cool','Heat','FAN','Dry','Auto','','Test'])[d[1]]||`Mode ${d[1]}`;
     const $=id=>document.getElementById(id);
+    const _sc=(id,val,color)=>{ const el=$(id); if(el){el.innerText=val; el.style.color=color||'#000000'; el.style.fontWeight=color&&color!=='#000000'?'bold':'normal'; } };
+    // helper: temp color — black normal, red if critical
+    const _tc=(v,warn=30,crit=35)=> v>crit?'#cc0000': v>warn?'#cc4400':'#000000';
+    const _vc=(v,lo,hi)=> v>hi?'#cc0000': v<lo?'#cc4400':'#000000';
+
     $('val_softver').innerText=`${d[28]}.${d[29]}.0`; $('val_softdata').innerText=`20${d[33]}-${d[34]}-${d[35]}`;
     $('val_driverlib').innerText="- - - -"; $('val_idumcuee').innerText="- - - -"; $('val_odumcuee').innerText="- - - -";
-    $('val_mode').innerText=`-${modeStr}`; $('val_tr').innerText=tr+"°C"; $('val_ts').innerText=ts_v+"°C"; $('val_te').innerText=te+"°C";
-    $('val_ratedmode').innerText="- - - -"; $('val_fanlevel').innerText=`-${fanLevelStr}`; $('val_idufan').innerText=iduFan+"RPM";
-    $('val_tsu').innerText=tsu+"°C"; $('val_ta').innerText=ta+"°C"; $('val_tc').innerText=tc+"°C"; $('val_td').innerText=td+"°C";
-    $('val_area').innerText=d[23]===23?"F_area":`Area ${d[23]}`; $('val_pcbtype').innerText=d[0]===0?"Rx23Tx":`Type ${d[0]}`;
-    $('val_odufan').innerText=oduFan+"RPM"; $('val_dccur').innerText=dcCur+"A"; $('val_dcvol').innerText=dcVol+"V";
-    $('val_accur').innerText=acCur+"A"; $('val_acvol').innerText=acVol+"V";
-    $('val_eev').innerText=eev+"P"; $('val_tipm').innerText=tipm+" °C"; $('val_fanipm').innerText=fanIpm+" °C";
-    $('Comp_Time').innerText=d[41]===0?`Off[${CompTime}]Sec`:(d[41]===1?`On[${CompTime}]Sec`:'--');
-    $('ui_target_freq').innerText=`F${d[3]}`; $('ui_set_freq').innerText=`F${d[4]}`; $('ui_real_freq').innerText=`${d[2]*60}rpm/(${d[2]}Hz)`;
 
+    _sc('val_mode', `-${modeStr}`, '#000080');
+    _sc('val_tr',   tr+"°C",   _tc(tr,28,33));
+    _sc('val_ts',   ts_v+"°C", _tc(ts_v,26,30));
+    _sc('val_te',   te+"°C",   _tc(te,15,20));
+    _sc('val_ratedmode',"- - - -");
+    _sc('val_fanlevel', `-${fanLevelStr}`, '#000080');
+    _sc('val_idufan',   iduFan+"RPM", iduFan===0&&(d[17]&0x80)?'#cc0000':'#000000');
+    _sc('val_tsu',  tsu+"°C",  _tc(tsu,28,33));
+    _sc('val_ta',   ta+"°C",   _tc(ta,30,38));
+    _sc('val_tc',   tc+"°C",   _tc(tc,32,40));
+    _sc('val_td',   td+"°C",   _tc(td,80,100));
+    _sc('val_area', d[23]===23?"F_area":`Area ${d[23]}`);
+    _sc('val_pcbtype', d[0]===0?"Rx23Tx":`Type ${d[0]}`);
+    _sc('val_odufan',  oduFan+"RPM",  oduFan===0&&(d[17]&0x80)?'#cc0000':'#000000');
+    _sc('val_dccur',   dcCur+"A",     _vc(dcCur,0,20));
+    _sc('val_dcvol',   dcVol+"V",     _vc(dcVol,200,420));
+    _sc('val_accur',   acCur+"A",     acCur>8?'#cc0000': acCur>5?'#cc4400':'#000000');
+    _sc('val_acvol',   acVol+"V",     _vc(acVol,100,240));
+    _sc('val_eev',     eev+"P");
+    _sc('val_tipm',    tipm+" °C",    _tc(tipm,70,90));
+    _sc('val_fanipm',  fanIpm+" °C",  _tc(fanIpm,60,80));
+    _sc('Comp_Time',   d[41]===0?`Off[${CompTime}]Sec`:(d[41]===1?`On[${CompTime}]Sec`:'--'), d[41]===1?'#006000':'#000000');
+    _sc('ui_target_freq', `F${d[3]}`, '#000080');
+    _sc('ui_set_freq',    `F${d[4]}`, '#000080');
+    _sc('ui_real_freq',   `${d[2]*60}rpm/(${d[2]}Hz)`, d[2]>0?'#000080':'#cc0000');
     const fc=[47,48,49,50,51,52,53,54,55,56,57,58,59],fh=[60,61,62,63,64,65,66,67,68,69,70,71,72];
     for(let n=1;n<=13;n++){$(`f_f${n}`).innerText=d[fc[n-1]];$(`Hf_f${n}`).innerText=d[fh[n-1]];}
-
     let iduFaultText='--';
     if(d[45]&0x01)iduFaultText="Fan fault";else if(d[45]&0x02)iduFaultText="Te fault";
     else if(d[45]&0x04)iduFaultText="Tr fault";else if(d[45]&0x08)iduFaultText="NoFo fault";
     else if(d[45]&0x10)iduFaultText="WiFi fault";else if(d[45])iduFaultText="IDU fault";
-    setDisplayField('val_idufaultstr',iduFaultText,'IDU Fault');
-
+    setDisplayField('val_idufaultstr',iduFaultText);
     let drvFaultText='--';
     if(d[16]&0x02)drvFaultText="Over Current";else if(d[16]&0x04)drvFaultText="Over Voltage";
     else if(d[16]&0x08)drvFaultText="Step Out";else if(d[16]&0x10)drvFaultText="Reverse";
-    setDisplayField('val_drvfault',drvFaultText,'Drv Fault');
-
+    setDisplayField('val_drvfault',drvFaultText);
     let faultDetail='';
     if(d[39]&0x02)faultDetail="Communication to drive";else if(d[39]&0x04)faultDetail="TSU Sensor";else if(d[39]&0x08)faultDetail="NoFo";
-    setIndicator('chk_fault','txt_fault_type',d[39],'active-green','Fault',faultDetail);
-
+    setIndicator('chk_fault','txt_fault_type',d[39],'active-red','Fault',faultDetail);
     const f2=[];
-    if(d[5]&0x02)f2.push("Ta sensor fault");if(d[5]&0x04)f2.push("Tc sensor fault");if(d[5]&0x08)f2.push("Td sensor fault");
-    if(d[5]&0x10)f2.push("Communication Fault");if(d[5]&0x20)f2.push("Out Fan Fault");if(d[5]&0x40)f2.push("Compressor Fault");if(d[5]&0x80)f2.push("IPM fault");
-    setIndicator('chk_fault2','txt_fault2_type',d[5],'active-green','ODU Fault',f2.join(", "));
-
+    if(d[5]&0x02)f2.push("Ta sensor");if(d[5]&0x04)f2.push("Tc sensor");if(d[5]&0x08)f2.push("Td sensor");
+    if(d[5]&0x10)f2.push("Communication");if(d[5]&0x20)f2.push("Out Fan");if(d[5]&0x40)f2.push("Compressor");if(d[5]&0x80)f2.push("IPM");
+    setIndicator('chk_fault2','txt_fault2_type',d[5],'active-red','ODU Fault',f2.join(", "));
     const pn=[];
-    if(d[40]&0x01)pn.push("DC Volt Stop");if(d[40]&0x02)pn.push("DC Current Protection to Stop");if(d[40]&0x04)pn.push("Tc freeze protect");
-    if(d[40]&0x08)pn.push("Te overload protect");if(d[40]&0x10)pn.push("IPM over temp protect");if(d[40]&0x20)pn.push("IPM protect permanent");if(d[40]&0x40)pn.push("Start Fail Preheat");
+    if(d[40]&0x01)pn.push("DC Volt Stop");if(d[40]&0x02)pn.push("DC Current Stop");if(d[40]&0x04)pn.push("Tc freeze");
+    if(d[40]&0x08)pn.push("Te overload");if(d[40]&0x10)pn.push("IPM overtemp");if(d[40]&0x20)pn.push("IPM permanent");if(d[40]&0x40)pn.push("Start Fail Preheat");
     if(d[6]&0x01)pn.push("Tr Protect");if(d[6]&0x02)pn.push("Tc Protect");if(d[6]&0x04)pn.push("Te protect");if(d[6]&0x08)pn.push("Ta protect");
-    if(d[6]&0x10)pn.push("AC current "+acCur+"A");if(d[6]&0x20)pn.push("AC voltage "+acVol+"V");if(d[6]&0x40)pn.push("Compressor protect (permanent stop)");if(d[6]&0x80)pn.push("Td Protect");
-    setIndicator('chk_protect','txt_protect_type',(d[40]>0||d[6]>0),'active-green','Protect',pn.join(", "));
-
+    if(d[6]&0x10)pn.push("AC current "+acCur+"A");if(d[6]&0x20)pn.push("AC voltage "+acVol+"V");if(d[6]&0x40)pn.push("Comp permanent stop");if(d[6]&0x80)pn.push("Td Protect");
+    setIndicator('chk_protect','txt_protect_type',(d[40]>0||d[6]>0),'active-red','Protect',pn.join(", "));
     const ln=[];
-    if(d[7]&0x01)ln.push(`DC Current ${dcCur}A/Limit F${d[4]} Run`);if(d[7]&0x02)ln.push(`IPM/Limit F${d[4]} Run`);
-    if(d[7]&0x04)ln.push(`Tc ${tc}C/Limit F${d[4]} Run`);if(d[7]&0x08)ln.push(`Te ${te}C/Limit F${d[4]} Run`);
-    if(d[7]&0x10)ln.push(`Ta ${ta}C/Limit F${d[4]} Run`);if(d[7]&0x20)ln.push(`AC Voltage ${acVol}V/Limit F${d[4]} Run`);
-    if(d[7]&0x40)ln.push(`AC Current ${acCur}A/Limit F${d[4]} Run`);if(d[7]&0x80)ln.push(`Td ${td}C/Limit F${d[4]} Run`);
-    setIndicator('chk_limitfreq','txt_Limitfreq_type',d[7],'active-green','LimitFreq',ln.join(", "));
-
+    if(d[7]&0x01)ln.push(`DC Cur ${dcCur}A`);if(d[7]&0x02)ln.push("IPM");
+    if(d[7]&0x04)ln.push(`Tc ${tc}C`);if(d[7]&0x08)ln.push(`Te ${te}C`);
+    if(d[7]&0x10)ln.push(`Ta ${ta}C`);if(d[7]&0x20)ln.push(`AC V ${acVol}V`);
+    if(d[7]&0x40)ln.push(`AC A ${acCur}A`);if(d[7]&0x80)ln.push(`Td ${td}C`);
+    setIndicator('chk_limitfreq','txt_Limitfreq_type',d[7],'active-orange','LimitFreq',ln.join(", ")+` → F${d[4]}`);
     const dn=[];
-    if(d[27]&0x01)dn.push(`Tc ${tc}C/Down to F${d[4]} Run`);if(d[27]&0x02)dn.push(`Te ${te}C/Down to F${d[4]} Run`);
-    if(d[27]&0x04)dn.push(`Td ${td}C/Down to F${d[4]} Run`);if(d[27]&0x08)dn.push(`AC current/Down to F${d[4]} Run`);
-    if(d[27]&0x10)dn.push(`Compressor phase current/Down to F${d[4]} Run`);if(d[27]&0x20)dn.push(`IPM temperature/Down to F${d[4]} Run`);
-    setIndicator('chk_downfreq','txt_downfreq_type',d[27],'active-green','DownFreq',dn.join(", "));
-
-    setIndicator('chk_comp',null,d[17]&0x80,'active-green','Comp','');setIndicator('chk_defrost',null,d[17]&0x04,'active-green','Defrost','');
-    setIndicator('chk_4way',null,d[17]&0x08,'active-green','4Way','');setIndicator('chk_retoil',null,d[17]&0x40,'active-green','Ret Oil','');
-    setIndicator('chk_outfan',null,d[17]&0x20,'active-green','Out Fan','');setIndicator('chk_test',null,d[17]&0x02,'active-green','Test','');
-    setIndicator('chk_preheat',null,d[17]&0x01,'active-green','Preheat','');setIndicator('chk_collectf',null,d[17]&0x10,'active-green','Collect F','');
-    setIndicator('chk_pfc',null,d[26]&0x10,'active-orange','PFC','');setIndicator('chk_eco',null,d[26]&0x08,'active-orange','ECO','');
-    setIndicator('chk_everoff',null,d[26]&0x01,'active-orange','Ever Off','');setIndicator('chk_idufault',null,d[26]&0x02,'active-red','IDU Fault (sys)','');
-
+    if(d[27]&0x01)dn.push(`Tc ${tc}C`);if(d[27]&0x02)dn.push(`Te ${te}C`);
+    if(d[27]&0x04)dn.push(`Td ${td}C`);if(d[27]&0x08)dn.push("AC current");
+    if(d[27]&0x10)dn.push("Comp phase cur");if(d[27]&0x20)dn.push("IPM temp");
+    setIndicator('chk_downfreq','txt_downfreq_type',d[27],'active-orange','DownFreq',dn.join(", "));
+    setIndicator('chk_comp',null,d[17]&0x80,'active-green','Comp','');
+    setIndicator('chk_defrost',null,d[17]&0x04,'active-green','Defrost','');
+    setIndicator('chk_4way',null,d[17]&0x08,'active-green','4Way','');
+    setIndicator('chk_retoil',null,d[17]&0x40,'active-green','Ret Oil','');
+    setIndicator('chk_outfan',null,d[17]&0x20,'active-green','Out Fan','');
+    setIndicator('chk_test',null,d[17]&0x02,'active-green','Test','');
+    setIndicator('chk_preheat',null,d[17]&0x01,'active-green','Preheat','');
+    setIndicator('chk_collectf',null,d[17]&0x10,'active-green','Collect F','');
+    setIndicator('chk_pfc',null,d[26]&0x10,'active-orange','PFC','');
+    setIndicator('chk_eco',null,d[26]&0x08,'active-orange','ECO','');
+    setIndicator('chk_everoff',null,d[26]&0x01,'active-orange','Ever Off','');
+    setIndicator('chk_idufault',null,d[26]&0x02,'active-red','IDU Fault (sys)','');
     const hexStr=Array.from(d).map(b=>b.toString(16).toUpperCase().padStart(2,'0')).join(' ');
     const asciiStr=Array.from(d).map(b=>(b>=32&&b<=126)?String.fromCharCode(b):'.').join('');
     appendLine(`[${new Date().toLocaleTimeString()}]\nComp: ${CompTime}\nHEX : ${hexStr}\nASC : ${asciiStr}\n---------------------------------------`);
 }
 
-
 // =============================================================================
 // PER-TOPIC BACKGROUND EVENT ENGINE
-// Runs for every topic in the background scanner — no need to open dashboard.
 // =============================================================================
-const _EVENT_TEXTS = [
-    "System Idle","Receive indoor instructions Standby","Mode change, Compressor stop",
-    "Indoor room temp reach to stop","AC Curr protect, Compressor stop",
-    "Indoor FAN motor fault, Compressor stop","Indoor Evaporator sensor fault",
-    "Indoor Room Sensor Fault","Stop reason8"
-];
-
-function _extractState(d) {
+const _EVENT_TEXTS=["System Idle","Receive indoor instructions Standby","Mode change, Compressor stop","Indoor room temp reach to stop","AC Curr protect, Compressor stop","Indoor FAN motor fault, Compressor stop","Indoor Evaporator sensor fault","Indoor Room Sensor Fault","Stop reason8"];
+function _extractState(d){
     let iduFault='';
-    if(d[45]&0x01)iduFault='Fan fault'; else if(d[45]&0x02)iduFault='Te fault';
-    else if(d[45]&0x04)iduFault='Tr fault'; else if(d[45]&0x08)iduFault='NoFo fault';
-    else if(d[45]&0x10)iduFault='WiFi fault'; else if(d[45])iduFault='IDU fault';
+    if(d[45]&0x01)iduFault='Fan fault';else if(d[45]&0x02)iduFault='Te fault';
+    else if(d[45]&0x04)iduFault='Tr fault';else if(d[45]&0x08)iduFault='NoFo fault';
+    else if(d[45]&0x10)iduFault='WiFi fault';else if(d[45])iduFault='IDU fault';
     let drvFault='';
-    if(d[16]&0x02)drvFault='Over Current'; else if(d[16]&0x04)drvFault='Over Voltage';
-    else if(d[16]&0x08)drvFault='Step Out'; else if(d[16]&0x10)drvFault='Reverse';
-    const modes=['Standby','Cool','Heat','FAN','Dry'];
-    return {
-        eventCode: d[31],
-        comp:!!(d[17]&0x80), defrost:!!(d[17]&0x04), way4:!!(d[17]&0x08),
-        retOil:!!(d[17]&0x40), outFan:!!(d[17]&0x20), test:!!(d[17]&0x02),
-        preheat:!!(d[17]&0x01), collectF:!!(d[17]&0x10),
-        pfc:!!(d[26]&0x10), eco:!!(d[26]&0x08), everOff:!!(d[26]&0x01),
-        iduFaultFlag:!!(d[26]&0x02), faultByte:d[39],
-        iduFault, drvFault,
-        oduFault: _bits(d[5],[[0x02,'Ta sensor'],[0x04,'Tc sensor'],[0x08,'Td sensor'],
-            [0x10,'Communication'],[0x20,'Out Fan'],[0x40,'Compressor'],[0x80,'IPM']]),
-        protect: [
-            _bits(d[40],[[0x01,'DC Volt Stop'],[0x02,'DC Current Stop'],[0x04,'Tc freeze'],
-                [0x08,'Te overload'],[0x10,'IPM overtemp'],[0x20,'IPM permanent'],[0x40,'Start Fail Preheat']]),
-            _bits(d[6],[[0x01,'Tr Protect'],[0x02,'Tc Protect'],[0x04,'Te Protect'],[0x08,'Ta Protect'],
-                [0x10,'AC Current'],[0x20,'AC Voltage'],[0x40,'Comp perm stop'],[0x80,'Td Protect']])
-        ].filter(Boolean).join(', '),
-        limitFreq: _bits(d[7],[[0x01,'DC Current Limit'],[0x02,'IPM Limit'],[0x04,'Tc Limit'],
-            [0x08,'Te Limit'],[0x10,'Ta Limit'],[0x20,'AC Voltage Limit'],[0x40,'AC Current Limit'],[0x80,'Td Limit']]),
-        downFreq: _bits(d[27],[[0x01,'Condenser temp'],[0x02,'Evaporator temp'],
-            [0x04,'Comp discharge temp'],[0x08,'AC current'],[0x10,'Comp phase current'],[0x20,'IPM temperature']]),
-        compState: d[41]===1?'On':'Off',
-        mode: modes[d[1]]||`Mode${d[1]}`,
-        ta: ((d[10]/2)-30).toFixed(0), targetFreq: d[4],
-    };
+    if(d[16]&0x02)drvFault='Over Current';else if(d[16]&0x04)drvFault='Over Voltage';
+    else if(d[16]&0x08)drvFault='Step Out';else if(d[16]&0x10)drvFault='Reverse';
+    const modes=['Standby','Cool','Heat','FAN','Dry','Auto','','Test'];
+    return{eventCode:d[31],comp:!!(d[17]&0x80),defrost:!!(d[17]&0x04),way4:!!(d[17]&0x08),retOil:!!(d[17]&0x40),outFan:!!(d[17]&0x20),test:!!(d[17]&0x02),preheat:!!(d[17]&0x01),collectF:!!(d[17]&0x10),pfc:!!(d[26]&0x10),eco:!!(d[26]&0x08),everOff:!!(d[26]&0x01),iduFaultFlag:!!(d[26]&0x02),faultByte:d[39],iduFault,drvFault,oduFault:_bits(d[5],[[0x02,'Ta sensor'],[0x04,'Tc sensor'],[0x08,'Td sensor'],[0x10,'Communication'],[0x20,'Out Fan'],[0x40,'Compressor'],[0x80,'IPM']]),protect:[_bits(d[40],[[0x01,'DC Volt Stop'],[0x02,'DC Current Stop'],[0x04,'Tc freeze'],[0x08,'Te overload'],[0x10,'IPM overtemp'],[0x20,'IPM permanent'],[0x40,'Start Fail Preheat']]),_bits(d[6],[[0x01,'Tr Protect'],[0x02,'Tc Protect'],[0x04,'Te Protect'],[0x08,'Ta Protect'],[0x10,'AC Current'],[0x20,'AC Voltage'],[0x40,'Comp perm stop'],[0x80,'Td Protect']])].filter(Boolean).join(', '),limitFreq:_bits(d[7],[[0x01,'DC Current Limit'],[0x02,'IPM Limit'],[0x04,'Tc Limit'],[0x08,'Te Limit'],[0x10,'Ta Limit'],[0x20,'AC Voltage Limit'],[0x40,'AC Current Limit'],[0x80,'Td Limit']]),downFreq:_bits(d[27],[[0x01,'Condenser temp'],[0x02,'Evaporator temp'],[0x04,'Comp discharge temp'],[0x08,'AC current'],[0x10,'Comp phase current'],[0x20,'IPM temperature']]),compState:d[41]===1?'On':'Off',mode:modes[d[1]]||`Mode${d[1]}`,ta:((d[10]/2)-30).toFixed(0),targetFreq:d[4]};
 }
-
-function processTopicEvents(topic, d) {
-    const cur = _extractState(d);
-    if (!topicEventLogs[topic]) topicEventLogs[topic] = [];
-
-    // First packet for this topic — seed state, no events yet
-    if (!topicStates[topic]) { topicStates[topic] = cur; return; }
-
-    const prev = topicStates[topic];
-    const ts   = new Date().toLocaleTimeString();
-    const evts = [];
-
-    // Event code (byte 31)
-    if (cur.eventCode !== prev.eventCode && cur.eventCode > 0 && cur.eventCode < _EVENT_TEXTS.length)
-        evts.push(`${ts} >> ${_EVENT_TEXTS[cur.eventCode]}`);
-
-    // Boolean flags
-    for (const [key,name] of [['comp','Comp'],['defrost','Defrost'],['way4','4Way'],
-        ['retOil','Ret Oil'],['outFan','Out Fan'],['test','Test'],['preheat','Preheat'],
-        ['collectF','Collect F'],['pfc','PFC'],['eco','ECO'],['everOff','Ever Off'],
-        ['iduFaultFlag','IDU Fault (sys)']]) {
-        if (cur[key] !== prev[key])
-            evts.push(`${ts} >> [${name}] ${cur[key] ? 'ON' : 'OFF >> Cleared'}`);
-    }
-
-    // Fault byte (byte 39)
-    if ((cur.faultByte!==0) !== (prev.faultByte!==0))
-        evts.push(`${ts} >> [Fault] ${cur.faultByte!==0 ? 'ON' : 'OFF >> Cleared'}`);
-
-    // Text fields
-    for (const [key,name] of [['iduFault','IDU Fault'],['oduFault','ODU Fault'],
-        ['drvFault','Drv Fault'],['protect','Protect']]) {
-        if (cur[key] !== prev[key])
-            evts.push(cur[key] ? `${ts} >> [${name}] >> ${cur[key]}` : `${ts} >> [${name}] OFF >> Cleared`);
-    }
-
-    // LimitFreq with detail
-    if (cur.limitFreq !== prev.limitFreq)
-        evts.push(cur.limitFreq
-            ? `${ts} >> [LimitFreq] ON >> ${cur.limitFreq}/Ta ${cur.ta}C/Limit F${cur.targetFreq} Run`
-            : `${ts} >> [LimitFreq] OFF >> Cleared`);
-
-    // DownFreq
-    if (cur.downFreq !== prev.downFreq)
-        evts.push(cur.downFreq ? `${ts} >> [DownFreq] ON >> ${cur.downFreq}` : `${ts} >> [DownFreq] OFF >> Cleared`);
-
-    // Comp state & mode
-    if (cur.compState !== prev.compState && prev.compState !== '')
-        evts.push(`${ts} >> [Comp State] ${cur.compState}`);
-    if (cur.mode !== prev.mode && prev.mode !== '')
-        evts.push(`${ts} >> [Mode] ${prev.mode} >> ${cur.mode}`);
-
-    topicStates[topic] = cur;
-
-    if (evts.length === 0) return;
-
-    // Store (keep last 500 per topic)
+function processTopicEvents(topic,d){
+    const cur=_extractState(d);
+    if(!topicEventLogs[topic])topicEventLogs[topic]=[];
+    if(!topicStates[topic]){topicStates[topic]=cur;return;}
+    const prev=topicStates[topic],ts=new Date().toLocaleTimeString(),evts=[];
+    if(cur.eventCode!==prev.eventCode&&cur.eventCode>0&&cur.eventCode<_EVENT_TEXTS.length)evts.push(`${ts} >> ${_EVENT_TEXTS[cur.eventCode]}`);
+    for(const [key,name]of[['comp','Comp'],['defrost','Defrost'],['way4','4Way'],['retOil','Ret Oil'],['outFan','Out Fan'],['test','Test'],['preheat','Preheat'],['collectF','Collect F'],['pfc','PFC'],['eco','ECO'],['everOff','Ever Off'],['iduFaultFlag','IDU Fault (sys)']]){if(cur[key]!==prev[key])evts.push(`${ts} >> [${name}] ${cur[key]?'ON':'OFF >> Cleared'}`);}
+    if((cur.faultByte!==0)!==(prev.faultByte!==0))evts.push(`${ts} >> [Fault] ${cur.faultByte!==0?'ON':'OFF >> Cleared'}`);
+    for(const [key,name]of[['iduFault','IDU Fault'],['oduFault','ODU Fault'],['drvFault','Drv Fault'],['protect','Protect']]){if(cur[key]!==prev[key])evts.push(cur[key]?`${ts} >> [${name}] >> ${cur[key]}`:`${ts} >> [${name}] OFF >> Cleared`);}
+    if(cur.limitFreq!==prev.limitFreq)evts.push(cur.limitFreq?`${ts} >> [LimitFreq] ON >> ${cur.limitFreq}/Ta ${cur.ta}C/Limit F${cur.targetFreq} Run`:`${ts} >> [LimitFreq] OFF >> Cleared`);
+    if(cur.downFreq!==prev.downFreq)evts.push(cur.downFreq?`${ts} >> [DownFreq] ON >> ${cur.downFreq}`:`${ts} >> [DownFreq] OFF >> Cleared`);
+    if(cur.compState!==prev.compState&&prev.compState!=='')evts.push(`${ts} >> [Comp State] ${cur.compState}`);
+    if(cur.mode!==prev.mode&&prev.mode!=='')evts.push(`${ts} >> [Mode] ${prev.mode} >> ${cur.mode}`);
+    topicStates[topic]=cur;
+    if(evts.length===0)return;
     topicEventLogs[topic].push(...evts);
-    if (topicEventLogs[topic].length > 500) topicEventLogs[topic] = topicEventLogs[topic].slice(-500);
-    // Auto-save to localStorage (web) or disk file (Electron)
-    _saveEventLines(topic, evts);
-
-    // If this topic's dashboard is currently open, append to live display
-    if (activeStreamTopic === topic) evts.forEach(e => _appendToEventDisplay(e));
+    if(topicEventLogs[topic].length>500)topicEventLogs[topic]=topicEventLogs[topic].slice(-500);
+    _saveEventLines(topic,evts);
+    if(activeStreamTopic===topic)evts.forEach(e=>_appendToEventDisplay(e));
 }
+function _appendToEventDisplay(line){['event_log_stream','event_log_stream_terminal'].forEach(id=>{const el=document.getElementById(id);if(el){el.innerText+=line+'\n';el.scrollTop=el.scrollHeight;}});}
 
-// Append a pre-formatted event line to the event display (no extra timestamp)
-function _appendToEventDisplay(line) {
-    ['event_log_stream','event_log_stream_terminal'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) { el.innerText += line + '\n'; el.scrollTop = el.scrollHeight; }
-    });
+// =============================================================================
+// CSV RECORDING ENGINE
+// =============================================================================
+const CSV_HEADERS=["YearMonth","Day","Time","Topic","Mode","Fan_Level","Real_Hz","Target_Hz","Set_Hz","Tr_C","Ts_C","Te_C","Tsu_C","Ta_C","Tc_C","Td_C","AC_Vol_V","AC_Cur_A","DC_Vol_V","DC_Cur_A","EEV_P","Tipm_C","FanIPM_C","ODU_Fan_RPM","IDU_Fan_RPM","Comp_State","Comp_Time_s","Soft_Ver","Soft_Date","IDU_Fault","Drv_Fault","ODU_Fault","Protect","LimitFreq","DownFreq","Comp","Defrost","4Way","RetOil","OutFan","Test","Preheat","CollectF","PFC","ECO","EverOff","IDU_Fault_Flag","CF1","CF2","CF3","CF4","CF5","CF6","CF7","CF8","CF9","CF10","CF11","CF12","CF13","HF1","HF2","HF3","HF4","HF5","HF6","HF7","HF8","HF9","HF10","HF11","HF12","HF13"];
+function _syncRecUI(){ /* recording disabled in web */ }
+let _recRows=[],_recActive=false,_recDate='',_recFilename='';
+function _bits(byte,pairs){return pairs.filter(([m])=>byte&m).map(([,n])=>n).join(', ');}
+function _recWriteRow(d,topic){
+    if(!_recActive||!topic)return;
+    const now=new Date(),today=now.toLocaleDateString('en-CA').replace(/-/g,'');
+    if(_recDate&&today!==_recDate){if(!window.electronAPI)_downloadCsv();_startNewFile(now);}
+    _recDate=today;
+    const modes=['Standby','Cool','Heat','FAN','Dry','Auto','','Test'],fans=['Stop','Weak','Silence','Low','Medium','High','Force'];
+    const iduF=d[45]&0x01?'Fan fault':d[45]&0x02?'Te fault':d[45]&0x04?'Tr fault':d[45]&0x08?'NoFo fault':d[45]&0x10?'WiFi fault':(d[45]?'IDU fault':'');
+    const drvF=d[16]&0x02?'Over Current':d[16]&0x04?'Over Voltage':d[16]&0x08?'Step Out':d[16]&0x10?'Reverse':'';
+    const oduF=_bits(d[5],[[0x02,'Ta sensor'],[0x04,'Tc sensor'],[0x08,'Td sensor'],[0x10,'Communication'],[0x20,'Out Fan'],[0x40,'Compressor'],[0x80,'IPM']]);
+    const prot=[_bits(d[40],[[0x01,'DC Volt Stop'],[0x02,'DC Current Stop'],[0x04,'Tc freeze'],[0x08,'Te overload'],[0x10,'IPM overtemp'],[0x20,'IPM permanent'],[0x40,'Start Fail Preheat']]),_bits(d[6],[[0x01,'Tr Protect'],[0x02,'Tc Protect'],[0x04,'Te Protect'],[0x08,'Ta Protect'],[0x10,'AC Current'],[0x20,'AC Voltage'],[0x40,'Comp perm stop'],[0x80,'Td Protect']])].filter(Boolean).join(', ');
+    const limF=_bits(d[7],[[0x01,'DC Current Limit'],[0x02,'IPM Limit'],[0x04,'Tc Limit'],[0x08,'Te Limit'],[0x10,'Ta Limit'],[0x20,'AC Voltage Limit'],[0x40,'AC Current Limit'],[0x80,'Td Limit']]);
+    const dwnF=_bits(d[27],[[0x01,'Condenser temp'],[0x02,'Evaporator temp'],[0x04,'Comp discharge temp'],[0x08,'AC current'],[0x10,'Comp phase current'],[0x20,'IPM temperature']]);
+    const row=[now.toLocaleDateString('en-CA').slice(0,7),String(now.getDate()).padStart(2,'0'),now.toLocaleTimeString('en-GB'),topic,modes[d[1]]||`Mode${d[1]}`,fans[d[18]]||`Level${d[18]}`,d[2],d[3],d[4],((d[9]/2)-30).toFixed(1),((d[8]/2)-30).toFixed(1),((d[12]/2)-30).toFixed(1),((d[30]/2)-30).toFixed(1),((d[10]/2)-30).toFixed(1),((d[13]/2)-30).toFixed(1),(d[11]-30).toFixed(0),d[14]*2,(d[15]/10).toFixed(1),d[19]*2,(d[20]/10).toFixed(1),d[24]*2,d[25],d[44],d[21]*10,d[32]*10,d[41]===1?'On':'Off',(d[42]<<8)|d[43],`${d[28]}.${d[29]}.0`,`20${String(d[33]).padStart(2,'0')}-${String(d[34]).padStart(2,'0')}-${String(d[35]).padStart(2,'0')}`,iduF,drvF,oduF,prot,limF,dwnF,(d[17]&0x80)?1:0,(d[17]&0x04)?1:0,(d[17]&0x08)?1:0,(d[17]&0x40)?1:0,(d[17]&0x20)?1:0,(d[17]&0x02)?1:0,(d[17]&0x01)?1:0,(d[17]&0x10)?1:0,(d[26]&0x10)?1:0,(d[26]&0x08)?1:0,(d[26]&0x01)?1:0,(d[26]&0x02)?1:0,...Array.from({length:13},(_,i)=>d[47+i]||0),...Array.from({length:13},(_,i)=>d[60+i]||0)];
+    if(window.electronAPI){const rowStr=row.map(v=>(typeof v==='string'&&(v.includes(',')||v.includes('"')))?`"${v.replace(/"/g,'""')}"`:`${v}`).join(',');window.electronAPI.appendRow(_recFilename,rowStr);window.electronAPI.setRecordingState(true,(_recRows.length+1));_recRows.push(1);}
+    else{_recRows.push(row);}
+    const cnt=document.getElementById('rec_count');if(cnt)cnt.textContent=`⏺ ${_recRows.length} rows`;
 }
+function _startNewFile(now){const ts=(now||new Date()).toISOString().replace(/[-T:.Z]/g,'').slice(0,15);_recFilename=`AMBER_${ts}.csv`;_recRows=[];if(window.electronAPI){window.electronAPI.initFile(_recFilename,CSV_HEADERS.join(','));}else{_recRows=[CSV_HEADERS];}}
+async function toggleRecording(){ return; // recording disabled in web version
+
+    if(!_recActive){_recDate=new Date().toLocaleDateString('en-CA').replace(/-/g,'');_recActive=true;_recRows=[];await _startNewFile();_syncRecUI();appendEventLog('CSV recording started — all online nodes captured.');}
+    else{_recActive=false;const saved=_recRows.length;if(window.electronAPI){window.electronAPI.openFolder();window.electronAPI.setRecordingState(false,0);}else{_downloadCsv();}_syncRecUI();appendEventLog(`CSV recording stopped — ${saved} rows saved.`);_recRows=[];}
+}
+function _downloadCsv(){if(_recRows.length<=1)return;const ts=new Date().toISOString().replace(/[-T:.Z]/g,'').slice(0,15),name=`AMBER_${ts}.csv`,csv=_recRows.map(r=>r.map(v=>(typeof v==='string'&&(v.includes(',')||v.includes('"')))?`"${v.replace(/"/g,'""')}"`:`${v}`).join(',')).join('\r\n');const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([csv],{type:'text/csv'})),download:name});a.click();URL.revokeObjectURL(a.href);}
+
+// =============================================================================
+// EVENT LOG PERSISTENCE
+// =============================================================================
+const _evtFileInited={};
+function _saveEventLines(topic,lines){
+    if(!lines||lines.length===0)return;
+    const safeT=topic.replace(/[\/\\:*?"<>|]/g,'_'),date=new Date().toLocaleDateString('en-CA').replace(/-/g,''),fname=`AMBER_Events_${safeT}_${date}.txt`;
+    if(window.electronAPI){if(!_evtFileInited[fname]){_evtFileInited[fname]=true;const header=`AMBER Event Log — ${topic}\r\nDate: ${new Date().toLocaleDateString()}\r\n${'='.repeat(60)}\r\n`;window.electronAPI.appendEventLog(fname,header);}lines.forEach(l=>{window.electronAPI.appendEventLog(fname,l);window.electronAPI.sendEvent(topic,l);});}
+    else{try{const key=`AMBER_EVT_${topic}`,prev=JSON.parse(localStorage.getItem(key)||'[]'),next=prev.concat(lines).slice(-1000);localStorage.setItem(key,JSON.stringify(next));}catch(e){}}
+}
+function _restoreEventLogsFromStorage(){
+    if(window.electronAPI)return;
+    try{for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key&&key.startsWith('AMBER_EVT_')){const topic=key.replace('AMBER_EVT_',''),lines=JSON.parse(localStorage.getItem(key)||'[]');if(lines.length>0&&!topicEventLogs[topic])topicEventLogs[topic]=lines;}}}catch(e){}
+}
+function downloadTopicEventLog(topic){const lines=topicEventLogs[topic];if(!lines||lines.length===0){alert('No events recorded for '+topic);return;}const ts=new Date().toISOString().replace(/[-T:.Z]/g,'').slice(0,15),safeT=topic.replace(/[^a-zA-Z0-9]/g,'_'),header=`AMBER Event Log — ${topic}\nExported: ${new Date().toLocaleString()}\n${'='.repeat(60)}\n\n`,content=header+lines.join('\n');const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([content],{type:'text/plain'})),download:`AMBER_Events_${safeT}_${ts}.txt`});a.click();URL.revokeObjectURL(a.href);}
+function downloadAllEventLogs(){const topics=Object.keys(topicEventLogs).filter(t=>topicEventLogs[t]?.length>0);if(topics.length===0){alert('No events recorded yet.');return;}const ts=new Date().toISOString().replace(/[-T:.Z]/g,'').slice(0,15);let content=`AMBER Event Logs — All Topics\nExported: ${new Date().toLocaleString()}\n${'='.repeat(60)}\n\n`;topics.forEach(t=>{content+=`Topic: ${t}\n${'-'.repeat(40)}\n`;content+=(topicEventLogs[t]||[]).join('\n')+'\n\n';});const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([content],{type:'text/plain'})),download:`AMBER_Events_ALL_${ts}.txt`});a.click();URL.revokeObjectURL(a.href);}
+
 // =============================================================================
 // INIT
 // =============================================================================
-
-// =============================================================================
-// EVENT LOG PERSISTENCE  — localStorage (web) / disk file (Electron)
-// =============================================================================
-
-// Save new event lines for a topic
-// Track which topic+date files have been initialised this session
-const _evtFileInited = {};
-
-function _saveEventLines(topic, lines) {
-    if (!lines || lines.length === 0) return;
-    const safeT = topic.replace(/[\/\\:*?"<>|]/g, '_');
-    const date  = new Date().toLocaleDateString('en-CA').replace(/-/g,'');
-    const fname = `AMBER_Events_${safeT}_${date}.txt`;
-    if (window.electronAPI) {
-        // Electron: write directly to disk — same folder as CSV files
-        if (!_evtFileInited[fname]) {
-            _evtFileInited[fname] = true;
-            const header = `AMBER Event Log — ${topic}\r\nDate: ${new Date().toLocaleDateString()}\r\n${'='.repeat(60)}\r\n`;
-            window.electronAPI.appendEventLog(fname, header);
-        }
-        lines.forEach(l => window.electronAPI.appendEventLog(fname, l));
-    } else {
-        // Web: accumulate in localStorage (keeps last 1000 per topic)
-        try {
-            const key  = `AMBER_EVT_${topic}`;
-            const prev = JSON.parse(localStorage.getItem(key) || '[]');
-            const next = prev.concat(lines).slice(-1000);
-            localStorage.setItem(key, JSON.stringify(next));
-        } catch(e) {}
-    }
-}
-
-// Restore all topic event logs from localStorage on page load (web only)
-function _restoreEventLogsFromStorage() {
-    if (window.electronAPI) return;  // Electron reads from disk files directly
-    try {
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.startsWith('AMBER_EVT_')) {
-                const topic = key.replace('AMBER_EVT_', '');
-                const lines = JSON.parse(localStorage.getItem(key) || '[]');
-                if (lines.length > 0 && !topicEventLogs[topic]) {
-                    topicEventLogs[topic] = lines;
-                }
-            }
-        }
-    } catch(e) {}
-}
-
-// Explicit user action — triggered by the "📄 Export Events" button on the
-// monitor screen. Non-blocking: uses the status bar instead of alert() so it
-// never freezes the UI thread or interrupts live data rendering.
-function exportCurrentTopicEvents() {
-    if (!activeStreamTopic) return;
-    const lines = topicEventLogs[activeStreamTopic];
-    if (!lines || lines.length === 0) {
-        appendEventLog(`No events recorded yet for [${activeStreamTopic}] — nothing to export.`);
-        return;
-    }
-    downloadTopicEventLog(activeStreamTopic);
-    appendEventLog(`Event log exported for [${activeStreamTopic}] (${lines.length} lines).`);
-}
-
-// Download a single topic's event log as a .txt file (web)
-function downloadTopicEventLog(topic) {
-    const lines = topicEventLogs[topic];
-    if (!lines || lines.length === 0) { appendEventLog('No events recorded for ' + topic); return; }
-    const ts      = new Date().toISOString().replace(/[-T:.Z]/g,'').slice(0,15);
-    const safeT   = topic.replace(/[^a-zA-Z0-9]/g,'_');
-    const header  = `AMBER Event Log — ${topic}\nExported: ${new Date().toLocaleString()}\n${'='.repeat(60)}\n\n`;
-    const content = header + lines.join('\n');
-    const a = Object.assign(document.createElement('a'), {
-        href: URL.createObjectURL(new Blob([content], {type:'text/plain'})),
-        download: `AMBER_Events_${safeT}_${ts}.txt`
-    });
-    a.click(); URL.revokeObjectURL(a.href);
-}
-
-// Download ALL topic event logs combined as one .txt file (web)
-function downloadAllEventLogs() {
-    const topics = Object.keys(topicEventLogs).filter(t => topicEventLogs[t]?.length > 0);
-    if (topics.length === 0) { alert('No events recorded yet.'); return; }
-    const ts   = new Date().toISOString().replace(/[-T:.Z]/g,'').slice(0,15);
-    let content = `AMBER Event Logs — All Topics\nExported: ${new Date().toLocaleString()}\n${'='.repeat(60)}\n\n`;
-    topics.forEach(t => {
-        content += `Topic: ${t}\n${'-'.repeat(40)}\n`;
-        content += (topicEventLogs[t] || []).join('\n') + '\n\n';
-    });
-    const a = Object.assign(document.createElement('a'), {
-        href: URL.createObjectURL(new Blob([content], {type:'text/plain'})),
-        download: `AMBER_Events_ALL_${ts}.txt`
-    });
-    a.click(); URL.revokeObjectURL(a.href);
-}
-// =============================================================================
-// END EVENT LOG PERSISTENCE
-// =============================================================================
-function initializeParallelDiscoveryNetwork() {
-    document.getElementById('cfg_broker_host').value = cfg.host;
-    document.getElementById('cfg_mqtt_user').value   = cfg.user;
-    document.getElementById('cfg_mqtt_pass').value   = cfg.pass;
-    _restoreEventLogsFromStorage();   // restore persisted event logs
+function initializeParallelDiscoveryNetwork(){
+    document.getElementById('cfg_broker_host').value=cfg.host;
+    document.getElementById('cfg_mqtt_user').value=cfg.user;
+    document.getElementById('cfg_mqtt_pass').value=cfg.pass;
+    updateToolbarBrokerTxt();
+    _restoreEventLogsFromStorage();
     appendEventLog("Asset register loaded. Provisioning sockets…");
-    fetchDevicesFromRegistry().forEach(dev => initializeBackgroundDeviceScanner(dev.topic));
+    fetchDevicesFromRegistry().forEach(dev=>initializeBackgroundDeviceScanner(dev.topic));
     renderDeviceInventoryTable();
 }
-
 initializeParallelDiscoveryNetwork();
+if(window.electronAPI){
+    window.electronAPI.onTrayToggle(()=>toggleRecording());
+    window.electronAPI.getDocsDir().then(dir=>{appendEventLog(`Desktop mode active. Files save to: ${dir}`);});
+}
 </script>
 </body>
 </html>
